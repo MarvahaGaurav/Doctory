@@ -17,11 +17,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-
 Route::post('signUp','CommonController@signUp');
-
-
+Route::post('otpVerify','CommonController@otpVerify');
+Route::post('login','CommonController@login');
 
 
 

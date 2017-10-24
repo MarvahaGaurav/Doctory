@@ -30,7 +30,25 @@ return [
 		'SHOW_ERROR_MESSAGE' => '400',
 		'ERROR_IN_EXECUTION' => '404',
 		'BAD_REQUEST' => '500'
-	] 
+	],
+
+	'required' => [
+		'accessToken' => 'Access Token Required.',
+		'requestToUserId' => 'RequestToUserId is required',
+	],
+
+	'invalid' =>[
+		'number' => 'Invalid number.',
+		'detail' => 'Invalid details.',
+		'request' => 'Invalid request.',
+		'accessToken' => 'Invalid accessToken.',
+		'OTP' => 'Invalid OTP.'
+	],
+
+	'same' => [
+		'same_number' => 'You have entered the same number.',
+		'country_code' => 'Same country code as last.'
+	]
 
 
 ];

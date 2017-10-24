@@ -20,6 +20,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('signUp','CommonController@signUp');
 Route::post('otpVerify','CommonController@otpVerify');
 Route::post('login','CommonController@login');
+Route::post('forgetPassword','CommonController@forgetPassword');
+Route::post('resetPassword','CommonController@resetPassword');
+Route::post('changeMobileNumber','CommonController@changeMobileNumber');
 
 
 

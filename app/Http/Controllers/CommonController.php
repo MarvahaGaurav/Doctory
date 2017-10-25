@@ -13,6 +13,7 @@ use \Carbon\Carbon;
 use App\User;
 use App\Otp;
 use App\UserDetail;
+use App\Subcategory;
 use Hash;
 use Auth;
 use Exception;

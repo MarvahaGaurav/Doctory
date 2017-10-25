@@ -24,7 +24,13 @@ class User extends Authenticatable
     }
 
     public function getUserDetail($userId){
-        $data = Self::where('id',$userId)->with('OtpDetail')->first();
+        $data = Self::where(['id' => $userId , 'status' => 1])->with('OtpDetail')->first();
         return $data;
+    }
+
+    public static function getUserList($query){
+        // dd($query['status']);
+        $data = Self::Where(['status' => $query['status'],'user_type' => $query['user_type']])->get();
+       return $data;
     }
 }

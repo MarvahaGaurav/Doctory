@@ -16,8 +16,8 @@ class Category extends Model
     	return $data;
     }
 
-    public static function getSubCatAndCat($categoryId){
-    	$data = Self::Where(['status' => 1])->with('subcategories')->first();
+    public static function getSubCatAndCat(){
+    	$data = Self::Where(['status' => 1])->with('subcategories')->get();
     	return $data;
     }
 }

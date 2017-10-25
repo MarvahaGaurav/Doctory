@@ -52,7 +52,7 @@ class CategoryController extends Controller
 	}
 
 	public function getSubCatAndCat(Request $request){
-		$data = Category::getSubCatAndCat($categoryId);
+		$data = Category::getSubCatAndCat();
 		$response = [
 				'message' => __('messages.success.success'),
 				'response' => $data

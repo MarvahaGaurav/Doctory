@@ -26,10 +26,14 @@ Route::post('changeMobileNumber','CommonController@changeMobileNumber');
 Route::get('getCategoryList','CategoryController@getCategoryList');
 Route::post('getSubCategoryUnderCat','CategoryController@getSubCategory');
 Route::get('getSubCatAndCat','CategoryController@getSubCatAndCat');
+
 Route::get('doctorList','DoctorController@getList');
+Route::post('completeProfile','CommonController@completeProfileOrEditProfile');
 
 
-
+////////////////////////////////////////////////
+////// Doctor Api's
+////////////////////////////////////////////////
 
 
 

@@ -32,8 +32,10 @@ class CategoryController extends Controller
 
 	public function getSubCategory(Request $request){
 		$categoryId = $request->categoryId;
+		$slug = $request->slug;
 		$validations = [
-			'categoryId' => 'numeric|required'
+			'categoryId' => 'numeric|required_if:slug,""',
+			'slug' => 'required_if:categoryId,""|alpha'
     	];
     	$validator = Validator::make($request->all(),$validations);
     	if($validator->fails()){
@@ -42,7 +44,7 @@ class CategoryController extends Controller
 			];
 			return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
     	}else{
-			$SubcategoryList = Category::getSubCatByCatId($categoryId);
+			$SubcategoryList = Category::getSubCatByCatId($categoryId,$slug);
 			$response = [
 				'message' => __('messages.success.success'),
 				'response' => $SubcategoryList

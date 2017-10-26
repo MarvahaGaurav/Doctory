@@ -20,11 +20,23 @@ class User extends Authenticatable
     ];
 
     public function OtpDetail(){
-        return $this->belongsTo(\App\Otp::class,'id','userId');
+        return $this->belongsTo(\App\Otp::class,'id','user_id');
+    }
+
+    public function speciality(){
+        return $this->hasOne('App\Subcategory','id','speciality_id')->where(['status' => 1]);
+    }
+
+    public function qualification(){
+        return $this->hasOne('App\Subcategory','id','qualification_id')->where(['status' => 1]);
     }
 
     public function getUserDetail($userId){
-        $data = Self::where(['id' => $userId , 'status' => 1])->with('OtpDetail')->first();
+        $data = Self::where(['id' => $userId , 'status' => 1])
+                ->with('speciality')
+                ->with('qualification')
+                ->with('OtpDetail')
+                ->first();
         return $data;
     }
 

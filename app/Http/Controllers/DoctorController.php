@@ -32,4 +32,8 @@ class DoctorController extends Controller
     	];
     	return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
     }
+
+    
+
+    
 }

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use DB;
 use Mail;
+use Illuminate\Validation\Rule;
 use Log;
 use Response;
 use Session;
@@ -416,4 +417,132 @@ class CommonController extends Controller
 	      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
 	   }
 	}
+
+	public function completeProfileOrEditProfile(Request $request){
+		$accessToken = $request->header('accessToken');
+		$photo = $request->file('profileImage');
+		$destinationPathOfProfile = base_path().'/'.'userImages/';
+		$specialityId = $request->specialityId;
+		$qualificationId = $request->qualificationId;
+		$experience = $request->experience;
+		$workingPlace = $request->workingPlace;
+		$motherLanguage = $request->motherLanguage;
+		$aboutMe = $request->aboutMe;
+		$key = $request->key;
+		$email = $request->email;
+		$mobile = $request->mobile;
+
+		$USER = User::Where(['remember_token' => $accessToken])->first();
+		//dd($USER);
+
+		if( !empty( $accessToken ) ) {
+			$validations = [
+				'key' => 'required|numeric',
+				'profileImage' => 'required_if:key,==,1|image',
+				'specialityId' => 'required|numeric',
+				'qualificationId' => 'required|numeric',
+				'experience' => 'required|numeric',
+				'workingPlace' => 'required|alpha',
+				'motherLanguage' => 'required|alpha',
+			];
+			if($key == 2){
+				$validations['email'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];
+				$validations['mobile'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];
+			}
+			$validator = Validator::make($request->all(),$validations);
+			if( $validator->fails() ) {
+				$response = [
+					'message' => $validator->errors($validator)->first(),
+				];
+				return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+			} else {
+				if($USER){
+					if(isset($_FILES['profileImage']['tmp_name'])){
+						$uploadedfile = $_FILES['profileImage']['tmp_name'];
+						$fileName1 = $this->uploadImage($photo,$uploadedfile,$destinationPathOfProfile); 	
+						$USER->profile_image = $fileName1;
+					}
+					if($key == 2){
+						$USER->email = $email;
+						$USER->mobile = $mobile;	
+					}
+					$USER->speciality_id = $specialityId;
+					$USER->qualification_id = $qualificationId;
+					$USER->experience = $experience;
+					$USER->working_place = $workingPlace; 
+					$USER->language = $motherLanguage;
+					$USER->about_me = $aboutMe;
+					$USER->save();
+
+					$user = new User;
+					$response = [
+						'message' => __('messages.success.success'),
+						'response' => $user->getUserDetail($USER->id)
+					];
+					return Response::json($response,trans('messages.statusCode.ACTION_COMPLETE'));
+				}else{
+					$response = [
+						'message' => __('messages.invalid.detail'),
+					];
+					return Response::json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+				}
+			}
+		} else {
+			$Response = [
+				'message'  => trans('messages.required.accessToken'),
+			];
+			return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+		}
+   }
+
+   public function uploadImage($photo,$uploadedfile,$destinationPathOfPhoto){
+        /*$photo = $request->file('photo');
+        $uploadedfile = $_FILES['photo']['tmp_name'];
+        $destinationPathOfPhoto = public_path().'/'.'thumbnail/';*/
+        $fileName = time()."_".$photo->getClientOriginalName();
+        $src = "";
+        $i = strrpos($fileName,".");
+        $l = strlen($fileName) - $i;
+        $ext = substr($fileName,$i+1);
+
+        if($ext=="jpg" || $ext=="jpeg" ){
+            $src = imagecreatefromjpeg($uploadedfile);
+        }else if($ext=="png"){
+            $src = imagecreatefrompng($uploadedfile);
+        }else if($ext=="gif"){
+            $src = imagecreatefromgif($uploadedfile);
+        }else{
+            $src = imagecreatefrombmp($uploadedfile);
+        }
+        $newwidth  = 200;
+        list($width,$height)=getimagesize($uploadedfile);
+        $newheight=($height/$width)*$newwidth;
+        $tmp=imagecreatetruecolor($newwidth,$newheight);
+        imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height);
+        $filename = $destinationPathOfPhoto.'small'.'_'.$fileName; 
+        imagejpeg($tmp,$filename,100);
+        imagedestroy($tmp);
+        $filename = explode('/', $filename);
+
+        $newwidth1  = 400;
+        list($width,$height)=getimagesize($uploadedfile);
+        $newheight1=($height/$width)*$newwidth1;
+        $tmp=imagecreatetruecolor($newwidth1,$newheight1);
+        imagecopyresampled($tmp,$src,0,0,0,0,$newwidth1,$newheight1,$width,$height);
+        $filename = $destinationPathOfPhoto.'big'.'_'.$fileName; 
+        imagejpeg($tmp,$filename,100);
+        imagedestroy($tmp);
+        $filename = explode('/', $filename);
+
+        $newwidth2  = 100;
+        list($width,$height)=getimagesize($uploadedfile);
+        $newheight2=($height/$width)*$newwidth2;
+        $tmp=imagecreatetruecolor($newwidth2,$newheight2);
+        imagecopyresampled($tmp,$src,0,0,0,0,$newwidth2,$newheight2,$width,$height);
+        $filename = $destinationPathOfPhoto.'thumbnail'.'_'.$fileName; 
+        imagejpeg($tmp,$filename,100);
+        imagedestroy($tmp);
+        $filename = explode('/', $filename);
+        return $filename[6];
+   }
 }

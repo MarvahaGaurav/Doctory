@@ -23,19 +23,19 @@ Route::post('login','CommonController@login');
 Route::post('forgetPassword','CommonController@forgetPassword');
 Route::post('resetPassword','CommonController@resetPassword');
 Route::post('changeMobileNumber','CommonController@changeMobileNumber');
-Route::get('getCategoryList','CategoryController@getCategoryList');
-Route::post('getSubCategoryUnderCat','CategoryController@getSubCategory');
-Route::get('getSubCatAndCat','CategoryController@getSubCatAndCat');
+Route::get('getSpeciality','CategoryController@getCategoryList');
+Route::get('getQualification','QualificationController@getQualificationList');
+// Route::post('getSubCategoryUnderCat','CategoryController@getSubCategory');
+// Route::get('getSubCatAndCat','CategoryController@getSubCatAndCat');
 
-Route::get('doctorList','DoctorController@getList');
 Route::post('completeProfile','CommonController@completeProfileOrEditProfile');
 
 
 ////////////////////////////////////////////////
 ////// Doctor Api's
 ////////////////////////////////////////////////
-
-
+Route::get('doctorList','DoctorController@getList');
+Route::post('getDoctorBySpecialityId','DoctorController@getDoctorBySpecialityId');
 
 Route::post('test',function(Request $request){
 	$password = $request->password;

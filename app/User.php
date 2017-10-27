@@ -19,24 +19,34 @@ class User extends Authenticatable
         'password',
     ];
 
-    public function OtpDetail(){
+    public function Otp_detail(){
         return $this->belongsTo(\App\Otp::class,'id','user_id');
     }
 
     public function speciality(){
-        return $this->hasOne('App\Subcategory','id','speciality_id')->where(['status' => 1]);
+        return $this->hasOne('App\Category','id','speciality_id')->where(['status' => 1]);
     }
 
     public function qualification(){
-        return $this->hasOne('App\Subcategory','id','qualification_id')->where(['status' => 1]);
+        return $this->hasMany('App\DoctorQualification');
     }
 
     public function getUserDetail($userId){
         $data = Self::where(['id' => $userId , 'status' => 1])
-                ->with('speciality')
-                ->with('qualification')
-                ->with('OtpDetail')
-                ->first();
+            ->with('speciality')
+            ->with('qualification')
+            ->with('Otp_detail')
+            ->first();
+        return $data;
+    }
+
+    public static function getDoctorBySpecialityId($query){
+        // dd($query);
+        $data = Self::where(['speciality_id' => $query['speciality_id'] , 'status' => $query['status']])
+            ->with('speciality')
+            ->with('qualification')
+            ->with('Otp_detail')
+            ->first();
         return $data;
     }
 

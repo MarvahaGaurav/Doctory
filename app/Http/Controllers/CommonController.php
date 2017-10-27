@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use DB;
@@ -14,6 +13,8 @@ use \Carbon\Carbon;
 use App\User;
 use App\Otp;
 use App\UserDetail;
+use App\Qualification;
+use App\DoctorQualification;
 use App\Subcategory;
 use Hash;
 use Auth;
@@ -32,6 +33,7 @@ class CommonController extends Controller
 		$device_type = $request->device_type;
 		$user_type = $request->user_type;
 		$otp = rand(100000,1000000);
+		$language = $request->language;
 		$accessToken  = md5(uniqid(rand(), true));
 		$validations = [
 			'fullName' => 'required|max:255',
@@ -41,7 +43,8 @@ class CommonController extends Controller
 			'password' => 'required|min:8',
 			'device_token' => 'required',
 			'device_type' => 'required|numeric',
-			'user_type' => 'required|numeric'
+			'user_type' => 'required|numeric',
+			'language' => 'required'
     	];
     	$validator = Validator::make($request->all(),$validations);
     	if($validator->fails()){
@@ -61,9 +64,10 @@ class CommonController extends Controller
     		$user->device_type = $device_type;
     		$user->user_type = $user_type;
     		$user->remember_token = $accessToken;
+    		$user->language = $language;
     		if($user->save()){
     			$insertId = $user->id;
-    			$OTP->userId = $insertId;
+    			$OTP->user_id = $insertId;
     			$OTP->otp = $otp;
     			$OTP->save();
     			$userData = $user->getUserDetail($insertId);
@@ -88,11 +92,13 @@ class CommonController extends Controller
 		$device_token = $request->device_token;
 		$device_type = $request->device_type;
 		$accessToken  = md5(uniqid(rand(), true));
+		$language = $request->language;
 		$validations = [
 			'email' => 'required|email',
 			'password' => 'required',
 			'device_token' => 'required',
-			'device_type' => 'required|numeric'
+			'device_type' => 'required|numeric',
+			'language' => 'required'
     	];
     	$validator = Validator::make($request->all(),$validations);
     	if($validator->fails()){
@@ -109,10 +115,13 @@ class CommonController extends Controller
     				$UserDetail->device_token = $device_token;
     				$UserDetail->device_type = $device_type;
     				$UserDetail->remember_token = $accessToken;
+    				$UserDetail->language = $language;
     				$UserDetail->save();
+    				
+    				$result = $this->getUserDetail($User->getUserDetail($userDetail->id));
     				$response = [
 						'message' =>  __('messages.success.login'),
-						'response' => $User->getUserDetail($userDetail->id)
+						'response' => $result
 					];
 					return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
     			}else{
@@ -423,31 +432,35 @@ class CommonController extends Controller
 		$photo = $request->file('profileImage');
 		$destinationPathOfProfile = base_path().'/'.'userImages/';
 		$specialityId = $request->specialityId;
-		$qualificationId = $request->qualificationId;
+		$qualificationArr = $request->qualification; // it would be array
 		$experience = $request->experience;
 		$workingPlace = $request->workingPlace;
+		$latitude = $request->latitude;
+		$longitude = $request->longitude;
 		$motherLanguage = $request->motherLanguage;
 		$aboutMe = $request->aboutMe;
 		$key = $request->key;
 		$email = $request->email;
 		$mobile = $request->mobile;
-
+		// dd($qualificationArr);
 		$USER = User::Where(['remember_token' => $accessToken])->first();
-		//dd($USER);
+		// dd($USER);
 
 		if( !empty( $accessToken ) ) {
 			$validations = [
 				'key' => 'required|numeric',
 				'profileImage' => 'required_if:key,==,1|image',
 				'specialityId' => 'required|numeric',
-				'qualificationId' => 'required|numeric',
+				'qualification' => 'required|array',
 				'experience' => 'required|numeric',
 				'workingPlace' => 'required|alpha',
+				'latitude' => 'required|numeric',
+				'longitude' => 'required|numeric',
 				'motherLanguage' => 'required|alpha',
 			];
-			if($key == 2){
-				$validations['email'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];
-				$validations['mobile'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];
+			if($key == 2 && count($USER)){ // Edit profile
+				/*$validations['email'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];
+				$validations['mobile'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];*/
 			}
 			$validator = Validator::make($request->all(),$validations);
 			if( $validator->fails() ) {
@@ -463,21 +476,35 @@ class CommonController extends Controller
 						$USER->profile_image = $fileName1;
 					}
 					if($key == 2){
-						$USER->email = $email;
-						$USER->mobile = $mobile;	
+						// $USER->email = $email;
+						// $USER->mobile = $mobile;	
 					}
 					$USER->speciality_id = $specialityId;
-					$USER->qualification_id = $qualificationId;
 					$USER->experience = $experience;
 					$USER->working_place = $workingPlace; 
-					$USER->language = $motherLanguage;
+					$USER->latitude = $latitude; 
+					$USER->longitude = $longitude; 
+					$USER->mother_language = $motherLanguage;
 					$USER->about_me = $aboutMe;
 					$USER->save();
 
+					$DoctorQualification = DoctorQualification::where(['user_id' => $USER->id])->get();
+					if(count($DoctorQualification)){
+						DoctorQualification::where(['user_id' => $USER->id])->delete();
+					}
+					foreach ($qualificationArr as $key => $value) {
+						$DoctorQualification = new \App\DoctorQualification;
+						$DoctorQualification->user_id = $USER->id;
+						$DoctorQualification->qualification_id = $value;
+						$DoctorQualification->save();
+					}
+
 					$user = new User;
+					$result = $this->getUserDetail($user->getUserDetail($USER->id));
 					$response = [
 						'message' => __('messages.success.success'),
-						'response' => $user->getUserDetail($USER->id)
+						// 'response' => $user->getUserDetail($USER->id)
+						'response' => $result
 					];
 					return Response::json($response,trans('messages.statusCode.ACTION_COMPLETE'));
 				}else{
@@ -493,6 +520,51 @@ class CommonController extends Controller
 			];
 			return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
 		}
+   }
+
+   public function getUserDetail($data){
+   	$qualification = [];
+   	if(isset(($data['qualification']))) {
+   		foreach ($data['qualification'] as $key => $value) {
+   			$QualificationDetail = Qualification::Where(['id' => $value->qualification_id])->first();
+   			$qualification[]=[
+   				'id' => $value->id,
+   				'user_id' => $value->user_id,
+   				'qualification_id' => $value->qualification_id,
+   				'qualification_name' => $QualificationDetail['name']
+   			];
+   		}
+   	}
+   	$result = [
+   		'id' => $data['id'],
+   		'name' => $data['name'],
+   		'email' => $data['email'],
+   		'country_code' => $data['country_code'],
+   		'mobile' => $data['mobile'],
+   		'profile_image' => $data['profile_image'],
+   		'speciality_id' => $data['speciality_id'],
+   		'experience' => $data['experience'],
+   		'working_place' => $data['working_place'],
+   		'latitude' => $data['latitude'],
+   		'longitude' => $data['longitude'],
+   		'about_me' => $data['about_me'],
+   		'remember_token' => $data['remember_token'],
+   		'device_token' => $data['device_token'],
+   		'device_type' => $data['device_type'],
+   		'user_type' => $data['user_type'],
+   		'status' => $data['status'],
+   		'available_status' => $data['available_status'],
+   		'notification' => $data['notification'],
+   		'mother_language' => $data['mother_language'],
+   		'language' => $data['language'],
+   		'created_at' => $data['created_at'],
+   		'updated_at' => $data['updated_at'],
+   		'speciality' => $data['speciality'],
+   		'otp_detail' => $data['Otp_detail'],
+   		'qualification' => $qualification,
+   		
+   	];
+   	return $result;
    }
 
    public function uploadImage($photo,$uploadedfile,$destinationPathOfPhoto){

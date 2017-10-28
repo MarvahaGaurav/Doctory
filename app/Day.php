@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Qualification extends Model
+class Day extends Model
 {
      protected $hidden = [
         'created_at','updated_at'

@@ -13,9 +13,13 @@ use \Carbon\Carbon;
 use App\User;
 use App\Otp;
 use App\UserDetail;
+use App\Category;
+use App\TimeSlot;
+use App\Day;
+use App\MotherLanguage;
+use App\DoctorAvailability;
 use App\Qualification;
 use App\DoctorQualification;
-use App\Subcategory;
 use Hash;
 use Auth;
 use Exception;
@@ -24,6 +28,7 @@ use Twilio\Rest\Client;
 class CommonController extends Controller
 {
 	public function signUp(Request $request){
+		Log::info('----------------------CommonController--------------------------signUp'.print_r($request->all(),True));
 		$fullName = $request->fullName;
 		$email = $request->email;
 		$country_code = $request->country_code;
@@ -87,6 +92,7 @@ class CommonController extends Controller
 	}
 
 	public function login(Request $request){
+		Log::info('----------------------CommonController--------------------------login'.print_r($request->all(),True));
 		$email = $request->input('email');
 		$password = $request->input('password');
 		$device_token = $request->device_token;
@@ -117,13 +123,12 @@ class CommonController extends Controller
     				$UserDetail->remember_token = $accessToken;
     				$UserDetail->language = $language;
     				$UserDetail->save();
-    				
     				$result = $this->getUserDetail($User->getUserDetail($userDetail->id));
     				$response = [
 						'message' =>  __('messages.success.login'),
 						'response' => $result
 					];
-					return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+					return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
     			}else{
     				$response = [
 						'message' =>  __('messages.invalid.detail')
@@ -140,6 +145,7 @@ class CommonController extends Controller
 	}
 
 	public function otpVerify( Request $request ) {
+		Log::info('----------------------CommonController--------------------------otpVerify'.print_r($request->all(),True));
 	   $otp  		 = $request->input('otp');
 		$accessToken = $request->header('accessToken');
 		$validations = [
@@ -158,7 +164,7 @@ class CommonController extends Controller
 			   } else {
 			    	$Exist =  $user->getUserDetail($userDetail->id);
 			    	if( count($Exist) ) {
-			    		if( $Exist->OtpDetail->otp == $otp || $otp == 123456 ){
+			    		if( $Exist->Otp_detail->otp == $otp || $otp == 123456 ){
 			    			$OTP = Otp::find($Exist->id);
 			    			$OTP->otp = "";
 			    			$OTP->varified = 1;
@@ -200,14 +206,14 @@ class CommonController extends Controller
 			$token = 'eeaa38187028b4a0a9c4f4e105162b6e';
 			$client = new Client($sid, $token);
 			$number = $client->lookups
-					    ->phoneNumbers("+14154291712")
-					    ->fetch(array("type" => "carrier"));
+				->phoneNumbers("+14154291712")
+				->fetch(array("type" => "carrier"));
 			$client->messages->create(
-					    $mobile, array(
-					        'from' => '+14154291712',
-					        'body' => 'doctory please enter this code to verify :'.$otp
-					    )
-					);
+			    $mobile, array(
+			        'from' => '+14154291712',
+			        'body' => 'doctory please enter this code to verify :'.$otp
+			    )
+			);
 		} catch(Exception $e){
 			// dd($e->getMessage());
 			$response = [
@@ -217,7 +223,72 @@ class CommonController extends Controller
 		}
 	}
 
+	public function resendOtp(Request $request){
+		Log::info('----------------------CommonController--------------------------resendOtp'.print_r($request->all(),True));
+		$key = $request->key; // 1 for send otp at mobile
+		$email = $request->email;
+		$mobile = $request->mobile;
+		$country_code = $request->country_code;
+		$accessToken = $request->accessToken;
+		$otp = rand(100000,1000000);
+
+		$validations = [
+			'key' => 'required|numeric',
+			'accessToken' => 'required_if:key,==,1',
+		];
+		$validator = Validator::make($request->all(),$validations);
+		if( $validator->fails() ){
+		   $response = [
+		   	'message'=>$validator->errors($validator)->first()
+		   ];
+		   return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+		}else{
+			$userDetail=User::where(['remember_token' => $accessToken])->first();
+				if(count($userDetail)){
+					$USER = new User;
+					if($key == 1){ // otp at mobile
+						$this->sendOtp($userDetail->country_code.$userDetail->mobile,$otp);
+					}
+					if($key == 2){ // otp at email
+						$data = [
+							'otp' => $otp,
+							'email' => $userDetail->email
+						];
+						try{
+							Mail::send(['text'=>'otp'], $data, function($message) use ($data)
+							{
+						         $message->to($data['email'])
+						         		->subject ('OTP');
+						         $message->from('techfluper@gmail.com');
+						   });	
+						}catch(Exception $e){
+							$response=[
+								'message' => $e->getMessage()
+				      	];
+				     		return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+						}
+					}
+					$userOtp = Otp::findOrNew($userDetail->id);
+					$userOtp->user_id = $userDetail->id;
+		 			$userOtp->otp = $otp;
+		 			$userOtp->varified = 0;
+		 			$userOtp->save();
+
+		 			$Response = [
+        			  'message'  => trans('messages.success.success'),
+        			  'response' => $USER->getUserDetail($userDetail->id)
+        			];
+        			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );		
+		 		}else{
+					$response['message'] = trans('messages.invalid.detail');
+					return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+				}
+		}
+
+	}
+
 	public function forgetPassword(Request $request) {
+		Log::info('----------------------CommonController--------------------------resetPassword'.print_r($request->all(),True));
 		/*$country_code = $request->country_code;
 		$mobile = $request->mobile;*/
 		$email = $request->email;
@@ -269,6 +340,7 @@ class CommonController extends Controller
 	}
 
 	public function resetPassword(Request $request){
+		Log::info('----------------------CommonController--------------------------resetPassword'.print_r($request->all(),True));
 		$accessToken = $request->header('accessToken');
 		$password = $request->password;
 		$validations = [
@@ -311,6 +383,7 @@ class CommonController extends Controller
 	}
 
 	public function changeMobileNumber( Request $request ) {
+		Log::info('----------------------CommonController--------------------------changeMobileNumber'.print_r($request->all(),True));
 		$country_code = $request->country_code;
 		$mobile 	 =  $request->mobile;
 		$accessToken =  $request->header('accessToken');
@@ -428,6 +501,7 @@ class CommonController extends Controller
 	}
 
 	public function completeProfileOrEditProfile(Request $request){
+		Log::info('----------------------CommonController--------------------------completeProfileOrEditProfile'.print_r($request->all(),True));
 		$accessToken = $request->header('accessToken');
 		$photo = $request->file('profileImage');
 		$destinationPathOfProfile = base_path().'/'.'userImages/';
@@ -442,10 +516,7 @@ class CommonController extends Controller
 		$key = $request->key;
 		$email = $request->email;
 		$mobile = $request->mobile;
-		// dd($qualificationArr);
 		$USER = User::Where(['remember_token' => $accessToken])->first();
-		// dd($USER);
-
 		if( !empty( $accessToken ) ) {
 			$validations = [
 				'key' => 'required|numeric',
@@ -486,6 +557,7 @@ class CommonController extends Controller
 					$USER->longitude = $longitude; 
 					$USER->mother_language = $motherLanguage;
 					$USER->about_me = $aboutMe;
+					$USER->profile_status = 1;
 					$USER->save();
 
 					$DoctorQualification = DoctorQualification::where(['user_id' => $USER->id])->get();
@@ -498,9 +570,8 @@ class CommonController extends Controller
 						$DoctorQualification->qualification_id = $value;
 						$DoctorQualification->save();
 					}
-
 					$user = new User;
-					$result = $this->getUserDetail($user->getUserDetail($USER->id));
+					$result =$this->getUserDetail($user->getUserDetail($USER->id));
 					$response = [
 						'message' => __('messages.success.success'),
 						// 'response' => $user->getUserDetail($USER->id)
@@ -553,6 +624,7 @@ class CommonController extends Controller
    		'device_type' => $data['device_type'],
    		'user_type' => $data['user_type'],
    		'status' => $data['status'],
+   		'profile_status' => $data['profile_status'],
    		'available_status' => $data['available_status'],
    		'notification' => $data['notification'],
    		'mother_language' => $data['mother_language'],
@@ -565,6 +637,51 @@ class CommonController extends Controller
    		
    	];
    	return $result;
+   }
+
+   public function settings(Request $request){
+		Log::info('----------------------CommonController--------------------------settings'.print_r($request->all(),True));
+
+   	$notification = $request->input('notification');
+   	$language = $request->input('language');
+		$accessToken = $request->header('accessToken');
+   	if( !empty( $accessToken ) ) {
+   		$userDetail = User::Where(['remember_token' => $accessToken])->first();
+   		if(!empty($userDetail)){
+		   	$validations = [
+					'notification' => 'required|numeric',
+					'language' => 'required|alpha',
+		    	];
+		    	$validator = Validator::make($request->all(),$validations);
+		    	if($validator->fails()){
+		    		$response = [
+					'message' => $validator->errors($validator)->first()
+					];
+					return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+		    	}else{
+		    		// dd($userDetail);
+		    		$User = new \App\User;
+		    		$userData = $User::find($userDetail->id); 
+		    		$userData->language = $language;
+		    		$userData->notification = $notification;
+		    		$userData->save();
+		    		$response = [
+						'message' =>  __('messages.success.success'),
+					];
+					return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+		    	}
+		   }else{
+    			$response = [
+					'message' =>  __('messages.invalid.detail')
+				];
+				return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+    		}
+	   }else {
+	    	$Response = [
+			  'message'  => trans('messages.required.accessToken'),
+			];
+	      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+    	}
    }
 
    public function uploadImage($photo,$uploadedfile,$destinationPathOfPhoto){
@@ -616,5 +733,24 @@ class CommonController extends Controller
         imagedestroy($tmp);
         $filename = explode('/', $filename);
         return $filename[6];
+   }
+
+   public function getAllStaticData(Request $request){
+		Log::info('----------------------CommonController--------------------------getAllStaticData'.print_r($request->all(),True));
+
+   	$MotherLanguage = MotherLanguage::all();
+   	$Qualification = Qualification::all();
+   	$Category = Category::all();
+   	$Day = Day::all();
+   	$TimeSlot = TimeSlot::all();
+   	
+   	$response = [
+   		'Day' => $Day,
+   		'TimeSlot' => $TimeSlot,
+   		'MotherLanguage' => $MotherLanguage,
+   		'Qualification' => $Qualification,
+   		'Speciality' => $Category,
+   	];
+		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
    }
 }

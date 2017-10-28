@@ -23,6 +23,8 @@ use Exception;
 class QualificationController extends Controller
 {
     public function getQualificationList(Request $request){
+		Log::info('----------------------QualificationController--------------------------getQualificationList'.print_r($request->all(),True));
+    	
 		$categoryList = Qualification::Where(['status' => 1])->get();
 		$response = [
 			'message' => __('messages.success.success'),

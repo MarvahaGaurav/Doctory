@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('signUp','CommonController@signUp');
 Route::post('otpVerify','CommonController@otpVerify');
+Route::post('resendOtp','CommonController@resendOtp');
 Route::post('login','CommonController@login');
 Route::post('forgetPassword','CommonController@forgetPassword');
 Route::post('resetPassword','CommonController@resetPassword');
@@ -27,15 +28,52 @@ Route::get('getSpeciality','CategoryController@getCategoryList');
 Route::get('getQualification','QualificationController@getQualificationList');
 // Route::post('getSubCategoryUnderCat','CategoryController@getSubCategory');
 // Route::get('getSubCatAndCat','CategoryController@getSubCatAndCat');
+Route::get('getAllStaticData','CommonController@getAllStaticData');
+
+Route::post('settings','CommonController@settings');
 
 Route::post('completeProfile','CommonController@completeProfileOrEditProfile');
+
+
+
+
+
+
+
+
+
 
 
 ////////////////////////////////////////////////
 ////// Doctor Api's
 ////////////////////////////////////////////////
-Route::get('doctorList','DoctorController@getList');
-Route::post('getDoctorBySpecialityId','DoctorController@getDoctorBySpecialityId');
+	Route::get('doctorList','DoctorController@getList');
+	Route::post('getDoctorBySpecialityId','DoctorController@getDoctorBySpecialityId');
+
+
+////////////////////////////////////////////////
+////// Doctor Api's END
+////////////////////////////////////////////////
+
+
+
+
+
+
+
+////////////////////////////////////////////////
+////// PATIENT's Api's
+////////////////////////////////////////////////
+
+	Route::post('bookmark_UnBookMark_Doctor','PatientController@bookmark_UnBookMark_Doctor');
+	Route::post('get_patient_bookmarks_doctors','PatientController@get_patient_bookmarks_doctors');
+
+	
+////////////////////////////////////////////////
+////// PATIENT's Api's END
+////////////////////////////////////////////////
+
+
 
 Route::post('test',function(Request $request){
 	$password = $request->password;

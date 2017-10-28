@@ -32,6 +32,7 @@ class User extends Authenticatable
     }
 
     public function getUserDetail($userId){
+        // dd($userId);
         $data = Self::where(['id' => $userId , 'status' => 1])
             ->with('speciality')
             ->with('qualification')

@@ -20,6 +20,7 @@ use App\MotherLanguage;
 use App\DoctorAvailability;
 use App\Qualification;
 use App\DoctorQualification;
+use App\DoctorMotherlanguage;
 use Hash;
 use Auth;
 use Exception;
@@ -511,12 +512,13 @@ class CommonController extends Controller
 		$workingPlace = $request->workingPlace;
 		$latitude = $request->latitude;
 		$longitude = $request->longitude;
-		$motherLanguage = $request->motherLanguage;
+		$motherLanguageArr = $request->motherLanguage;
 		$aboutMe = $request->aboutMe;
 		$key = $request->key;
 		$email = $request->email;
 		$mobile = $request->mobile;
 		$USER = User::Where(['remember_token' => $accessToken])->first();
+		// dd($motherLanguageArr);
 		if( !empty( $accessToken ) ) {
 			$validations = [
 				'key' => 'required|numeric',
@@ -527,7 +529,7 @@ class CommonController extends Controller
 				'workingPlace' => 'required|alpha',
 				'latitude' => 'required|numeric',
 				'longitude' => 'required|numeric',
-				'motherLanguage' => 'required|alpha',
+				'motherLanguage' => 'required|array',
 			];
 			if($key == 2 && count($USER)){ // Edit profile
 				/*$validations['email'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];
@@ -555,12 +557,13 @@ class CommonController extends Controller
 					$USER->working_place = $workingPlace; 
 					$USER->latitude = $latitude; 
 					$USER->longitude = $longitude; 
-					$USER->mother_language = $motherLanguage;
 					$USER->about_me = $aboutMe;
 					$USER->profile_status = 1;
 					$USER->save();
 
 					$DoctorQualification = DoctorQualification::where(['user_id' => $USER->id])->get();
+					$DoctorMotherlanguage = DoctorMotherlanguage::where(['user_id' => $USER->id])->get();
+
 					if(count($DoctorQualification)){
 						DoctorQualification::where(['user_id' => $USER->id])->delete();
 					}
@@ -570,6 +573,17 @@ class CommonController extends Controller
 						$DoctorQualification->qualification_id = $value;
 						$DoctorQualification->save();
 					}
+
+					if(count($DoctorMotherlanguage)){
+						DoctorMotherlanguage::where(['user_id' => $USER->id])->delete();
+					}
+					foreach ($motherLanguageArr as $key => $value) {
+						$DoctorMotherlanguage = new \App\DoctorMotherlanguage;
+						$DoctorMotherlanguage->user_id = $USER->id;
+						$DoctorMotherlanguage->mother_language_id = $value;
+						$DoctorMotherlanguage->save();
+					}
+
 					$user = new User;
 					$result =$this->getUserDetail($user->getUserDetail($USER->id));
 					$response = [
@@ -594,7 +608,9 @@ class CommonController extends Controller
    }
 
    public function getUserDetail($data){
+   	// dd($data);
    	$qualification = [];
+   	$DoctorMotherlanguage = [];
    	if(isset(($data['qualification']))) {
    		foreach ($data['qualification'] as $key => $value) {
    			$QualificationDetail = Qualification::Where(['id' => $value->qualification_id])->first();
@@ -606,6 +622,21 @@ class CommonController extends Controller
    			];
    		}
    	}
+   	if(isset(($data['mother_language']))) {
+   		// dd($data['mother_language']);
+   		foreach ($data['mother_language'] as $key => $value) {
+   			// dd($value);
+   			$DoctorMotherlanguageDetail = MotherLanguage::Where(['id' => $value->mother_language_id])->first();
+   			// dd($DoctorMotherlanguageDetail);
+   			$DoctorMotherlanguage[]=[
+   				'id' => $value->id,
+   				'user_id' => $value->user_id,
+   				'mother_language_id' => $value->mother_language_id,
+   				'qualification_name' => $DoctorMotherlanguageDetail['name']
+   			];
+   		}
+   	}
+
    	$result = [
    		'id' => $data['id'],
    		'name' => $data['name'],
@@ -634,7 +665,7 @@ class CommonController extends Controller
    		'speciality' => $data['speciality'],
    		'otp_detail' => $data['Otp_detail'],
    		'qualification' => $qualification,
-   		
+   		'mother_language' => $DoctorMotherlanguage,
    	];
    	return $result;
    }

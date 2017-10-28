@@ -31,12 +31,17 @@ class User extends Authenticatable
         return $this->hasMany('App\DoctorQualification');
     }
 
+    public function mother_language(){
+        return $this->hasMany('App\DoctorMotherlanguage');
+    }
+
     public function getUserDetail($userId){
         // dd($userId);
         $data = Self::where(['id' => $userId , 'status' => 1])
             ->with('speciality')
             ->with('qualification')
             ->with('Otp_detail')
+            ->with('mother_language')
             ->first();
         return $data;
     }

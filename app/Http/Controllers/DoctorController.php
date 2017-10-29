@@ -151,7 +151,7 @@ class DoctorController extends Controller
         if( !empty( $accessToken ) ) {
             $DOCTOR_DETAIL = User::Where(['remember_token' => $accessToken, 'user_type' => 1])->first();
             if(count($DOCTOR_DETAIL)){
-                $reviews = Review::where(['doctor_id' => $DOCTOR_DETAIL->id])->get();
+                $reviews = Review::where(['doctor_id' => $DOCTOR_DETAIL->id , 'status_by_doctor' => 0])->get();
                 $response = [
                     'message' => __('messages.success.success'),
                     'response' => $reviews

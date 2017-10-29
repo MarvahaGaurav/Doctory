@@ -52,8 +52,7 @@ class User extends Authenticatable
             ->with('speciality')
             ->with('qualification')
             ->with('Otp_detail')
-            ->with('mother_language')
-            ->get();
+            ->first();
         return $data;
     }
 

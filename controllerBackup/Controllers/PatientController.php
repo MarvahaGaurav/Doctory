@@ -129,6 +129,4 @@ class PatientController extends Controller
 	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
 		}
  	}
-
- 	
 }

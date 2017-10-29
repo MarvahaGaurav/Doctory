@@ -34,7 +34,7 @@ Route::post('settings','CommonController@settings');
 
 Route::post('completeProfile','CommonController@completeProfileOrEditProfile');
 
-Route::post('logout','CommonController@logout');
+
 
 
 
@@ -48,16 +48,7 @@ Route::post('logout','CommonController@logout');
 ////// Doctor Api's
 ////////////////////////////////////////////////
 	Route::get('doctorList','DoctorController@getList');
-
-	Route::post('save_doctor_timing_for_availability','DoctorController@save_doctor_timing_for_availability');
-
-	Route::post('get_review_rating_at_doctor_app','DoctorController@get_review_rating_at_doctor_app');
-	
-	Route::post('change_status_of_reviews_from_doctor_app','DoctorController@change_status_of_reviews_from_doctor_app');
-
-
-	Route::post('getDoctorBySpecialityId','DoctorController@getDoctorBySpecialityId_FOR_PATIENT_SEARCH');
-
+	Route::post('getDoctorBySpecialityId','DoctorController@getDoctorBySpecialityId');
 
 
 ////////////////////////////////////////////////

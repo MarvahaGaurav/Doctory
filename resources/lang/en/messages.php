@@ -10,7 +10,9 @@ return [
 		'unsuccess' => 'Unsuccessful.',
 		'logout' => 'Logout Successfull.',
 		'request_accepted' => 'request accepted successfully.',
-		'request_rejected' => 'request rejected.'
+		'request_rejected' => 'request rejected.',
+		'review_published' => 'review published successfully.',
+		'review_un_published' => 'review un published successfully.'
 	],
 
 	'error' => [

@@ -124,7 +124,7 @@ class CommonController extends Controller
     				$UserDetail->remember_token = $accessToken;
     				$UserDetail->language = $language;
     				$UserDetail->save();
-    				$result = $this->getUserDetail($User->getUserDetail($userDetail->id)); // $this->getUserDetail available in controlle
+    				$result = $this->getUserDetail($User->getUserDetail($userDetail->id));
     				$response = [
 						'message' =>  __('messages.success.login'),
 						'response' => $result
@@ -145,32 +145,6 @@ class CommonController extends Controller
     	}
 	}
 
-	public function logout( Request $request ) {
-		Log::info('----------------------CommonController--------------------------logout'.print_r($request->all(),True));
-		$accessToken =  $request->header('accessToken');
-		if( !empty( $accessToken ) ) {
-			$user = new \App\User;
-			$userDetail = User::where(['remember_token' => $accessToken])->first();
-			if(count($userDetail)){
-				$User = User::find($userDetail->id);
-    			$User->remember_token = "";
-    			$User->save();
-    			$Response = [
-    			  'message'  => trans('messages.success.logout'),
-    			];
-        		return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );	
-			}else{
-				$response['message'] = trans('messages.invalid.detail');
-				return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
-			}
-		} else {
-	    	$Response = [
-			  'message'  => trans('messages.required.accessToken'),
-			];
-	      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-    	}
-		
-	}
 	public function otpVerify( Request $request ) {
 		Log::info('----------------------CommonController--------------------------otpVerify'.print_r($request->all(),True));
 	   $otp  		 = $request->input('otp');
@@ -361,7 +335,7 @@ class CommonController extends Controller
 				$response=[
 					'message' => trans('messages.invalid.request'),
 		      	];
-		      return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+		      return Response::json($response,400);
 			}
 		}
 	}
@@ -532,7 +506,6 @@ class CommonController extends Controller
 		$accessToken = $request->header('accessToken');
 		$photo = $request->file('profileImage');
 		$destinationPathOfProfile = base_path().'/'.'userImages/';
-		$fullName = $request->fullName;
 		$specialityId = $request->specialityId;
 		$qualificationArr = $request->qualification; // it would be array
 		$experience = $request->experience;
@@ -550,7 +523,6 @@ class CommonController extends Controller
 			$validations = [
 				'key' => 'required|numeric',
 				'profileImage' => 'required_if:key,==,1|image',
-				'fullName' => 'required|max:255',
 				'specialityId' => 'required|numeric',
 				'qualification' => 'required|array',
 				'experience' => 'required|numeric',
@@ -580,7 +552,6 @@ class CommonController extends Controller
 						// $USER->email = $email;
 						// $USER->mobile = $mobile;	
 					}
-					$USER->name = $fullName;
 					$USER->speciality_id = $specialityId;
 					$USER->experience = $experience;
 					$USER->working_place = $workingPlace; 
@@ -636,7 +607,7 @@ class CommonController extends Controller
 		}
    }
 
-   /*public function getUserDetail($data){
+   public function getUserDetail($data){
    	// dd($data);
    	$qualification = [];
    	$DoctorMotherlanguage = [];
@@ -697,7 +668,7 @@ class CommonController extends Controller
    		'mother_language' => $DoctorMotherlanguage,
    	];
    	return $result;
-   }*/
+   }
 
    public function settings(Request $request){
 		Log::info('----------------------CommonController--------------------------settings'.print_r($request->all(),True));

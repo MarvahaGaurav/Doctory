@@ -9828,3 +9828,612 @@ Did you mean this?
     [language] => en
 )
   
+[2017-10-30 12:12:52] local.INFO: ----------------------CommonController--------------------------loginArray
+(
+    [email] => ravi104@gmail.com
+    [password] => 12345678
+    [device_token] => 12345
+    [device_type] => 0
+    [language] => en
+)
+  
+[2017-10-30 12:16:56] local.INFO: ----------------------CommonController--------------------------loginArray
+(
+    [email] => ravi104@gmail.com
+    [password] => 12345678
+    [device_token] => 12345
+    [device_type] => 0
+    [language] => en
+)
+  
+[2017-10-30 12:17:03] local.INFO: ----------------------CommonController--------------------------otpVerifyArray
+(
+    [user_id] => 50
+    [otp] => 123456
+)
+  
+[2017-10-30 12:18:49] local.INFO: ----------------------CommonController--------------------------loginArray
+(
+    [device_type] => 1
+    [language] => en
+    [user_type] => 1
+    [email] => doctor4@gmail.com
+    [password] => 12345678
+    [device_token] => 12345
+)
+  
+[2017-10-30 12:19:04] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [specialityId] => 2
+    [experience] => 21
+    [workingPlace] => noida
+    [aboutMe] => aboutMeaboutMeaboutMe
+    [key] => 1
+    [qualification] => Array
+        (
+            [0] => 3
+        )
+
+    [latitude] => 1215215
+    [longitude] => 125162
+    [motherLanguage] => Array
+        (
+            [0] => 1
+        )
+
+)
+  
+[2017-10-30 12:19:27] local.INFO: ----------------------CommonController--------------------------signUpArray
+(
+    [fullName] => addfg
+    [email] => ravi105@gmail.com
+    [mobile] => 4559969485
+    [password] => 12345678
+    [device_token] => 12345678
+    [device_type] => 0
+    [user_type] => 2
+    [country_code] => +91
+    [language] => en
+)
+  
+[2017-10-30 12:19:30] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [specialityId] => 2
+    [experience] => 21
+    [workingPlace] => noida
+    [aboutMe] => aboutMeaboutMeaboutMe
+    [key] => 1
+    [qualification] => Array
+        (
+            [0] => 3
+        )
+
+    [latitude] => 1215215
+    [longitude] => 125162
+    [motherLanguage] => Array
+        (
+            [0] => 1
+        )
+
+)
+  
+[2017-10-30 12:20:19] local.INFO: ----------------------CommonController--------------------------otpVerifyArray
+(
+    [user_id] => 51
+    [otp] => 123456
+)
+  
+[2017-10-30 12:21:27] local.INFO: ----------------------CommonController--------------------------signUpArray
+(
+    [fullName] => sfffgb
+    [email] => ravi106@gmail.com
+    [mobile] => 4626762649476
+    [password] => 12345678
+    [device_token] => 12345678
+    [device_type] => 0
+    [user_type] => 2
+    [country_code] => +91
+    [language] => en
+)
+  
+[2017-10-30 12:22:35] local.INFO: ----------------------CommonController--------------------------loginArray
+(
+    [device_type] => 1
+    [language] => en
+    [user_type] => 1
+    [email] => doctor4@gmail.com
+    [password] => 12345678
+    [device_token] => 12345
+)
+  
+[2017-10-30 12:22:39] local.INFO: ----------------------CommonController--------------------------loginArray
+(
+    [email] => ravi106@gmail.com
+    [password] => 12345678
+    [device_token] => 12345
+    [device_type] => 0
+    [language] => en
+)
+  
+[2017-10-30 12:23:18] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [latitude] => 28.61
+    [workingPlace] => B129, B Block, Sector 65, Noida, Uttar Pradesh 201301, India
+    [aboutMe] => Test
+    [motherLanguage] => 
+    [fullName] => Test
+    [key] => 1
+    [experience] => 1 Year
+    [longitude] => 77.39
+    [specialityId] => 1
+    [qualification] => 
+    [profileImage] => Illuminate\Http\UploadedFile Object
+        (
+            [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 
+            [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 1509366196.jpeg
+            [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => image/jpeg
+            [size:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 49125
+            [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
+            [hashName:protected] => 
+            [pathName:SplFileInfo:private] => /tmp/phpPCjS6H
+            [fileName:SplFileInfo:private] => phpPCjS6H
+        )
+
+)
+  
+[2017-10-30 12:23:44] local.INFO: ----------------------CommonController--------------------------otpVerifyArray
+(
+    [user_id] => 52
+    [otp] => 123456
+)
+  
+[2017-10-30 12:25:13] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [latitude] => 28.61
+    [workingPlace] => B129, B Block, Sector 65, Noida, Uttar Pradesh 201301, India
+    [aboutMe] => Test
+    [motherLanguage] => 
+    [fullName] => Test
+    [key] => 1
+    [experience] => 1 Year
+    [longitude] => 77.39
+    [specialityId] => 1
+    [qualification] => 
+    [profileImage] => Illuminate\Http\UploadedFile Object
+        (
+            [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 
+            [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 1509366312.jpeg
+            [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => image/jpeg
+            [size:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 49125
+            [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
+            [hashName:protected] => 
+            [pathName:SplFileInfo:private] => /tmp/php63XGaw
+            [fileName:SplFileInfo:private] => php63XGaw
+        )
+
+)
+  
+[2017-10-30 12:25:23] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [latitude] => 28.61
+    [workingPlace] => B129, B Block, Sector 65, Noida, Uttar Pradesh 201301, India
+    [aboutMe] => Test
+    [motherLanguage] => 
+    [fullName] => Test
+    [key] => 1
+    [experience] => 1 Year
+    [longitude] => 77.39
+    [specialityId] => 1
+    [qualification] => 
+    [profileImage] => Illuminate\Http\UploadedFile Object
+        (
+            [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 
+            [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 1509366322.jpeg
+            [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => image/jpeg
+            [size:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 49125
+            [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
+            [hashName:protected] => 
+            [pathName:SplFileInfo:private] => /tmp/phph8wfUs
+            [fileName:SplFileInfo:private] => phph8wfUs
+        )
+
+)
+  
+[2017-10-30 12:26:49] local.INFO: ----------------------CommonController--------------------------resetPasswordArray
+(
+    [email] => gauravmrvh1@gmail.com
+)
+  
+[2017-10-30 12:27:00] local.INFO: ----------------------CommonController--------------------------resetPasswordArray
+(
+    [email] => gauravmrvh1@gmail.com
+)
+  
+[2017-10-30 12:27:16] local.INFO: ----------------------CommonController--------------------------resetPasswordArray
+(
+    [email] => ravi@gmail.com
+)
+  
+[2017-10-30 12:28:06] local.INFO: ----------------------CommonController--------------------------loginArray
+(
+    [device_type] => 1
+    [language] => en
+    [user_type] => 1
+    [email] => doctor4@gmail.com
+    [password] => 12345678
+    [device_token] => 12345
+)
+  
+[2017-10-30 12:28:48] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [latitude] => 28.61
+    [workingPlace] => B129, B Block, Sector 65, Noida, Uttar Pradesh 201301, India
+    [aboutMe] => Drug
+    [motherLanguage] => 
+    [fullName] => Test
+    [key] => 1
+    [experience] => 1 Year
+    [longitude] => 77.39
+    [specialityId] => 1
+    [qualification] => 
+    [profileImage] => Illuminate\Http\UploadedFile Object
+        (
+            [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 
+            [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 1509366528.jpeg
+            [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => image/jpeg
+            [size:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 22835
+            [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
+            [hashName:protected] => 
+            [pathName:SplFileInfo:private] => /tmp/phpeoBrxV
+            [fileName:SplFileInfo:private] => phpeoBrxV
+        )
+
+)
+  
+[2017-10-30 12:29:24] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [specialityId] => 2
+    [experience] => 21
+    [workingPlace] => noida
+    [aboutMe] => aboutMeaboutMeaboutMe
+    [key] => 1
+    [qualification] => Array
+        (
+            [0] => 3
+        )
+
+    [latitude] => 1215215
+    [longitude] => 125162
+    [motherLanguage] => Array
+        (
+            [0] => 1
+        )
+
+)
+  
+[2017-10-30 12:29:42] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [specialityId] => 2
+    [experience] => 21
+    [workingPlace] => noida
+    [aboutMe] => aboutMeaboutMeaboutMe
+    [key] => 1
+    [qualification] => Array
+        (
+            [0] => 3
+        )
+
+    [latitude] => 1215215
+    [longitude] => 125162
+    [motherLanguage] => Array
+        (
+            [0] => 1
+        )
+
+)
+  
+[2017-10-30 12:30:34] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [specialityId] => 2
+    [experience] => 21
+    [workingPlace] => noida
+    [aboutMe] => aboutMeaboutMeaboutMe
+    [key] => 1
+    [qualification] => Array
+        (
+            [0] => 3
+        )
+
+    [latitude] => 1215215
+    [longitude] => 125162
+    [motherLanguage] => Array
+        (
+            [0] => 1
+        )
+
+    [profileImage] => Illuminate\Http\UploadedFile Object
+        (
+            [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 
+            [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => Simulator Screen Shot 30-Oct-2017, 3.36.35 PM.png
+            [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => image/png
+            [size:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 25317
+            [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
+            [hashName:protected] => 
+            [pathName:SplFileInfo:private] => /tmp/phpZar2qk
+            [fileName:SplFileInfo:private] => phpZar2qk
+        )
+
+)
+  
+[2017-10-30 12:30:52] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [specialityId] => 2
+    [experience] => 21
+    [workingPlace] => noida
+    [aboutMe] => aboutMeaboutMeaboutMe
+    [key] => 1
+    [qualification] => Array
+        (
+            [0] => 3
+        )
+
+    [latitude] => 1215215
+    [longitude] => 125162
+    [motherLanguage] => Array
+        (
+            [0] => 1
+        )
+
+    [fullName] => Test
+    [profileImage] => Illuminate\Http\UploadedFile Object
+        (
+            [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 
+            [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => Simulator Screen Shot 30-Oct-2017, 3.36.35 PM.png
+            [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => image/png
+            [size:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 25317
+            [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
+            [hashName:protected] => 
+            [pathName:SplFileInfo:private] => /tmp/phptVU8Ly
+            [fileName:SplFileInfo:private] => phptVU8Ly
+        )
+
+)
+  
+[2017-10-30 12:33:31] local.INFO: ----------------------CommonController--------------------------loginArray
+(
+    [device_type] => 1
+    [language] => en
+    [user_type] => 1
+    [email] => doctor4@gmail.com
+    [password] => 12345678
+    [device_token] => 12345
+)
+  
+[2017-10-30 12:33:31] local.ERROR: The HTTP status code "0" is not valid. {"exception":"[object] (InvalidArgumentException(code: 0): The HTTP status code \"0\" is not valid. at /home/worklime/public_html/doctor/vendor/symfony/http-foundation/Response.php:472)
+[stacktrace]
+#0 /home/worklime/public_html/doctor/vendor/symfony/http-foundation/Response.php(200): Symfony\\Component\\HttpFoundation\\Response->setStatusCode(0)
+#1 /home/worklime/public_html/doctor/vendor/symfony/http-foundation/JsonResponse.php(44): Symfony\\Component\\HttpFoundation\\Response->__construct('', 'messages.status...', Array)
+#2 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Http/JsonResponse.php(30): Symfony\\Component\\HttpFoundation\\JsonResponse->__construct(Array, 'messages.status...', Array)
+#3 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/ResponseFactory.php(83): Illuminate\\Http\\JsonResponse->__construct(Array, 'messages.status...', Array, 0)
+#4 /home/worklime/public_html/doctor/app/Http/Controllers/CommonController.php(132): Illuminate\\Routing\\ResponseFactory->json(Array, 'messages.status...')
+#5 [internal function]: App\\Http\\Controllers\\CommonController->login(Object(Illuminate\\Http\\Request))
+#6 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(54): call_user_func_array(Array, Array)
+#7 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(45): Illuminate\\Routing\\Controller->callAction('login', Array)
+#8 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Route.php(212): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\CommonController), 'login')
+#9 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Route.php(169): Illuminate\\Routing\\Route->runController()
+#10 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Router.php(645): Illuminate\\Routing\\Route->run()
+#11 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Pipeline.php(30): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#12 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(41): Illuminate\\Routing\\Pipeline->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#13 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(149): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#14 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Pipeline.php(53): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#15 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(57): Illuminate\\Routing\\Pipeline->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#16 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(149): Illuminate\\Routing\\Middleware\\ThrottleRequests->handle(Object(Illuminate\\Http\\Request), Object(Closure), 60, '1')
+#17 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Pipeline.php(53): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#18 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(102): Illuminate\\Routing\\Pipeline->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#19 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Router.php(647): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#20 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Router.php(622): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#21 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Router.php(588): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#22 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Router.php(577): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#23 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(176): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#24 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Pipeline.php(30): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}(Object(Illuminate\\Http\\Request))
+#25 /home/worklime/public_html/doctor/vendor/fideloper/proxy/src/TrustProxies.php(56): Illuminate\\Routing\\Pipeline->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#26 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(149): Fideloper\\Proxy\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#27 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Pipeline.php(53): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#28 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(30): Illuminate\\Routing\\Pipeline->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#29 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(149): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#30 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Pipeline.php(53): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#31 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(30): Illuminate\\Routing\\Pipeline->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#32 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(149): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#33 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Pipeline.php(53): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#34 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Routing\\Pipeline->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#35 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(149): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#36 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Pipeline.php(53): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#37 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/CheckForMaintenanceMode.php(46): Illuminate\\Routing\\Pipeline->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#38 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(149): Illuminate\\Foundation\\Http\\Middleware\\CheckForMaintenanceMode->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#39 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Routing/Pipeline.php(53): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}(Object(Illuminate\\Http\\Request))
+#40 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(102): Illuminate\\Routing\\Pipeline->Illuminate\\Routing\\{closure}(Object(Illuminate\\Http\\Request))
+#41 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(151): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#42 /home/worklime/public_html/doctor/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(116): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#43 /home/worklime/public_html/doctor/index.php(55): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#44 {main}
+"} 
+[2017-10-30 12:33:58] local.INFO: ----------------------CommonController--------------------------loginArray
+(
+    [device_type] => 1
+    [language] => en
+    [user_type] => 1
+    [email] => doctor4@gmail.com
+    [password] => 12345678
+    [device_token] => 12345
+)
+  
+[2017-10-30 12:34:39] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [latitude] => 51.18
+    [workingPlace] => 3 Stonehenge Rd, Salisbury SP4 7DD, UK
+    [aboutMe] => Rfdfdg
+    [motherLanguage] => 
+    [fullName] => Test
+    [key] => 1
+    [issuing_country] => Armenia
+    [experience] => 1 Year
+    [longitude] => -1.83
+    [medical_licence_number] => 45656
+    [specialityId] => 1
+    [qualification] => 
+    [profileImage] => Illuminate\Http\UploadedFile Object
+        (
+            [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 
+            [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 1509366878.jpeg
+            [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => image/jpeg
+            [size:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 49125
+            [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
+            [hashName:protected] => 
+            [pathName:SplFileInfo:private] => /tmp/phpFfLaqv
+            [fileName:SplFileInfo:private] => phpFfLaqv
+        )
+
+)
+  
+[2017-10-30 12:35:19] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [specialityId] => 2
+    [experience] => 21
+    [workingPlace] => noida
+    [aboutMe] => aboutMeaboutMeaboutMe
+    [key] => 1
+    [qualification] => Array
+        (
+            [0] => 3
+        )
+
+    [latitude] => 1215215
+    [longitude] => 125162
+    [motherLanguage] => Array
+        (
+            [0] => 1
+        )
+
+    [fullName] => Test
+    [medical_licence_number] => sfdfddfgfdgdfg
+    [issuing_country] => India
+    [profileImage] => Illuminate\Http\UploadedFile Object
+        (
+            [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 
+            [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => Simulator Screen Shot 30-Oct-2017, 3.36.35 PM.png
+            [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => image/png
+            [size:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 25317
+            [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
+            [hashName:protected] => 
+            [pathName:SplFileInfo:private] => /tmp/phpOffOdn
+            [fileName:SplFileInfo:private] => phpOffOdn
+        )
+
+)
+  
+[2017-10-30 12:35:34] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [specialityId] => 2
+    [experience] => 21
+    [workingPlace] => noida
+    [aboutMe] => aboutMeaboutMeaboutMe
+    [key] => 1
+    [qualification] => Array
+        (
+            [0] => 3
+        )
+
+    [latitude] => 1215215
+    [longitude] => 125162
+    [motherLanguage] => Array
+        (
+            [0] => 1
+        )
+
+    [fullName] => Test
+    [medical_licence_number] => sfdfddfgfdgdfg
+    [issuing_country] => India
+    [profileImage] => Illuminate\Http\UploadedFile Object
+        (
+            [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 
+            [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => Simulator Screen Shot 30-Oct-2017, 3.36.35 PM.png
+            [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => image/png
+            [size:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 25317
+            [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
+            [hashName:protected] => 
+            [pathName:SplFileInfo:private] => /tmp/php0sbFz9
+            [fileName:SplFileInfo:private] => php0sbFz9
+        )
+
+)
+  
+[2017-10-30 12:36:52] local.INFO: ----------------------CommonController--------------------------completeProfileOrEditProfileArray
+(
+    [specialityId] => 2
+    [experience] => 21
+    [workingPlace] => noida
+    [aboutMe] => aboutMeaboutMeaboutMe
+    [key] => 1
+    [qualification] => Array
+        (
+            [0] => 3
+            [1] => 4
+        )
+
+    [latitude] => 1215215
+    [longitude] => 125162
+    [motherLanguage] => Array
+        (
+            [0] => 1
+        )
+
+    [fullName] => Test
+    [medical_licence_number] => sfdfddfgfdgdfg
+    [issuing_country] => India
+    [profileImage] => Illuminate\Http\UploadedFile Object
+        (
+            [test:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 
+            [originalName:Symfony\Component\HttpFoundation\File\UploadedFile:private] => Simulator Screen Shot 30-Oct-2017, 3.36.35 PM.png
+            [mimeType:Symfony\Component\HttpFoundation\File\UploadedFile:private] => image/png
+            [size:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 25317
+            [error:Symfony\Component\HttpFoundation\File\UploadedFile:private] => 0
+            [hashName:protected] => 
+            [pathName:SplFileInfo:private] => /tmp/phpR6LnBa
+            [fileName:SplFileInfo:private] => phpR6LnBa
+        )
+
+)
+  
+[2017-10-30 12:47:15] local.INFO: ----------------------PatientController--------------------------bookmark_UnBookMark_DoctorArray
+(
+    [patient_id] => 2
+    [doctor_id] => 1
+    [time_slot_id] => 1
+    [day_id] => 2
+    [patient_age] => 25
+    [patient_gender] => male
+    [question] => question
+    [previous_illness_desc] => no desc
+)
+  
+[2017-10-30 12:54:02] local.INFO: ----------------------PatientController--------------------------bookmark_UnBookMark_DoctorArray
+(
+    [patient_id] => 2
+    [doctor_id] => 1
+    [time_slot_id] => 1
+    [day_id] => 2
+    [patient_age] => 25
+    [patient_gender] => male
+    [question] => question
+    [previous_illness_desc] => no desc
+)
+  
+[2017-10-30 13:14:26] local.INFO: ----------------------CommonController--------------------------loginArray
+(
+    [email] => ravi104@gmail.com
+    [password] => 12345678
+    [device_token] => 12345
+    [device_type] => 0
+    [language] => en
+)
+  

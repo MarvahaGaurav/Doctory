@@ -532,18 +532,18 @@ class CommonController extends Controller
 
 	public function completeProfileOrEditProfile(Request $request){
 		Log::info('----------------------CommonController--------------------------completeProfileOrEditProfile'.print_r($request->all(),True));
-		// dd($request->motherLanguage);
+		// dd(json_decode($request->motherLanguage));
 		$accessToken = $request->header('accessToken');
 		$photo = $request->file('profileImage');
 		$destinationPathOfProfile = base_path().'/'.'userImages/';
 		$fullName = $request->fullName;
 		$specialityId = $request->specialityId;
-		$qualificationArr = $request->qualification; // it would be array
+		$qualificationArr = json_decode($request->qualification); // it would be array
 		$experience = $request->experience;
 		$workingPlace = $request->workingPlace;
 		$latitude = $request->latitude;
 		$longitude = $request->longitude;
-		$motherLanguageArr = $request->motherLanguage;
+		$motherLanguageArr = json_decode($request->motherLanguage);
 		$aboutMe = $request->aboutMe;
 		$key = $request->key;
 		$email = $request->email;
@@ -566,12 +566,12 @@ class CommonController extends Controller
 						'profileImage' => 'required_if:key,==,1|image',
 						'fullName' => 'required|max:255',
 						'specialityId' => 'required|numeric',
-						'qualification' => 'required|array',
+						'qualification' => 'required',
 						'experience' => 'required|numeric',
 						'workingPlace' => 'required|alpha',
 						'latitude' => 'required|numeric',
 						'longitude' => 'required|numeric',
-						'motherLanguage' => 'required|array',
+						'motherLanguage' => 'required',
 						'medical_licence_number' => 'required',
 						'issuing_country' => 'required',
 					];

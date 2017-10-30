@@ -24,7 +24,8 @@ use Exception;
 class DoctorController extends Controller
 {
     public function getList(Request $request){
-    	$query = [
+        Log::info('----------------------DoctorController--------------------------getList'.print_r($request->all(),True));
+        $query = [
     		'status' => 1,
     		'user_type' => 1
     	];
@@ -66,6 +67,8 @@ class DoctorController extends Controller
 
     // at search by category this api will hit only every time
     public function getDoctorBySpecialityId_FOR_PATIENT_SEARCH(Request $request){
+        Log::info('----------------------DoctorController--------------------------getDoctorBySpecialityId_FOR_PATIENT_SEARCH'.print_r($request->all(),True));
+
         $accessToken =  $request->header('accessToken');
         $speciality_id =  $request->speciality_id;
         if( !empty( $accessToken ) ) {
@@ -143,8 +146,65 @@ class DoctorController extends Controller
     }
 
     public function save_doctor_timing_for_availability(Request $request){
-
+        Log::info('----------------------DoctorController--------------------------save_doctor_timing_for_availability'.print_r($request->all(),True));
+        $accessToken = $request->header('accessToken');
+        $daysArr = $request->days;
+        $timeslotsArr = $request->timeslots;
+        if( !empty( $accessToken ) ) {
+            $validations = [
+                'days' => 'required|array',
+                'timeslots' => 'required|array',
+            ];
+            $validator = Validator::make($request->all(),$validations);
+            if( $validator->fails() ) {
+                $response = [ 'message'=>$validator->errors($validator)->first()
+                ];
+                return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+            } else {
+                $DoctorDetail = User::where(['remember_token' => $accessToken])->first();
+                if($DoctorDetail){
+                    foreach ($daysArr as $key => $dayId) {
+                        foreach ($timeslotsArr as $key => $timeSlotId) {
+                            $doctor_availabilities_Data = [
+                                'day_id' => $dayId,
+                                'time_slot_id' => $timeSlotId,
+                                'doctor_id' => $DoctorDetail->id
+                            ]; 
+                            $exist = DoctorAvailability::where([
+                                'day_id' => $dayId,
+                                'time_slot_id' => $timeSlotId,
+                                'doctor_id' => $DoctorDetail->id
+                                ])->first();
+                            if(!$exist){
+                                DoctorAvailability::insert([
+                                'day_id' => $dayId,
+                                'time_slot_id' => $timeSlotId,
+                                'doctor_id' => $DoctorDetail->id
+                                ]);
+                            }
+                        }
+                    }
+                    $result = DoctorAvailability::where(['doctor_id' => $DoctorDetail->id])->get();
+                    $response = [
+                        'message' => __('messages.success.success'),
+                        'response' => $result
+                    ];
+                    return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+                }else {
+                    $response=[
+                        'message' => trans('messages.invalid.request'),
+                    ];
+                    return Response::json($response,__('messages.statusCode.INVALID_ACCESS_TOKEN'));
+                }
+            }
+        }else {
+            $Response = [
+                'message'  => trans('messages.required.accessToken'),
+            ];
+          return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+        }
     }
+
 
     public function get_review_rating_at_doctor_app(Request $request){
         $accessToken =  $request->header('accessToken');

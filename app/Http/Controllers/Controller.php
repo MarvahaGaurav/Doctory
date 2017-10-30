@@ -84,6 +84,8 @@ class Controller extends BaseController
 	   		'device_token' => $data['device_token'],
 	   		'device_type' => $data['device_type'],
 	   		'user_type' => $data['user_type'],
+	   		'medical_licence_number' => $data['medical_licence_number'],
+	   		'issuing_country' => $data['issuing_country'],
 	   		
 	   		'status' => $data['status'],
 	   		'profile_status' => $data['profile_status'],

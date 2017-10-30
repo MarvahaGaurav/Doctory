@@ -174,14 +174,15 @@ class CommonController extends Controller
 	public function otpVerify( Request $request ) {
 		Log::info('----------------------CommonController--------------------------otpVerify'.print_r($request->all(),True));
 	   $otp  		 = $request->input('otp');
-		$accessToken = $request->header('accessToken');
+	   $user_id  		 = $request->input('user_id');
+		// $accessToken = $request->header('accessToken');
 		$validations = [
 			'otp'   => 'required'
 		];
 	  	$validator = Validator::make($request->all(),$validations);
-	  	if( !empty( $accessToken ) ) {
+	  	if( !empty( $user_id ) ) {
 			$user = new \App\User;
-			$userDetail = User::where(['remember_token' => $accessToken])->first();
+			$userDetail = User::where(['id' => $user_id])->first();
 			if(count($userDetail)){
 			  	if( $validator->fails() ) {
 					$response = [
@@ -221,7 +222,7 @@ class CommonController extends Controller
 			}
 		} else {
 	    	$Response = [
-			  'message'  => trans('messages.required.accessToken'),
+			  'message'  => trans('messages.required.user_id'),
 			];
 	      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
     	}
@@ -256,12 +257,14 @@ class CommonController extends Controller
 		$email = $request->email;
 		$mobile = $request->mobile;
 		$country_code = $request->country_code;
-		$accessToken = $request->accessToken;
+		// $accessToken = $request->accessToken;
+	   $user_id  		 = $request->input('user_id');
 		$otp = rand(100000,1000000);
 
 		$validations = [
 			'key' => 'required|numeric',
-			'accessToken' => 'required_if:key,==,1',
+			'user_id' => 'required',
+			// 'email' => 'required_if:key,==,2',
 		];
 		$validator = Validator::make($request->all(),$validations);
 		if( $validator->fails() ){
@@ -270,48 +273,47 @@ class CommonController extends Controller
 		   ];
 		   return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
 		}else{
-			$userDetail=User::where(['remember_token' => $accessToken])->first();
-				if(count($userDetail)){
-					$USER = new User;
-					if($key == 1){ // otp at mobile
-						$this->sendOtp($userDetail->country_code.$userDetail->mobile,$otp);
-					}
-					if($key == 2){ // otp at email
-						$data = [
-							'otp' => $otp,
-							'email' => $userDetail->email
-						];
-						try{
-							Mail::send(['text'=>'otp'], $data, function($message) use ($data)
-							{
-						         $message->to($data['email'])
-						         		->subject ('OTP');
-						         $message->from('techfluper@gmail.com');
-						   });	
-						}catch(Exception $e){
-							$response=[
-								'message' => $e->getMessage()
-				      	];
-				     		return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
-						}
-					}
-					$userOtp = Otp::findOrNew($userDetail->id);
-					$userOtp->user_id = $userDetail->id;
-		 			$userOtp->otp = $otp;
-		 			$userOtp->varified = 0;
-		 			$userOtp->save();
-
-		 			$Response = [
-        			  'message'  => trans('messages.success.success'),
-        			  'response' => $USER->getUserDetail($userDetail->id)
-        			];
-        			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );		
-		 		}else{
-					$response['message'] = trans('messages.invalid.detail');
-					return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+			$userDetail=User::where(['id' => $user_id])->first();
+			if(count($userDetail)){
+				$USER = new User;
+				if($key == 1){ // otp at mobile
+					$this->sendOtp($userDetail->country_code.$userDetail->mobile,$otp);
 				}
-		}
+				if($key == 2){ // otp at email
+					$data = [
+						'otp' => $otp,
+						'email' => $userDetail->email
+					];
+					try{
+						Mail::send(['text'=>'otp'], $data, function($message) use ($data)
+						{
+					         $message->to($data['email'])
+					         		->subject ('OTP');
+					         $message->from('techfluper@gmail.com');
+					   });	
+					}catch(Exception $e){
+						$response=[
+							'message' => $e->getMessage()
+			      	];
+			     		return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+					}
+				}
+				$userOtp = Otp::findOrNew($userDetail->id);
+				$userOtp->user_id = $userDetail->id;
+	 			$userOtp->otp = $otp;
+	 			$userOtp->varified = 0;
+	 			$userOtp->save();
 
+	 			$Response = [
+     			  'message'  => trans('messages.success.success'),
+     			  'response' => $USER->getUserDetail($userDetail->id)
+     			];
+     			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );		
+	 		}else{
+				$response['message'] = trans('messages.invalid.detail');
+				return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+			}
+		}
 	}
 
 	public function forgetPassword(Request $request) {
@@ -355,7 +357,8 @@ class CommonController extends Controller
 				$UserOtp->save();
 				$response=[
 					'message' => trans('messages.success.success'),
-		      	];
+					'response' => ['user_id'=> $UserDetail->id]
+		      ];
 		      return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
 			} else {
 				$response=[
@@ -459,7 +462,7 @@ class CommonController extends Controller
 			        		$this->sendOtp($country_code.$mobile , $otp);
 			        		$response = [
 			        			'message' => __('messages.success.success'),
-			        			'response' => $User->getUserDetail($userDetail->id)
+			        			// 'response' => $User->getUserDetail($userDetail->id)
 			        		];
 			        		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
 		            }
@@ -480,14 +483,13 @@ class CommonController extends Controller
 		        		$this->sendOtp($country_code.$mobile , $otp);
 		        		$response = [
 		        			'message' => __('messages.success.success'),
-		        			'response' => $User->getUserDetail($userDetail->id)
+		        			// 'response' => $User->getUserDetail($userDetail->id)
 		        		];
 		        		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
 		        	}
 
 		        	else if( $isChangedMobile == 1 && $isChangedCountryCode == 1){
 		        		// dd("both");
-
 		        		$User = new \App\User;
 						$UserDetail = $User::find($userDetail->id);
 						$UserDetail->mobile = $mobile;
@@ -502,15 +504,16 @@ class CommonController extends Controller
 		        		$this->sendOtp($country_code.$mobile,$otp);
 		        		$response = [
 		        			'message' => __('messages.success.success'),
-		        			'response' => $User->getUserDetail($userDetail->id)
+		        			// 'response' => $User->getUserDetail($userDetail->id)
 		        		];
 		        		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
 		        	}
+
 		        	else {
 		        		$User = new \App\User;
 		        		$Response = [
 							'message'  => trans('messages.same.same_number'),
-							'response' =>  $User->getUserDetail($userDetail->id),
+							// 'response' =>  $User->getUserDetail($userDetail->id),
 						];
 		        		return Response::json($Response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
 		        	}
@@ -529,6 +532,7 @@ class CommonController extends Controller
 
 	public function completeProfileOrEditProfile(Request $request){
 		Log::info('----------------------CommonController--------------------------completeProfileOrEditProfile'.print_r($request->all(),True));
+		// dd($request->motherLanguage);
 		$accessToken = $request->header('accessToken');
 		$photo = $request->file('profileImage');
 		$destinationPathOfProfile = base_path().'/'.'userImages/';
@@ -544,89 +548,118 @@ class CommonController extends Controller
 		$key = $request->key;
 		$email = $request->email;
 		$mobile = $request->mobile;
-		$USER = User::Where(['remember_token' => $accessToken])->first();
+		$medical_licence_number = $request->medical_licence_number;
+		$issuing_country = $request->issuing_country;
 		// dd($motherLanguageArr);
 		if( !empty( $accessToken ) ) {
-			$validations = [
-				'key' => 'required|numeric',
-				'profileImage' => 'required_if:key,==,1|image',
-				'fullName' => 'required|max:255',
-				'specialityId' => 'required|numeric',
-				'qualification' => 'required|array',
-				'experience' => 'required|numeric',
-				'workingPlace' => 'required|alpha',
-				'latitude' => 'required|numeric',
-				'longitude' => 'required|numeric',
-				'motherLanguage' => 'required|array',
-			];
-			if($key == 2 && count($USER)){ // Edit profile
-				/*$validations['email'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];
-				$validations['mobile'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];*/
-			}
-			$validator = Validator::make($request->all(),$validations);
-			if( $validator->fails() ) {
-				$response = [
-					'message' => $validator->errors($validator)->first(),
+			$USER = User::Where(['remember_token' => $accessToken])->first();
+			if(count($USER)){
+				// dd($USER);
+				$validations = [
+					'key' => 'required|numeric',
+					'profileImage' => 'required_if:key,==,1|image',
+					'fullName' => 'required|max:255',
 				];
-				return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-			} else {
-				if($USER){
-					if(isset($_FILES['profileImage']['tmp_name'])){
-						$uploadedfile = $_FILES['profileImage']['tmp_name'];
-						$fileName1 = $this->uploadImage($photo,$uploadedfile,$destinationPathOfProfile); 	
-						$USER->profile_image = $fileName1;
-					}
-					if($key == 2){
-						// $USER->email = $email;
-						// $USER->mobile = $mobile;	
-					}
-					$USER->name = $fullName;
-					$USER->speciality_id = $specialityId;
-					$USER->experience = $experience;
-					$USER->working_place = $workingPlace; 
-					$USER->latitude = $latitude; 
-					$USER->longitude = $longitude; 
-					$USER->about_me = $aboutMe;
-					$USER->profile_status = 1;
-					$USER->save();
-
-					$DoctorQualification = DoctorQualification::where(['user_id' => $USER->id])->get();
-					$DoctorMotherlanguage = DoctorMotherlanguage::where(['user_id' => $USER->id])->get();
-
-					if(count($DoctorQualification)){
-						DoctorQualification::where(['user_id' => $USER->id])->delete();
-					}
-					foreach ($qualificationArr as $key => $value) {
-						$DoctorQualification = new \App\DoctorQualification;
-						$DoctorQualification->user_id = $USER->id;
-						$DoctorQualification->qualification_id = $value;
-						$DoctorQualification->save();
-					}
-
-					if(count($DoctorMotherlanguage)){
-						DoctorMotherlanguage::where(['user_id' => $USER->id])->delete();
-					}
-					foreach ($motherLanguageArr as $key => $value) {
-						$DoctorMotherlanguage = new \App\DoctorMotherlanguage;
-						$DoctorMotherlanguage->user_id = $USER->id;
-						$DoctorMotherlanguage->mother_language_id = $value;
-						$DoctorMotherlanguage->save();
-					}
-
-					$user = new User;
-					$result =$this->getUserDetail($user->getUserDetail($USER->id));
-					$response = [
-						'message' => __('messages.success.success'),
-						// 'response' => $user->getUserDetail($USER->id)
-						'response' => $result
+				if($USER->user_type == 1){
+					$validations = [
+						'key' => 'required|numeric',
+						'profileImage' => 'required_if:key,==,1|image',
+						'fullName' => 'required|max:255',
+						'specialityId' => 'required|numeric',
+						'qualification' => 'required|array',
+						'experience' => 'required|numeric',
+						'workingPlace' => 'required|alpha',
+						'latitude' => 'required|numeric',
+						'longitude' => 'required|numeric',
+						'motherLanguage' => 'required|array',
+						'medical_licence_number' => 'required',
+						'issuing_country' => 'required',
 					];
-					return Response::json($response,trans('messages.statusCode.ACTION_COMPLETE'));
-				}else{
-					$response = [
-						'message' => __('messages.invalid.detail'),
-					];
-					return Response::json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
 				}
+				if($key == 2 && count($USER)){ // Edit profile
+					/*$validations['email'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];
+					$validations['mobile'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];*/
+				}
+				$validator = Validator::make($request->all(),$validations);
+				if( $validator->fails() ) {
+					$response = [
+						'message' => $validator->errors($validator)->first(),
+					];
+					return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+				} else {
+					// dd('else');
+					if($USER){
+						if($USER->user_type == 1){
+							$USER->speciality_id = $specialityId;
+							$USER->experience = $experience;
+							$USER->working_place = $workingPlace; 
+							$USER->latitude = $latitude; 
+							$USER->longitude = $longitude; 
+							$USER->about_me = $aboutMe;
+							if($key == 1){ // only run in complete profile of doctor
+								$USER->medical_licence_number = $medical_licence_number;
+								$USER->issuing_country = $issuing_country;
+							}
+						}
+						if(isset($_FILES['profileImage']['tmp_name'])){
+							$uploadedfile = $_FILES['profileImage']['tmp_name'];
+							$fileName1 = $this->uploadImage($photo,$uploadedfile,$destinationPathOfProfile); 	
+							$USER->profile_image = $fileName1;
+						}
+
+						if($key == 2){
+							/*$USER->email = $email;
+							$USER->mobile = $mobile;*/	
+						}
+						$USER->name = $fullName;
+						$USER->profile_status = 1;
+						$USER->save();
+
+						if($USER->user_type == 1){
+							$DoctorQualification = DoctorQualification::where(['user_id' => $USER->id])->get();
+							$DoctorMotherlanguage = DoctorMotherlanguage::where(['user_id' => $USER->id])->get();
+
+							if(count($DoctorQualification)){
+								DoctorQualification::where(['user_id' => $USER->id])->delete();
+							}
+							foreach ($qualificationArr as $key => $value) {
+								$DoctorQualification = new \App\DoctorQualification;
+								$DoctorQualification->user_id = $USER->id;
+								$DoctorQualification->qualification_id = $value;
+								$DoctorQualification->save();
+							}
+
+							if(count($DoctorMotherlanguage)){
+								DoctorMotherlanguage::where(['user_id' => $USER->id])->delete();
+							}
+							foreach ($motherLanguageArr as $key => $value) {
+								$DoctorMotherlanguage = new \App\DoctorMotherlanguage;
+								$DoctorMotherlanguage->user_id = $USER->id;
+								$DoctorMotherlanguage->mother_language_id = $value;
+								$DoctorMotherlanguage->save();
+							}
+						}
+
+						$user = new User;
+						$result =$this->getUserDetail($user->getUserDetail($USER->id));
+						$response = [
+							'message' => __('messages.success.success'),
+							// 'response' => $user->getUserDetail($USER->id)
+							'response' => $result
+						];
+						return Response::json($response,trans('messages.statusCode.ACTION_COMPLETE'));
+					}else{
+						$response = [
+							'message' => __('messages.invalid.detail'),
+						];
+						return Response::json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+					}
+				}
+			}else{
+				$response = [
+					'message' => __('messages.invalid.detail'),
+				];
+				return Response::json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
 			}
 		} else {
 			$Response = [
@@ -635,69 +668,6 @@ class CommonController extends Controller
 			return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
 		}
    }
-
-   /*public function getUserDetail($data){
-   	// dd($data);
-   	$qualification = [];
-   	$DoctorMotherlanguage = [];
-   	if(isset(($data['qualification']))) {
-   		foreach ($data['qualification'] as $key => $value) {
-   			$QualificationDetail = Qualification::Where(['id' => $value->qualification_id])->first();
-   			$qualification[]=[
-   				'id' => $value->id,
-   				'user_id' => $value->user_id,
-   				'qualification_id' => $value->qualification_id,
-   				'qualification_name' => $QualificationDetail['name']
-   			];
-   		}
-   	}
-   	if(isset(($data['mother_language']))) {
-   		// dd($data['mother_language']);
-   		foreach ($data['mother_language'] as $key => $value) {
-   			// dd($value);
-   			$DoctorMotherlanguageDetail = MotherLanguage::Where(['id' => $value->mother_language_id])->first();
-   			// dd($DoctorMotherlanguageDetail);
-   			$DoctorMotherlanguage[]=[
-   				'id' => $value->id,
-   				'user_id' => $value->user_id,
-   				'mother_language_id' => $value->mother_language_id,
-   				'qualification_name' => $DoctorMotherlanguageDetail['name']
-   			];
-   		}
-   	}
-
-   	$result = [
-   		'id' => $data['id'],
-   		'name' => $data['name'],
-   		'email' => $data['email'],
-   		'country_code' => $data['country_code'],
-   		'mobile' => $data['mobile'],
-   		'profile_image' => $data['profile_image'],
-   		'speciality_id' => $data['speciality_id'],
-   		'experience' => $data['experience'],
-   		'working_place' => $data['working_place'],
-   		'latitude' => $data['latitude'],
-   		'longitude' => $data['longitude'],
-   		'about_me' => $data['about_me'],
-   		'remember_token' => $data['remember_token'],
-   		'device_token' => $data['device_token'],
-   		'device_type' => $data['device_type'],
-   		'user_type' => $data['user_type'],
-   		'status' => $data['status'],
-   		'profile_status' => $data['profile_status'],
-   		'available_status' => $data['available_status'],
-   		'notification' => $data['notification'],
-   		'mother_language' => $data['mother_language'],
-   		'language' => $data['language'],
-   		'created_at' => $data['created_at'],
-   		'updated_at' => $data['updated_at'],
-   		'speciality' => $data['speciality'],
-   		'otp_detail' => $data['Otp_detail'],
-   		'qualification' => $qualification,
-   		'mother_language' => $DoctorMotherlanguage,
-   	];
-   	return $result;
-   }*/
 
    public function settings(Request $request){
 		Log::info('----------------------CommonController--------------------------settings'.print_r($request->all(),True));

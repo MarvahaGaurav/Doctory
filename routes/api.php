@@ -75,7 +75,11 @@ Route::post('logout','CommonController@logout');
 ////////////////////////////////////////////////
 
 	Route::post('bookmark_UnBookMark_Doctor','PatientController@bookmark_UnBookMark_Doctor');
+
 	Route::post('get_patient_bookmarks_doctors','PatientController@get_patient_bookmarks_doctors');
+	
+	Route::post('schedule_appointment_with_doctor','PatientController@schedule_appointment_with_doctor');
+
 
 	
 ////////////////////////////////////////////////

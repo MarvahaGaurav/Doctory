@@ -36,6 +36,7 @@ return [
 
 	'required' => [
 		'accessToken' => 'Access Token Required.',
+		'user_id' => 'User id is required.',
 		'requestToUserId' => 'RequestToUserId is required',
 	],
 
@@ -50,7 +51,9 @@ return [
 	'same' => [
 		'same_number' => 'You have entered the same number.',
 		'country_code' => 'Same country code as last.'
-	]
+	],
 
+	'Already_Busy_Time_Slot_With_Other_Patient' => 'Already_Busy_Time_Slot_With_Other_Patient',
 
+	'Patient_Already_Booked_appointment' => 'you have already booked your appointment.'
 ];

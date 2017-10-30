@@ -206,7 +206,7 @@ class DoctorController extends Controller
     }
 
 
-    public function get_review_rating_at_doctor_app(Request $request){
+    /*public function get_review_rating_at_doctor_app(Request $request){
         $accessToken =  $request->header('accessToken');
         if( !empty( $accessToken ) ) {
             $DOCTOR_DETAIL = User::Where(['remember_token' => $accessToken, 'user_type' => 1])->first();
@@ -283,5 +283,5 @@ class DoctorController extends Controller
             ];
             return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
         }
-    }
+    }*/
 }

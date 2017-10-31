@@ -568,7 +568,7 @@ class CommonController extends Controller
 						'specialityId' => 'required|numeric',
 						'qualification' => 'required',
 						'experience' => 'required|numeric',
-						'workingPlace' => 'required|alpha',
+						'workingPlace' => 'required',
 						'latitude' => 'required|numeric',
 						'longitude' => 'required|numeric',
 						'motherLanguage' => 'required',

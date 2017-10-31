@@ -12,7 +12,9 @@ return [
 		'request_accepted' => 'request accepted successfully.',
 		'request_rejected' => 'request rejected.',
 		'review_published' => 'review published successfully.',
-		'review_un_published' => 'review un published successfully.'
+		'review_un_published' => 'review un published successfully.',
+		'appointment_accepted' => 'Appointment accepted Successfully.',
+		'appointment_rejected' => 'Appointment rejected Successfully.'
 	],
 
 	'error' => [
@@ -27,7 +29,7 @@ return [
 		'INVALID_CREDENTIAL' => '403',
 		'ACTION_COMPLETE' => '200',
 		'CREATE' => '201',
-		'NO_DATA_FOUND' => '200',
+		'NO_DATA_FOUND' => '204',
 		'IMAGE_FILE_MISSING' => '422',
 		'SHOW_ERROR_MESSAGE' => '400',
 		'ERROR_IN_EXECUTION' => '404',
@@ -55,5 +57,8 @@ return [
 
 	'Already_Busy_Time_Slot_With_Other_Patient' => 'Already_Busy_Time_Slot_With_Other_Patient',
 
-	'Patient_Already_Booked_appointment' => 'you have already booked your appointment.'
+	'Patient_Already_Booked_appointment' => 'you have already booked your appointment.',
+
+
+	'date_format' => 'The :attribute does not match the format :format.',
 ];

@@ -59,6 +59,11 @@ Route::post('logout','CommonController@logout');
 	Route::post('getDoctorBySpecialityId','DoctorController@getDoctorBySpecialityId_FOR_PATIENT_SEARCH');
 
 
+	Route::post('get_all_appointment_of_doctor_by_date','DoctorController@get_all_appointment_of_doctor_by_date');
+
+	Route::post('accept_or_reject_appointment','DoctorController@accept_or_reject_appointment');
+	
+
 
 ////////////////////////////////////////////////
 ////// Doctor Api's END
@@ -79,6 +84,8 @@ Route::post('logout','CommonController@logout');
 	Route::post('get_patient_bookmarks_doctors','PatientController@get_patient_bookmarks_doctors');
 	
 	Route::post('schedule_appointment_with_doctor','PatientController@schedule_appointment_with_doctor');
+
+	Route::post('get_all_appointment_of_patient_by_date','PatientController@get_all_appointment_of_patient_by_date');
 
 
 	

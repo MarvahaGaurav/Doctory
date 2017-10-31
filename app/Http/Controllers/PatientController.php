@@ -133,7 +133,6 @@ class PatientController extends Controller
 
  	public function schedule_appointment_with_doctor(Request $request){
 		Log::info('----------------------PatientController--------------------------bookmark_UnBookMark_Doctor'.print_r($request->all(),True));
- 		
  		$accessToken = $request->header('accessToken');
  		$patient_id = $request->patient_id;
  		$patient_age = $request->patient_age;
@@ -218,6 +217,53 @@ class PatientController extends Controller
         		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
     		}
  		}else {
+	    	$Response = [
+				'message'  => trans('messages.required.accessToken'),
+			];
+	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+	   }
+ 	}
+
+ 	public function get_all_appointment_of_patient_by_date(Request $request){
+ 		$accessToken = $request->header('accessToken');
+ 		$date = date('Y-m-d',strtotime($request->date));
+	   $page_number = $request->page_number;
+ 		// dd($date);
+ 		if( !empty( $accessToken ) ) {
+ 			$UserDetail = User::where(['remember_token'=>$accessToken])->first();
+ 			if(count($UserDetail)){
+ 				if($UserDetail->user_type == 2){
+	 				$validations = [
+						'date' => 'required',
+						'page_number' => 'required|numeric'
+			    	];
+			    	$validator = Validator::make($request->all(),$validations);
+			    	if($validator->fails()){
+			    		$response = [
+							'message' => $validator->errors($validator)->first()
+						];
+						return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+		    		}else{
+		    			$result = Appointment::get_all_appointment_of_patient_by_date($date,$UserDetail->id,$page_number);
+		    			$Response = [
+							'message'  => trans('messages.success.success'),
+							'response' => $result
+						];
+				      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+		    		}
+		    	}else{
+		    		$Response = [
+						'message'  => trans('messages.invalid.request'),
+					];
+			      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+		    	}
+ 			}else{
+    			$Response = [
+    			  'message'  => trans('messages.invalid.detail'),
+    			];
+        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+    		}
+		}else {
 	    	$Response = [
 				'message'  => trans('messages.required.accessToken'),
 			];

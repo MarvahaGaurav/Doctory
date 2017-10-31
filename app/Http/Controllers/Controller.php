@@ -61,7 +61,7 @@ class Controller extends BaseController
 	   				'id' => $value->id,
 	   				'user_id' => $value->user_id,
 	   				'mother_language_id' => $value->mother_language_id,
-	   				'qualification_name' => $DoctorMotherlanguageDetail['name']
+	   				'mother_language_name' => $DoctorMotherlanguageDetail['name']
 	   			];
 	   		}
 	   	}

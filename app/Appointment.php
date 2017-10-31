@@ -16,6 +16,14 @@ class Appointment extends Model
 		return $this->hasOne('\App\User','id','doctor_id');
 	}
 
+	public function Reffered_To_Doctor_Detail(){
+		return $this->hasOne('\App\User','id','reffered_to_doctor_id');
+	}
+
+	public function Reffered_By_Doctor_Detail(){
+		return $this->hasOne('\App\User','id','doctor_id');
+	}
+
 	public static function get_all_appointment_of_patient_by_date($date,$UserDetail, $page_number){
 
 		if($page_number == 0){
@@ -26,7 +34,7 @@ class Appointment extends Model
 		
 		$data = Self::Where(['patient_id' => $UserDetail])
 			->whereDate('created_at',$date)
-			->with('DoctorDetail')
+			->with('DoctorDetail','Reffered_To_Doctor_Detail','Reffered_By_Doctor_Detail')
 			->skip($skip)
 			->take(10)
 			->get();
@@ -40,8 +48,9 @@ class Appointment extends Model
 			$skip = $page_number * 10;
 		}
 		$data = Self::Where(['doctor_id' => $UserDetail])
+			->orWhere(['reffered_to_doctor_id' => $UserDetail])
 			->whereDate('created_at',$date)
-			->with('PatientDetail')
+			->with('PatientDetail','Reffered_To_Doctor_Detail','Reffered_By_Doctor_Detail')
 			->skip($skip)
 			->take(10)
 			->get();

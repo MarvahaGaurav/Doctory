@@ -412,6 +412,58 @@ class CommonController extends Controller
 	   }
 	}
 
+	public function change_password(Request $request){
+		Log::info('----------------------CommonController--------------------------change_password'.print_r($request->all(),True));
+		$accessToken = $request->header('accessToken');
+		$old_password = $request->old_password;
+		$new_password = $request->new_password;
+		$validations = [
+			'old_password' => 'required|min:8',
+			'new_password' => 'required|min:8'
+    	];
+    	$validator = Validator::make($request->all(),$validations);
+    	if( !empty( $accessToken ) ) {
+	    	if($validator->fails()){
+	    		$response = [
+					'message' => $validator->errors($validator)->first()
+				];
+				return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+	    	}else{
+	    		$UserDetail = User::where(['remember_token' => $accessToken])->first();
+	    		if(count($UserDetail)){
+	    			// dd($UserDetail->password);
+	    			if(Hash::check($old_password,$UserDetail->password)){
+	    				// dd("correct");
+	    				$User = User::find($UserDetail->id);
+		    			$User->password = Hash::make($new_password);
+		    			$User->save();
+		    			$userDetail = new \App\User;
+		    			$Response = [
+		    			  'message'  => trans('messages.success.password_updated'),
+		    			  'response' => $userDetail->getUserDetail($UserDetail->id)
+		    			];
+	        			return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+	    			}else{
+	    				$Response = [
+		    			  'message'  => trans('messages.error.incorrect_old_password'),
+		    			];
+	        			return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+	    			}
+	    		}else{
+	    			$Response = [
+	    			  'message'  => trans('messages.invalid.detail'),
+	    			];
+	        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+	    		}
+	    	}
+	   }else {
+	    	$Response = [
+				'message'  => trans('messages.required.accessToken'),
+			];
+	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+	   }
+	}
+
 	public function changeMobileNumber( Request $request ) {
 		Log::info('----------------------CommonController--------------------------changeMobileNumber'.print_r($request->all(),True));
 		$country_code = $request->country_code;
@@ -603,7 +655,7 @@ class CommonController extends Controller
 						}
 						if(isset($_FILES['profileImage']['tmp_name'])){
 							$uploadedfile = $_FILES['profileImage']['tmp_name'];
-							$fileName1 = $this->uploadImage($photo,$uploadedfile,$destinationPathOfProfile); 	
+							$fileName1 = substr($this->uploadImage($photo,$uploadedfile,$destinationPathOfProfile),9); 
 							$USER->profile_image = $fileName1;
 						}
 

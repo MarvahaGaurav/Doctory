@@ -34,6 +34,8 @@ Route::post('settings','CommonController@settings');
 
 Route::post('completeProfile','CommonController@completeProfileOrEditProfile');
 
+Route::post('change_password','CommonController@change_password');
+
 Route::post('logout','CommonController@logout');
 
 

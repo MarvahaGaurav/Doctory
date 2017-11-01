@@ -14,11 +14,13 @@ return [
 		'review_published' => 'review published successfully.',
 		'review_un_published' => 'review un published successfully.',
 		'appointment_accepted' => 'Appointment accepted Successfully.',
-		'appointment_rejected' => 'Appointment rejected Successfully.'
+		'appointment_rejected' => 'Appointment rejected Successfully.',
+		'password_updated' => 'Password updated Successfully.'
 	],
 
 	'error' => [
-		'insert' => 'Error in record creation.'
+		'insert' => 'Error in record creation.',
+		'incorrect_old_password' => 'Old password is incorrect.'
 	],
 
 

@@ -272,6 +272,7 @@ class PatientController extends Controller
  	}
 
  	public function accept_or_reject_appointment_by_patient_rescheduled_by_doctor(Request $request){
+ 		dd($request->all());
  		$accessToken = $request->header('accessToken');
  		$appointment_id = $request->appointment_id;
  		$doctor_id = $request->doctor_id;

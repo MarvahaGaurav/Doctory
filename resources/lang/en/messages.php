@@ -15,7 +15,9 @@ return [
 		'review_un_published' => 'review un published successfully.',
 		'appointment_accepted' => 'Appointment accepted Successfully.',
 		'appointment_rejected' => 'Appointment rejected Successfully.',
-		'password_updated' => 'Password updated Successfully.'
+		'password_updated' => 'Password updated Successfully.',
+		'appointment_rescheduled' => 'Appointment rescheduled Successfully.',
+		'appointment_scheduled' => 'Appointment scheduled Successfully.'
 	],
 
 	'error' => [
@@ -48,6 +50,7 @@ return [
 		'number' => 'Invalid number.',
 		'detail' => 'Invalid details.',
 		'request' => 'Invalid request.',
+		'credentials' => 'Invalid credentials.',
 		'accessToken' => 'Invalid accessToken.',
 		'OTP' => 'Invalid OTP.'
 	],
@@ -57,10 +60,9 @@ return [
 		'country_code' => 'Same country code as last.'
 	],
 
-	'Already_Busy_Time_Slot_With_Other_Patient' => 'Already_Busy_Time_Slot_With_Other_Patient',
+	'Already_Busy_Time_Slot_With_Other_Patient' => 'Already Busy Time Slot With Other Patient',
 
 	'Patient_Already_Booked_appointment' => 'you have already booked your appointment.',
+	'Appointment_already_booked_at_this_time_slot_for_this_patient' => 'Appointment already booked at this time slot for this patient.',
 
-
-	'date_format' => 'The :attribute does not match the format :format.',
 ];

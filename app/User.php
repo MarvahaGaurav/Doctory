@@ -48,7 +48,7 @@ class User extends Authenticatable
 
     public static function getDoctorBySpecialityId($query){
         // dd($query);
-        $data = Self::where(['speciality_id' => $query['speciality_id'] , 'status' => $query['status']])
+        $data = Self::where(['speciality_id' => $query['speciality_id'] , 'status' => $query['status'],'profile_status' => 1])
             ->with('speciality')
             ->with('qualification')
             ->with('Otp_detail')

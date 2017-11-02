@@ -362,7 +362,7 @@ class CommonController extends Controller
 		      return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
 			} else {
 				$response=[
-					'message' => trans('messages.invalid.request'),
+					'message' => trans('messages.invalid.credentials'),
 		      	];
 		      return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
 			}
@@ -396,7 +396,7 @@ class CommonController extends Controller
 	    			  'message'  => trans('messages.success.success'),
 	    			  'response' => $userDetail->getUserDetail($UserDetail->id)
 	    			];
-	        		return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+	        		return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
 	    		}else{
 	    			$Response = [
 	    			  'message'  => trans('messages.invalid.detail'),
@@ -442,7 +442,7 @@ class CommonController extends Controller
 		    			  'message'  => trans('messages.success.password_updated'),
 		    			  'response' => $userDetail->getUserDetail($UserDetail->id)
 		    			];
-	        			return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+	        			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
 	    			}else{
 	    				$Response = [
 		    			  'message'  => trans('messages.error.incorrect_old_password'),

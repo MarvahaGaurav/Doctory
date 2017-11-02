@@ -122,6 +122,7 @@ class DoctorController extends Controller
                                 'language' => $data['language'],
                                 'otp_detail' => $data['otp_detail'],
                                 'qualification' => $data['qualification'],
+                                'mother_language' => $data['mother_language'],
                                 'doctor_availabilities' => $data['doctor_availabilities'],
                                 'bookmarked' => $bookmarked,
                                 'reviews' => $Review
@@ -164,9 +165,16 @@ class DoctorController extends Controller
             } else {
                 $DoctorDetail = User::where(['remember_token' => $accessToken])->first();
                 if($DoctorDetail){
+                    DoctorAvailability::where(['doctor_id' => $DoctorDetail->id])->delete();
                     foreach ($daysArr as $key => $dayId) {
                         foreach ($timeslotsArr as $key => $timeSlotId) {
-                            $doctor_availabilities_Data = [
+                            DoctorAvailability::insert([
+                            'day_id' => $dayId,
+                            'time_slot_id' => $timeSlotId,
+                            'doctor_id' => $DoctorDetail->id
+                            ]);
+
+                            /*$doctor_availabilities_Data = [
                                 'day_id' => $dayId,
                                 'time_slot_id' => $timeSlotId,
                                 'doctor_id' => $DoctorDetail->id
@@ -182,7 +190,7 @@ class DoctorController extends Controller
                                 'time_slot_id' => $timeSlotId,
                                 'doctor_id' => $DoctorDetail->id
                                 ]);
-                            }
+                            }*/
                         }
                     }
                     $result = DoctorAvailability::where(['doctor_id' => $DoctorDetail->id])->get();
@@ -373,6 +381,81 @@ class DoctorController extends Controller
                                 'message'  => trans('messages.invalid.request'),
                             ];
                             return Response::json( $Response , __('messages.statusCode.NO_DATA_FOUND') );
+                        }
+                    }
+                }else{
+                    $Response = [
+                        'message'  => trans('messages.invalid.request'),
+                    ];
+                    return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                }
+            }else{
+                $response['message'] = trans('messages.invalid.detail');
+                return response()->json($response,401);
+            }
+        }else {
+            $Response = [
+                'message'  => trans('messages.required.accessToken'),
+            ];
+          return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+        }
+    }
+
+    public function reschedule_appointment_by_doctor(Request $request){
+        $accessToken =  $request->header('accessToken');
+        $appointment_id = $request->appointment_id;
+        $patient_id = $request->patient_id;
+        $day_id = $request->day_id;
+        $time_slot_id = $request->time_slot_id;
+        if( !empty( $accessToken ) ) {
+            $DOCTOR_DETAIL = User::Where(['remember_token' => $accessToken])->first();
+            if(count($DOCTOR_DETAIL)){
+                if($DOCTOR_DETAIL->user_type == 1){
+                    $validations = [
+                        'patient_id' => 'required|numeric',
+                        'appointment_id' => 'required|numeric',
+                        'time_slot_id' => 'required|numeric',
+                        'day_id' => 'required|numeric'
+                    ];
+                    $validator = Validator::make($request->all(),$validations);
+                    if($validator->fails()){
+                        $response = [
+                            'message' => $validator->errors($validator)->first()
+                        ];
+                        return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                    }else{
+                        $AlreadyBusyTimeSlot = Appointment::where(['doctor_id' => $DOCTOR_DETAIL->id,
+                            'time_slot_id' => $time_slot_id, 'day_id' => $day_id])
+                        ->where('status_of_appointment','<>','Rejected')
+                        ->first();
+                        if(!$AlreadyBusyTimeSlot){
+                            $AppointmentDetail = Appointment::find($appointment_id);
+                            $AppointmentDetail->time_slot_id = $time_slot_id;
+                            $AppointmentDetail->day_id = $day_id;
+                            $AppointmentDetail->rescheduled_by_doctor = 1;
+                            $AppointmentDetail->save();
+
+                            // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
+                            $response = [
+                                'messages' => __('messages.success.appointment_rescheduled'),
+                                'response' => Appointment::find($appointment_id)
+                            ];
+                            return response()->json($response,__('messages.statusCode.ACTION_COMPLETE')); 
+                        }else{
+                            if($AlreadyBusyTimeSlot->patient_id == $patient_id && $AlreadyBusyTimeSlot->status_of_appointment = "Rejected"){
+                                $response = [
+                                    'messages' =>__('messages.Appointment_already_booked_at_this_time_slot_for_this_patient'),
+
+                                    'response' => Appointment::find($appointment_id)
+                                ];
+                                return response()->json($response,__('messages.statusCode.ALREADY_EXIST')); 
+                            }else{
+                                $response = [
+                                    'messages' => __('messages.Already_Busy_Time_Slot_With_Other_Patient'),
+                                    'response' => Appointment::find($appointment_id)
+                                ];
+                                return response()->json($response,__('messages.statusCode.ALREADY_EXIST'));  
+                            }
                         }
                     }
                 }else{

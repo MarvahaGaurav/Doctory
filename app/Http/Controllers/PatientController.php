@@ -104,7 +104,7 @@ class PatientController extends Controller
     				$User = new User;
     				foreach ($PatientBookmark as $key => $value) {
     					// dd($value->doctor_id);
-				    	$result[] = $User->getUserDetail($value->doctor_id);
+				    	$result[] = $this->getUserDetail($User->getUserDetail($value->doctor_id));
     				}
     				$Response = [
 						'message'  => trans('messages.success.success'),
@@ -187,7 +187,7 @@ class PatientController extends Controller
 			    				$result = Appointment::find($appontmentId);
 
 				    			$Response = [
-									'message'  => trans('messages.success.success'),
+									'message'  => trans('messages.success.appointment_scheduled'),
 									'response' => $result
 								];
 						      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
@@ -258,6 +258,54 @@ class PatientController extends Controller
 			      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
 		    	}
  			}else{
+    			$Response = [
+    			  'message'  => trans('messages.invalid.detail'),
+    			];
+        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+    		}
+		}else {
+	    	$Response = [
+				'message'  => trans('messages.required.accessToken'),
+			];
+	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+	   }
+ 	}
+
+ 	public function accept_or_reject_appointment_by_patient_rescheduled_by_doctor(Request $request){
+ 		$accessToken = $request->header('accessToken');
+ 		$appointment_id = $request->appointment_id;
+ 		$doctor_id = $request->doctor_id;
+ 		$time_slot_id = $request->time_slot_id;
+		$day_id = $request->day_id;
+ 		if( !empty( $accessToken ) ) {
+ 			$UserDetail = User::where(['remember_token'=>$accessToken])->first();
+ 			if(count($UserDetail)){
+ 				if($UserDetail->user_type == 2){ // for Patient Only
+ 					$validations = [
+						'appointment_id' => 'required|numeric',
+						'doctor_id' => 'required|numeric',
+						'time_slot_id' => 'required|numeric',
+						'day_id' => 'required|numeric',
+			    	];
+			    	$validator = Validator::make($request->all(),$validations);
+			    	if($validator->fails()){
+			    		$response = [
+							'message' => $validator->errors($validator)->first()
+						];
+						return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+		    		}else{
+		    			$today = Carbon::now();
+		    			$dayNumber = $today->dayOfWeek+1;
+		    			dd($today->hour);
+		    			dd($today->minute);
+		    		}
+		    	}else{
+ 					$response=[
+						'message' => trans('messages.invalid.request'),
+		      	];
+		     		return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+ 				}
+		   }else{
     			$Response = [
     			  'message'  => trans('messages.invalid.detail'),
     			];

@@ -57,13 +57,15 @@ Route::post('logout','CommonController@logout');
 	
 	Route::post('change_status_of_reviews_from_doctor_app','DoctorController@change_status_of_reviews_from_doctor_app');
 
-
 	Route::post('getDoctorBySpecialityId','DoctorController@getDoctorBySpecialityId_FOR_PATIENT_SEARCH');
 
 
 	Route::post('get_all_appointment_of_doctor_by_date','DoctorController@get_all_appointment_of_doctor_by_date');
 
 	Route::post('accept_or_reject_appointment','DoctorController@accept_or_reject_appointment');
+	
+	Route::post('reschedule_appointment_by_doctor','DoctorController@reschedule_appointment_by_doctor');
+
 	
 
 
@@ -89,7 +91,8 @@ Route::post('logout','CommonController@logout');
 
 	Route::post('get_all_appointment_of_patient_by_date','PatientController@get_all_appointment_of_patient_by_date');
 
-
+	Route::post('accept_or_reject_appointment_by_patient_rescheduled_by_doctor','PatientController@accept_or_reject_appointment_by_patient_rescheduled_by_doctor');
+	
 	
 ////////////////////////////////////////////////
 ////// PATIENT's Api's END

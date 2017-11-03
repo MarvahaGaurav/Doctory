@@ -62,4 +62,18 @@ class User extends Authenticatable
         $data = Self::Where(['status' => $query['status'],'user_type' => $query['user_type']])->get();
        return $data;
     }
+
+    public static function get_doctor_by_search_query($query){
+        $data = Self::Where([
+            'user_type' => $query['user_type'],
+            'profile_status' => $query['profile_status'],
+        ])
+        ->where('name','like','%'.$query['name'].'%')
+        ->with('speciality')
+        ->with('qualification')
+        ->with('Otp_detail')
+        ->with('mother_language')
+        ->get();
+       return $data;
+    }
 }

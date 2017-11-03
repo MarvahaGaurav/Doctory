@@ -65,7 +65,7 @@ Route::post('logout','CommonController@logout');
 	Route::post('accept_or_reject_appointment','DoctorController@accept_or_reject_appointment');
 	
 	Route::post('reschedule_appointment_by_doctor','DoctorController@reschedule_appointment_by_doctor');
-
+	
 	
 
 
@@ -92,7 +92,8 @@ Route::post('logout','CommonController@logout');
 	Route::post('get_all_appointment_of_patient_by_date','PatientController@get_all_appointment_of_patient_by_date');
 
 	Route::post('accept_or_reject_appointment_by_patient_rescheduled_by_doctor','PatientController@accept_or_reject_appointment_by_patient_rescheduled_by_doctor');
-	
+	Route::post('search_doctor_by_patient','PatientController@search_doctor');
+
 	
 ////////////////////////////////////////////////
 ////// PATIENT's Api's END

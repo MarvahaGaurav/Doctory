@@ -17,7 +17,8 @@ return [
 		'appointment_rejected' => 'Appointment rejected Successfully.',
 		'password_updated' => 'Password updated Successfully.',
 		'appointment_rescheduled' => 'Appointment rescheduled Successfully.',
-		'appointment_scheduled' => 'Appointment scheduled Successfully.'
+		'appointment_scheduled' => 'Appointment scheduled Successfully.',
+		'NO_DATA_FOUND' => 'NO DATA FOUND'
 	],
 
 	'error' => [
@@ -52,7 +53,10 @@ return [
 		'request' => 'Invalid request.',
 		'credentials' => 'Invalid credentials.',
 		'accessToken' => 'Invalid accessToken.',
-		'OTP' => 'Invalid OTP.'
+		'OTP' => 'Invalid OTP.',
+		'appointment_date' => 'You can not book appointment for previous days',
+		'doctor_not_available_at_this_time_slot' => 'Doctor not available at this time slot',
+		'appointment_expired' => 'Appointment Experied.'
 	],
 
 	'same' => [
@@ -64,5 +68,6 @@ return [
 
 	'Patient_Already_Booked_appointment' => 'you have already booked your appointment.',
 	'Appointment_already_booked_at_this_time_slot_for_this_patient' => 'Appointment already booked at this time slot for this patient.',
+
 
 ];

@@ -608,21 +608,21 @@ class CommonController extends Controller
 			if(count($USER)){
 				// dd($USER);
 				$validations = [
-					'key' => 'required|numeric',
+					'key' => 'required',
 					'profileImage' => 'required_if:key,==,1|image',
 					'fullName' => 'required|max:255',
 				];
 				if($USER->user_type == 1){
 					$validations = [
-						'key' => 'required|numeric',
+						'key' => 'required',
 						'profileImage' => 'required_if:key,==,1|image',
 						'fullName' => 'required|max:255',
-						'specialityId' => 'required|numeric',
+						'specialityId' => 'required',
 						'qualification' => 'required',
-						'experience' => 'required|numeric',
+						'experience' => 'required',
 						'workingPlace' => 'required',
-						'latitude' => 'required|numeric',
-						'longitude' => 'required|numeric',
+						'latitude' => 'required',
+						'longitude' => 'required',
 						'motherLanguage' => 'required',
 						'medical_licence_number' => 'required',
 						'issuing_country' => 'required',

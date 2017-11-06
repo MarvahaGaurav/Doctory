@@ -25,9 +25,15 @@ use Hash;
 use Auth;
 use Exception;
 use Twilio\Rest\Client;
-
+use Stevebauman\Translation\Contracts\Translation;
 class CommonController extends Controller
 {
+	protected $translation;
+	public function __construct(Translation $translation)
+	{
+	  $this->translation = $translation;
+	}
+
 	public function signUp(Request $request){
 		Log::info('----------------------CommonController--------------------------signUp'.print_r($request->all(),True));
 		$fullName = $request->fullName;
@@ -100,15 +106,20 @@ class CommonController extends Controller
 		$device_type = $request->device_type;
 		$accessToken  = md5(uniqid(rand(), true));
 		$language = $request->language;
+		\App::setLocale($language);
+		// dd(\App::getLocale());
+		// dd(\Lang::get('messages.email'));
 		$validations = [
+			'language' => 'required',
 			'email' => 'required|email',
-			'password' => 'required',
+			'password' => 'required|min:8',
 			'device_token' => 'required',
-			'device_type' => 'required|numeric',
-			'language' => 'required'
+			'device_type' => 'required|numeric'
     	];
     	$validator = Validator::make($request->all(),$validations);
     	if($validator->fails()){
+
+
     		$response = [
 			'message' => $validator->errors($validator)->first()
 			];
@@ -401,7 +412,7 @@ class CommonController extends Controller
 	    			$Response = [
 	    			  'message'  => trans('messages.invalid.detail'),
 	    			];
-	        		return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+	        		return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
 	    		}
 	    	}
 	   }else {
@@ -572,7 +583,7 @@ class CommonController extends Controller
 	        }
 	      }else{
 	      	$response['message'] = trans('messages.invalid.detail');
-	      	return response()->json($response,401);
+	      	return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
 	      }
 	   }else {
 	    	$Response = [
@@ -607,22 +618,23 @@ class CommonController extends Controller
 			$USER = User::Where(['remember_token' => $accessToken])->first();
 			if(count($USER)){
 				// dd($USER);
+				$type = $USER->user_type;
 				$validations = [
 					'key' => 'required',
 					'profileImage' => 'required_if:key,==,1|image',
-					'fullName' => 'required|max:255',
+					'fullName' => 'required_if:type,==,2|max:255',
 				];
 				if($USER->user_type == 1){
 					$validations = [
 						'key' => 'required',
 						'profileImage' => 'required_if:key,==,1|image',
-						'fullName' => 'required|max:255',
+						// 'fullName' => 'required|max:255',
 						'specialityId' => 'required',
 						'qualification' => 'required',
 						'experience' => 'required',
 						'workingPlace' => 'required',
-						'latitude' => 'required',
-						'longitude' => 'required',
+						// 'latitude' => 'required',
+						// 'longitude' => 'required',
 						'motherLanguage' => 'required',
 						'medical_licence_number' => 'required',
 						'issuing_country' => 'required',
@@ -663,7 +675,9 @@ class CommonController extends Controller
 							/*$USER->email = $email;
 							$USER->mobile = $mobile;*/	
 						}
-						$USER->name = $fullName;
+						if(!empty($fullName)){
+							$USER->name = $fullName;
+						}
 						$USER->profile_status = 1;
 						$USER->save();
 
@@ -756,7 +770,7 @@ class CommonController extends Controller
     			$response = [
 					'message' =>  __('messages.invalid.detail')
 				];
-				return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+				return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
     		}
 	   }else {
 	    	$Response = [
@@ -818,6 +832,8 @@ class CommonController extends Controller
    }
 
    public function getAllStaticData(Request $request){
+		// dd(strstr($request->url(),'api'));
+		// dd(strpos($request->url(), 'api'));
 		Log::info('----------------------CommonController--------------------------getAllStaticData'.print_r($request->all(),True));
 
    	$MotherLanguage = MotherLanguage::all();

@@ -30,7 +30,7 @@ class CategoryController extends Controller
 		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
 	}
 
-	public function getSubCategory(Request $request){
+	/*public function getSubCategory(Request $request){
 		$categoryId = $request->categoryId;
 		$slug = $request->slug;
 		$validations = [
@@ -60,5 +60,5 @@ class CategoryController extends Controller
 				'response' => $data
 			];
 			return response()->json($response,trans('messages.statusCode.ACTION_COMPLETE'));
-	}
+	}*/
 }

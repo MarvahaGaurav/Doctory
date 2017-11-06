@@ -70,7 +70,6 @@ class DoctorController extends Controller
     // at search by category this api will hit only every time
     public function getDoctorBySpecialityId_FOR_PATIENT_SEARCH(Request $request){
         Log::info('----------------------DoctorController--------------------------getDoctorBySpecialityId_FOR_PATIENT_SEARCH'.print_r($request->all(),True));
-
         $accessToken =  $request->header('accessToken');
         $speciality_id =  $request->speciality_id;
         if( !empty( $accessToken ) ) {
@@ -138,7 +137,7 @@ class DoctorController extends Controller
                 }
             }else{
                 $response['message'] = trans('messages.invalid.detail');
-                return response()->json($response,401);
+                return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
             }
         }else {
             $Response = [
@@ -229,7 +228,7 @@ class DoctorController extends Controller
                 return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
             }else{
                 $response['message'] = trans('messages.invalid.detail');
-                return response()->json($response,401);
+                return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
             }
         }else {
             $Response = [
@@ -285,7 +284,7 @@ class DoctorController extends Controller
                 
             }else{
                 $response['message'] = trans('messages.invalid.detail');
-                return response()->json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
             }
         }else {
             $Response = [

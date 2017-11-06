@@ -121,7 +121,7 @@ class PatientController extends Controller
     			$Response = [
     			  'message'  => trans('messages.invalid.detail'),
     			];
-        		return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
     		}
 		}else {
 	    	$Response = [
@@ -437,7 +437,7 @@ class PatientController extends Controller
     			$Response = [
     			  'message'  => trans('messages.invalid.credentials'),
     			];
-        		return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
     		}
     	}else {
 	    	$Response = [

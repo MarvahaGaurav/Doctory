@@ -6,9 +6,11 @@
     "type": "project",
     "require": {
         "php": ">=7.0.0",
+        "brozot/laravel-fcm": "1.2.*",
         "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
+        "stevebauman/translation": "1.4.*",
         "twilio/sdk": "^5.15"
     },
     "require-dev": {

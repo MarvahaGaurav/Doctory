@@ -4,6 +4,8 @@ return array(
 
 	'fullName' => 'الاسم الكامل',
 
+	'name' => 'اسم',
+
 	'email'        => 'البريد الإلكتروني',
 
 	'password' => 'كلمه السر',
@@ -43,5 +45,12 @@ return array(
 	'speciality_id' => 'معرف التخصص',
 
 	'days' => 'أيام',
+
+	'notification' => 'إعلام',
+
+	'categoryId' => 'معرف الفئة',
+
+	'timeslots' => 'فتحات الوقت
+'
 
 );

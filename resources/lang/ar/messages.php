@@ -39,45 +39,6 @@ return [
 		'BAD_REQUEST' => '500'
 	],
 
-	/*'required' => [
-		'accessToken' => 'رمز الوصول المطلوب',
-		'user_id' => 'مطلوب معرف المستخدم',
-		'requestToUserId' => 'مطلوب ريكتوسريد',
-		'email' => '',
-		'password' => '',
-		'device_token' => '',
-		'device_type' => '',
-		'mobile' => '',
-		'country_code' => '',
-		'user_type' => '',
-		'fullName' => '',
-		'otp' => '',
-		'key' => '',
-		'old_password' => '',
-		'new_password' => '',
-		'isChangedCountryCode' => '',
-		'isChangedMobile' => '',
-		'profileImage' => '',
-		'qualification' => '',
-		'experience' => '',
-		'workingPlace' => '',
-		'motherLanguage' => '',
-		'medical_licence_number' => '',
-		'issuing_country' => '',
-		'speciality_id' => '',
-		'days' => '',
-		'timeslots' => '',
-		'review_id' => '',
-		'acceptOrReject' => '',
-		'date' => '',
-		'page_number' => '',
-		'patient_id' => '',
-		'doctor_id' => '',
-	],*/
-
-
-
-
 	'invalid' =>[
 		'number' => 'رقم غير صالح',
 		'detail' => 'تفاصيل غير صالحة',

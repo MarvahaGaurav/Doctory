@@ -39,6 +39,12 @@ return [
 		'BAD_REQUEST' => '500'
 	],
 
+	'required' => [
+		'accessToken' => 'رمز الوصول المطلوب.',
+		'user_id' => 'مطلوب معرف المستخدم.',
+		'requestToUserId' => 'مطلوب ريكتوسريد',
+	],
+
 	'invalid' =>[
 		'number' => 'رقم غير صالح',
 		'detail' => 'تفاصيل غير صالحة',
@@ -60,6 +66,7 @@ return [
 
 	'Patient_Already_Booked_appointment' => 'لقد حجزت مسبقا موعدك',
 	'Appointment_already_booked_at_this_time_slot_for_this_patient' => 'حجز حجز بالفعل في هذا الوقت فتحة لهذا المريض',
+
 
 
 ];

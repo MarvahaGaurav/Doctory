@@ -24,6 +24,11 @@ class QualificationController extends Controller
 {
     public function getQualificationList(Request $request){
 		Log::info('----------------------QualificationController--------------------------getQualificationList'.print_r($request->all(),True));
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
     	
 		$categoryList = Qualification::Where(['status' => 1])->get();
 		$response = [

@@ -45,7 +45,7 @@ return [
 		'accessToken' => 'Access Token Required.',
 		'user_id' => 'User id is required.',
 		'requestToUserId' => 'RequestToUserId is required',
-		
+		'locale' => 'Locale is required',
 	],
 
 	'invalid' =>[

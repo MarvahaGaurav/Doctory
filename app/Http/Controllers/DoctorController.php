@@ -72,6 +72,12 @@ class DoctorController extends Controller
         Log::info('----------------------DoctorController--------------------------getDoctorBySpecialityId_FOR_PATIENT_SEARCH'.print_r($request->all(),True));
         $accessToken =  $request->header('accessToken');
         $speciality_id =  $request->speciality_id;
+        $locale = $request->header('locale');
+        if(empty($locale)){
+            $locale = 'en';
+        }
+        \App::setLocale($locale);
+        
         if( !empty( $accessToken ) ) {
             $PATIENT_DETAIL = User::Where(['remember_token' => $accessToken])->first();
             if(count($PATIENT_DETAIL)){
@@ -152,6 +158,12 @@ class DoctorController extends Controller
         $accessToken = $request->header('accessToken');
         $daysArr = $request->days;
         $timeslotsArr = $request->timeslots;
+        $locale = $request->header('locale');
+        if(empty($locale)){
+            $locale = 'en';
+        }
+        \App::setLocale($locale);
+
         if( !empty( $accessToken ) ) {
             $validations = [
                 'days' => 'required|array',

@@ -25,14 +25,8 @@ use Hash;
 use Auth;
 use Exception;
 use Twilio\Rest\Client;
-use Stevebauman\Translation\Contracts\Translation;
 class CommonController extends Controller
 {
-	protected $translation;
-	public function __construct(Translation $translation)
-	{
-	  $this->translation = $translation;
-	}
 
 	public function signUp(Request $request){
 		Log::info('----------------------CommonController--------------------------signUp'.print_r($request->all(),True));
@@ -47,55 +41,70 @@ class CommonController extends Controller
 		$otp = rand(100000,1000000);
 		$language = $request->language;
 		$accessToken  = md5(uniqid(rand(), true));
-		$validations = [
-			'fullName' => 'required|max:255',
-			'email' => 'required|email|unique:users',
-			'mobile' => 'required|numeric|unique:users',
-			'country_code' => 'required|numeric',
-			'password' => 'required|min:8',
-			'device_token' => 'required',
-			'device_type' => 'required|numeric',
-			'user_type' => 'required|numeric',
-			'language' => 'required'
-    	];
-    	$validator = Validator::make($request->all(),$validations);
-    	if($validator->fails()){
-    		$response = [
-			'message' => $validator->errors($validator)->first()
+		$locale = $request->header('locale');
+
+		if(empty($locale)){
+			$locale = 'en';
+		}else{
+			\App::setLocale($locale);
+		}
+
+		if(!empty($locale)){
+			$validations = [
+				'fullName' => 'required|max:255',
+				'email' => 'required|email|unique:users',
+				'mobile' => 'required|numeric|unique:users',
+				'country_code' => 'required|numeric',
+				'password' => 'required|min:8',
+				'device_token' => 'required',
+				'device_type' => 'required|numeric',
+				'user_type' => 'required|numeric',
+				'language' => 'required'
+	    	];
+	    	$validator = Validator::make($request->all(),$validations);
+	    	if($validator->fails()){
+	    		$response = [
+				'message' => $validator->errors($validator)->first()
+				];
+				return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+	    	}else{
+	    		$user = new \App\User;
+	    		$OTP = new \App\Otp;
+	    		$user->name = $fullName;
+	    		$user->email = $email;
+	    		$user->country_code = $country_code;
+	    		$user->mobile = $mobile;
+	    		$user->password = $password;
+	    		$user->device_token = $device_token;
+	    		$user->device_type = $device_type;
+	    		$user->user_type = $user_type;
+	    		$user->remember_token = $accessToken;
+	    		$user->language = $language;
+	    		if($user->save()){
+	    			$insertId = $user->id;
+	    			$OTP->user_id = $insertId;
+	    			$OTP->otp = $otp;
+	    			$OTP->save();
+	    			$userData = $user->getUserDetail($insertId);
+	    			$this->sendOtp($country_code.$mobile,$otp);
+	    			$response = [
+						'message' =>  __('messages.success.success'),
+						'response' => $userData
+					];
+					return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+	    		}else{
+	    			$response = [
+						'message' =>  __('messages.error.insert')
+					];
+					return response()->json($response,__('messages.statusCode.ERROR_IN_EXECUTION'));
+	    		}
+	    	}
+	   }else{
+	   	$response = [
+				'message' =>  __('messages.required.locale')
 			];
-			return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-    	}else{
-    		$user = new \App\User;
-    		$OTP = new \App\Otp;
-    		$user->name = $fullName;
-    		$user->email = $email;
-    		$user->country_code = $country_code;
-    		$user->mobile = $mobile;
-    		$user->password = $password;
-    		$user->device_token = $device_token;
-    		$user->device_type = $device_type;
-    		$user->user_type = $user_type;
-    		$user->remember_token = $accessToken;
-    		$user->language = $language;
-    		if($user->save()){
-    			$insertId = $user->id;
-    			$OTP->user_id = $insertId;
-    			$OTP->otp = $otp;
-    			$OTP->save();
-    			$userData = $user->getUserDetail($insertId);
-    			$this->sendOtp($country_code.$mobile,$otp);
-    			$response = [
-					'message' =>  __('messages.success.success'),
-					'response' => $userData
-				];
-				return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
-    		}else{
-    			$response = [
-					'message' =>  __('messages.error.insert')
-				];
-				return response()->json($response,__('messages.statusCode.ERROR_IN_EXECUTION'));
-    		}
-    	}
+			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+	   }
 	}
 
 	public function login(Request $request){
@@ -106,137 +115,172 @@ class CommonController extends Controller
 		$device_type = $request->device_type;
 		$accessToken  = md5(uniqid(rand(), true));
 		$language = $request->language;
-		\App::setLocale($language);
-		// dd(\App::getLocale());
-		// dd(\Lang::get('messages.email'));
-		$validations = [
-			'language' => 'required',
-			'email' => 'required|email',
-			'password' => 'required|min:8',
-			'device_token' => 'required',
-			'device_type' => 'required|numeric'
-    	];
-    	$validator = Validator::make($request->all(),$validations);
-    	if($validator->fails()){
+		$locale = $request->header('locale');
 
+		if(empty($locale)){
+			$locale = 'en';
+		}
 
-    		$response = [
-			'message' => $validator->errors($validator)->first()
-			];
-			return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-    	}else{
-    		$userDetail = User::Where(['email' => $email])->first();
-    		if(!empty($userDetail)){
-    			if(Hash::check($password,$userDetail->password)){
-    				$User = new \App\User;
-    				$UserDetail = $User::find($userDetail->id);
-    				$UserDetail->device_token = $device_token;
-    				$UserDetail->device_type = $device_type;
-    				$UserDetail->remember_token = $accessToken;
-    				$UserDetail->language = $language;
-    				$UserDetail->save();
-    				$result = $this->getUserDetail($User->getUserDetail($userDetail->id)); // $this->getUserDetail available in controlle
-    				$response = [
-						'message' =>  __('messages.success.login'),
-						'response' => $result
-					];
-					return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
-    			}else{
-    				$response = [
+		if(!empty($locale)){
+			\App::setLocale($locale);
+			$validations = [
+				'language' => 'required',
+				'email' => 'required|email',
+				'password' => 'required|min:8',
+				'device_token' => 'required',
+				'device_type' => 'required|numeric'
+	    	];
+	    	$validator = Validator::make($request->all(),$validations);
+	    	if($validator->fails()){
+	    		$response = [
+				'message' => $validator->errors($validator)->first()
+				];
+				return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+	    	}else{
+	    		$userDetail = User::Where(['email' => $email])->first();
+	    		if(!empty($userDetail)){
+	    			if(Hash::check($password,$userDetail->password)){
+	    				$User = new \App\User;
+	    				$UserDetail = $User::find($userDetail->id);
+	    				$UserDetail->device_token = $device_token;
+	    				$UserDetail->device_type = $device_type;
+	    				$UserDetail->remember_token = $accessToken;
+	    				$UserDetail->language = $language;
+	    				$UserDetail->save();
+	    				$result = $this->getUserDetail($User->getUserDetail($userDetail->id)); // $this->getUserDetail available in controlle
+	    				$response = [
+							'message' =>  __('messages.success.login'),
+							'response' => $result
+						];
+						return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+	    			}else{
+	    				$response = [
+							'message' =>  __('messages.invalid.detail')
+						];
+						return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+	    			}
+	    		}else{
+	    			$response = [
 						'message' =>  __('messages.invalid.detail')
 					];
 					return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
-    			}
-    		}else{
-    			$response = [
-					'message' =>  __('messages.invalid.detail')
-				];
-				return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
-    		}
-    	}
+	    		}
+	    	}
+	   }else{
+	   	$response = [
+				'message' =>  __('messages.required.locale')
+			];
+			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+	   }
 	}
 
 	public function logout( Request $request ) {
 		Log::info('----------------------CommonController--------------------------logout'.print_r($request->all(),True));
 		$accessToken =  $request->header('accessToken');
-		if( !empty( $accessToken ) ) {
-			$user = new \App\User;
-			$userDetail = User::where(['remember_token' => $accessToken])->first();
-			if(count($userDetail)){
-				$User = User::find($userDetail->id);
-    			$User->remember_token = "";
-    			$User->save();
-    			$Response = [
-    			  'message'  => trans('messages.success.logout'),
-    			];
-        		return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );	
-			}else{
-				$response['message'] = trans('messages.invalid.detail');
-				return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
-			}
-		} else {
-	    	$Response = [
-			  'message'  => trans('messages.required.accessToken'),
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		if(!empty($locale)){
+			\App::setLocale($locale);
+			if( !empty( $accessToken ) ) {
+				$user = new \App\User;
+				$userDetail = User::where(['remember_token' => $accessToken])->first();
+				if(count($userDetail)){
+					$User = User::find($userDetail->id);
+	    			$User->remember_token = "";
+	    			$User->save();
+	    			$Response = [
+	    			  'message'  => trans('messages.success.logout'),
+	    			];
+	        		return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );	
+				}else{
+					$response['message'] = trans('messages.invalid.detail');
+					return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+				}
+			} else {
+		    	$Response = [
+				  'message'  => trans('messages.required.accessToken'),
+				];
+		      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+	    	}
+		}else{
+	   	$response = [
+				'message' =>  __('messages.required.locale')
 			];
-	      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-    	}
-		
+			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+	   }
 	}
+
+
 	public function otpVerify( Request $request ) {
 		Log::info('----------------------CommonController--------------------------otpVerify'.print_r($request->all(),True));
 	   $otp  		 = $request->input('otp');
 	   $user_id  		 = $request->input('user_id');
-		// $accessToken = $request->header('accessToken');
-		$validations = [
-			'otp'   => 'required'
-		];
-	  	$validator = Validator::make($request->all(),$validations);
-	  	if( !empty( $user_id ) ) {
-			$user = new \App\User;
-			$userDetail = User::where(['id' => $user_id])->first();
-			if(count($userDetail)){
-			  	if( $validator->fails() ) {
-					$response = [
-					 'message' => $validator->errors($validator)->first(),
-					];
-					return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-			   } else {
-			    	$Exist =  $user->getUserDetail($userDetail->id);
-			    	if( count($Exist) ) {
-			    		if( $Exist->Otp_detail->otp == $otp || $otp == 123456 ){
-			    			$OTP = Otp::find($Exist->id);
-			    			$OTP->otp = "";
-			    			$OTP->varified = 1;
-			    			$OTP->save();
-			    			$Response = [
-		        			  'message'  => trans('messages.success.success'),
-		        			  'status' => 1,
-		        			  'response' => $user->getUserDetail($userDetail->id)
-		        			];
-		        			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
-			    		} else {
-			    			$Response = [
-		        				'message'  => trans('messages.invalid.OTP'),
-		        			];
-		        			return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
-			    		}
-			    	} else {
-			    		$Response = [
-		    			  'message'  => trans('messages.invalid.detail'),
-		    			];
-		        		return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
-			    	}
-			   }
-			}else{
-				$response['message'] = trans('messages.invalid.detail');
-				return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
-			}
-		} else {
-	    	$Response = [
-			  'message'  => trans('messages.required.user_id'),
+		$locale = $request->header('locale');
+
+		if(empty($locale)){
+			$locale = 'en';
+		}
+
+		if(!empty($locale)){
+			\App::setLocale($locale);
+			$validations = [
+				'otp'   => 'required'
 			];
-	      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-    	}
+		  	$validator = Validator::make($request->all(),$validations);
+		  	if( !empty( $user_id ) ) {
+				$user = new \App\User;
+				$userDetail = User::where(['id' => $user_id])->first();
+				if(count($userDetail)){
+				  	if( $validator->fails() ) {
+						$response = [
+						 'message' => $validator->errors($validator)->first(),
+						];
+						return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+				   } else {
+				    	$Exist =  $user->getUserDetail($userDetail->id);
+				    	if( count($Exist) ) {
+				    		if( $Exist->Otp_detail->otp == $otp || $otp == 123456 ){
+				    			$OTP = Otp::find($Exist->id);
+				    			$OTP->otp = "";
+				    			$OTP->varified = 1;
+				    			$OTP->save();
+				    			$Response = [
+			        			  'message'  => trans('messages.success.success'),
+			        			  'status' => 1,
+			        			  'response' => $user->getUserDetail($userDetail->id)
+			        			];
+			        			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
+				    		} else {
+				    			$Response = [
+			        				'message'  => trans('messages.invalid.OTP'),
+			        			];
+			        			return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+				    		}
+				    	} else {
+				    		$Response = [
+			    			  'message'  => trans('messages.invalid.detail'),
+			    			];
+			        		return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+				    	}
+				   }
+				}else{
+					$response['message'] = trans('messages.invalid.detail');
+					return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+				}
+			} else {
+		    	$Response = [
+				  'message'  => trans('messages.required.user_id'),
+				];
+		      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+	    	}
+	   }else{
+	   	$response = [
+				'message' =>  __('messages.required.locale')
+			];
+			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+	   }
 	}
 
 	public function sendOtp($mobile,$otp) {
@@ -268,63 +312,72 @@ class CommonController extends Controller
 		$email = $request->email;
 		$mobile = $request->mobile;
 		$country_code = $request->country_code;
-		// $accessToken = $request->accessToken;
 	   $user_id  		 = $request->input('user_id');
 		$otp = rand(100000,1000000);
+		$locale = $request->header('locale');
 
-		$validations = [
-			'key' => 'required|numeric',
-			'user_id' => 'required',
-			// 'email' => 'required_if:key,==,2',
-		];
-		$validator = Validator::make($request->all(),$validations);
-		if( $validator->fails() ){
-		   $response = [
-		   	'message'=>$validator->errors($validator)->first()
-		   ];
-		   return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
-		}else{
-			$userDetail=User::where(['id' => $user_id])->first();
-			if(count($userDetail)){
-				$USER = new User;
-				if($key == 1){ // otp at mobile
-					$this->sendOtp($userDetail->country_code.$userDetail->mobile,$otp);
-				}
-				if($key == 2){ // otp at email
-					$data = [
-						'otp' => $otp,
-						'email' => $userDetail->email
-					];
-					try{
-						Mail::send(['text'=>'otp'], $data, function($message) use ($data)
-						{
-					         $message->to($data['email'])
-					         		->subject ('OTP');
-					         $message->from('techfluper@gmail.com');
-					   });	
-					}catch(Exception $e){
-						$response=[
-							'message' => $e->getMessage()
-			      	];
-			     		return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
-					}
-				}
-				$userOtp = Otp::findOrNew($userDetail->id);
-				$userOtp->user_id = $userDetail->id;
-	 			$userOtp->otp = $otp;
-	 			$userOtp->varified = 0;
-	 			$userOtp->save();
-
-	 			$Response = [
-     			  'message'  => trans('messages.success.success'),
-     			  'response' => $USER->getUserDetail($userDetail->id)
-     			];
-     			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );		
-	 		}else{
-				$response['message'] = trans('messages.invalid.detail');
-				return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
-			}
+		if(empty($locale)){
+			$locale = 'en';
 		}
+		if(!empty($locale)){
+			\App::setLocale($locale);
+			$validations = [
+				'key' => 'required|numeric',
+				'user_id' => 'required',
+			];
+			$validator = Validator::make($request->all(),$validations);
+			if( $validator->fails() ){
+			   $response = [
+			   	'message'=>$validator->errors($validator)->first()
+			   ];
+			   return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+			}else{
+				$userDetail=User::where(['id' => $user_id])->first();
+				if(count($userDetail)){
+					$USER = new User;
+					if($key == 1){ // otp at mobile
+						$this->sendOtp($userDetail->country_code.$userDetail->mobile,$otp);
+					}
+					if($key == 2){ // otp at email
+						$data = [
+							'otp' => $otp,
+							'email' => $userDetail->email
+						];
+						try{
+							Mail::send(['text'=>'otp'], $data, function($message) use ($data)
+							{
+						         $message->to($data['email'])
+						         		->subject ('OTP');
+						         $message->from('techfluper@gmail.com');
+						   });	
+						}catch(Exception $e){
+							$response=[
+								'message' => $e->getMessage()
+				      	];
+				     		return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+						}
+					}
+					$userOtp = Otp::findOrNew($userDetail->id);
+					$userOtp->user_id = $userDetail->id;
+		 			$userOtp->otp = $otp;
+		 			$userOtp->varified = 0;
+		 			$userOtp->save();
+		 			$Response = [
+	     			  'message'  => trans('messages.success.success'),
+	     			  'response' => $USER->getUserDetail($userDetail->id)
+	     			];
+	     			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );		
+		 		}else{
+					$response['message'] = trans('messages.invalid.detail');
+					return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+				}
+			}
+		}else{
+	   	$response = [
+				'message' =>  __('messages.required.locale')
+			];
+			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+	   }
 	}
 
 	public function forgetPassword(Request $request) {
@@ -333,93 +386,121 @@ class CommonController extends Controller
 		$mobile = $request->mobile;*/
 		$email = $request->email;
 		$otp = rand(100000,1000000);
-		$validations = [
-			'email'=>'required|email'
-		];
-		$validator = Validator::make($request->all(),$validations);
-		if( $validator->fails() ){
-		   $response = [
-		   	'message'=>$validator->errors($validator)->first()
-		   ];
-		   return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
-		}else{
-			$UserDetail = User::Where(['email' => $email])->first();
-			if(count($UserDetail)){
-				// $this->sendOtp($country_code.$mobile,$otp);
-				$data = [
-					'otp' => $otp,
-					'email' => $email
-				];
-				try{
-					Mail::send(['text'=>'otp'], $data, function($message) use ($data)
-					{
-				         $message->to($data['email'])
-				         		->subject ('Forget Password OTP');
-				         $message->from('techfluper@gmail.com');
-				   });	
-				}catch(Exception $e){
-					$response=[
-						'message' => $e->getMessage()
-		      	];
-		     		return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
-				}
-				$UserOtp = Otp::find($UserDetail->id);
-				$UserOtp->otp = $otp;
-				$UserOtp->save();
-				$response=[
-					'message' => trans('messages.success.success'),
-					'response' => ['user_id'=> $UserDetail->id]
-		      ];
-		      return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
-			} else {
-				$response=[
-					'message' => trans('messages.invalid.credentials'),
-		      	];
-		      return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
-			}
+		$locale = $request->header('locale');
+
+		if(empty($locale)){
+			$locale = 'en';
 		}
+		if(!empty($locale)){
+			\App::setLocale($locale);
+			$validations = [
+				'email'=>'required|email'
+			];
+			$validator = Validator::make($request->all(),$validations);
+			if( $validator->fails() ){
+			   $response = [
+			   	'message'=>$validator->errors($validator)->first()
+			   ];
+			   return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+			}else{
+				$UserDetail = User::Where(['email' => $email])->first();
+				if(count($UserDetail)){
+					// $this->sendOtp($country_code.$mobile,$otp);
+					$data = [
+						'otp' => $otp,
+						'email' => $email
+					];
+					try{
+						Mail::send(['text'=>'otp'], $data, function($message) use ($data)
+						{
+					         $message->to($data['email'])
+					         		->subject ('Forget Password OTP');
+					         $message->from('techfluper@gmail.com');
+					   });	
+					}catch(Exception $e){
+						$response=[
+							'message' => $e->getMessage()
+			      	];
+			     		return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+					}
+					$UserOtp = Otp::find($UserDetail->id);
+					$UserOtp->otp = $otp;
+					$UserOtp->save();
+					$response=[
+						'message' => trans('messages.success.success'),
+						'response' => ['user_id'=> $UserDetail->id]
+			      ];
+			      return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
+				} else {
+					$response=[
+						'message' => trans('messages.invalid.credentials'),
+			      	];
+			      return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+				}
+			}
+		}else{
+	   	$response = [
+				'message' =>  __('messages.required.locale')
+			];
+			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+	   }
 	}
 
 	public function resetPassword(Request $request){
 		Log::info('----------------------CommonController--------------------------resetPassword'.print_r($request->all(),True));
 		$accessToken = $request->header('accessToken');
 		$password = $request->password;
-		$validations = [
-			'password' => 'required|min:8'
-    	];
-    	$validator = Validator::make($request->all(),$validations);
-    	if( !empty( $accessToken ) ) {
-	    	if($validator->fails()){
-	    		$response = [
-					'message' => $validator->errors($validator)->first()
-				];
-				return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-	    	}else{
-	    		$UserDetail = User::where(['remember_token' => $accessToken])->first();
-	    		if(count($UserDetail)){
-	    			// dd($UserDetail);
-	    			$User = User::find($UserDetail->id);
-	    			$User->password = Hash::make($password);
-	    			$User->save();
-	    			$userDetail = new \App\User;
 
-	    			$Response = [
-	    			  'message'  => trans('messages.success.success'),
-	    			  'response' => $userDetail->getUserDetail($UserDetail->id)
-	    			];
-	        		return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
-	    		}else{
-	    			$Response = [
-	    			  'message'  => trans('messages.invalid.detail'),
-	    			];
-	        		return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
-	    		}
-	    	}
-	   }else {
-	    	$Response = [
-				'message'  => trans('messages.required.accessToken'),
+		$locale = $request->header('locale');
+
+		if(empty($locale)){
+			$locale = 'en';
+		}
+
+		if(!empty($locale)){
+			\App::setLocale($locale);
+			$validations = [
+				'password' => 'required|min:8'
+	    	];
+	    	$validator = Validator::make($request->all(),$validations);
+	    	if( !empty( $accessToken ) ) {
+		    	if($validator->fails()){
+		    		$response = [
+						'message' => $validator->errors($validator)->first()
+					];
+					return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+		    	}else{
+		    		$UserDetail = User::where(['remember_token' => $accessToken])->first();
+		    		if(count($UserDetail)){
+		    			// dd($UserDetail);
+		    			$User = User::find($UserDetail->id);
+		    			$User->password = Hash::make($password);
+		    			$User->save();
+		    			$userDetail = new \App\User;
+
+		    			$Response = [
+		    			  'message'  => trans('messages.success.success'),
+		    			  'response' => $userDetail->getUserDetail($UserDetail->id)
+		    			];
+		        		return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
+		    		}else{
+		    			$Response = [
+		    			  'message'  => trans('messages.invalid.detail'),
+		    			];
+		        		return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+		    		}
+		    	}
+		   }else {
+		    	$Response = [
+					'message'  => trans('messages.required.accessToken'),
+				];
+		      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+		   }
+		}else{
+	   	$response = [
+				'message' =>  __('messages.required.locale')
 			];
-	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
 	   }
 	}
 
@@ -428,50 +509,63 @@ class CommonController extends Controller
 		$accessToken = $request->header('accessToken');
 		$old_password = $request->old_password;
 		$new_password = $request->new_password;
-		$validations = [
-			'old_password' => 'required|min:8',
-			'new_password' => 'required|min:8'
-    	];
-    	$validator = Validator::make($request->all(),$validations);
-    	if( !empty( $accessToken ) ) {
-	    	if($validator->fails()){
-	    		$response = [
-					'message' => $validator->errors($validator)->first()
-				];
-				return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-	    	}else{
-	    		$UserDetail = User::where(['remember_token' => $accessToken])->first();
-	    		if(count($UserDetail)){
-	    			// dd($UserDetail->password);
-	    			if(Hash::check($old_password,$UserDetail->password)){
-	    				// dd("correct");
-	    				$User = User::find($UserDetail->id);
-		    			$User->password = Hash::make($new_password);
-		    			$User->save();
-		    			$userDetail = new \App\User;
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+
+		if(!empty($locale)){
+			\App::setLocale($locale);
+			$validations = [
+				'old_password' => 'required|min:8',
+				'new_password' => 'required|min:8'
+	    	];
+	    	$validator = Validator::make($request->all(),$validations);
+	    	if( !empty( $accessToken ) ) {
+		    	if($validator->fails()){
+		    		$response = [
+						'message' => $validator->errors($validator)->first()
+					];
+					return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+		    	}else{
+		    		$UserDetail = User::where(['remember_token' => $accessToken])->first();
+		    		if(count($UserDetail)){
+		    			// dd($UserDetail->password);
+		    			if(Hash::check($old_password,$UserDetail->password)){
+		    				// dd("correct");
+		    				$User = User::find($UserDetail->id);
+			    			$User->password = Hash::make($new_password);
+			    			$User->save();
+			    			$userDetail = new \App\User;
+			    			$Response = [
+			    			  'message'  => trans('messages.success.password_updated'),
+			    			  'response' => $userDetail->getUserDetail($UserDetail->id)
+			    			];
+		        			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
+		    			}else{
+		    				$Response = [
+			    			  'message'  => trans('messages.error.incorrect_old_password'),
+			    			];
+		        			return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+		    			}
+		    		}else{
 		    			$Response = [
-		    			  'message'  => trans('messages.success.password_updated'),
-		    			  'response' => $userDetail->getUserDetail($UserDetail->id)
+		    			  'message'  => trans('messages.invalid.detail'),
 		    			];
-	        			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
-	    			}else{
-	    				$Response = [
-		    			  'message'  => trans('messages.error.incorrect_old_password'),
-		    			];
-	        			return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
-	    			}
-	    		}else{
-	    			$Response = [
-	    			  'message'  => trans('messages.invalid.detail'),
-	    			];
-	        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
-	    		}
-	    	}
-	   }else {
-	    	$Response = [
-				'message'  => trans('messages.required.accessToken'),
+		        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+		    		}
+		    	}
+		   }else {
+		    	$Response = [
+					'message'  => trans('messages.required.accessToken'),
+				];
+		      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+		   }
+		}else{
+	   	$response = [
+				'message' =>  __('messages.required.locale')
 			];
-	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
 	   }
 	}
 
@@ -484,37 +578,65 @@ class CommonController extends Controller
 		$isChangedCountryCode = $request->isChangedCountryCode;
 		$isChangedMobile = $request->isChangedMobile;
 		$userDetail  = [];
-		$validations = [
-			'country_code' => 'required|numeric',
-			'mobile' 	   => 'required|numeric',
-			'isChangedCountryCode' => 'required',
-			'isChangedMobile' => 'required',
-		];
-		$validator = Validator::make($request->all(),$validations);
-	  	if( !empty( $accessToken ) ) {
-	  		$userDetail = User::Where(['remember_token' => $accessToken])->first();
-	  		if(count($userDetail)){
-	        if( $validator->fails() ) {
-	            $response = [
-						'message'	=>	$validator->errors($validator)->first(),
-					];
-	            return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-	        } else {
-		        	if( $isChangedMobile == 1 && $isChangedCountryCode == 0 ) {
-		        		$validations = [
-							'mobile' => 'unique:users',
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+
+		if(!empty($locale)){
+			\App::setLocale($locale);
+			$validations = [
+				'country_code' => 'required|numeric',
+				'mobile' 	   => 'required|numeric',
+				'isChangedCountryCode' => 'required',
+				'isChangedMobile' => 'required',
+			];
+			$validator = Validator::make($request->all(),$validations);
+		  	if( !empty( $accessToken ) ) {
+		  		$userDetail = User::Where(['remember_token' => $accessToken])->first();
+		  		if(count($userDetail)){
+		        if( $validator->fails() ) {
+		            $response = [
+							'message'	=>	$validator->errors($validator)->first(),
 						];
-		    			$validator = Validator::make($request->all(),$validations);
-		    			if( $validator->fails() ) {
-		        			$response = [
-								'message'	=>	$validator->errors($validator)->first()
+		            return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+		        } else {
+			        	if( $isChangedMobile == 1 && $isChangedCountryCode == 0 ) {
+			        		$validations = [
+								'mobile' => 'unique:users',
 							];
-		            	return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-		            } else {
-		            	
-							$User = new \App\User;
+			    			$validator = Validator::make($request->all(),$validations);
+			    			if( $validator->fails() ) {
+			        			$response = [
+									'message'	=>	$validator->errors($validator)->first()
+								];
+			            	return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+			            } else {
+			            	
+								$User = new \App\User;
+								$UserDetail = $User::find($userDetail->id);
+								$UserDetail->mobile = $mobile;
+								$UserDetail->save();
+
+								$OTP = Otp::find($userDetail->id);
+								$OTP->otp = $otp;
+								$OTP->varified = 0;
+								$OTP->save();
+
+				        		$this->sendOtp($country_code.$mobile , $otp);
+				        		$response = [
+				        			'message' => __('messages.success.success'),
+				        			// 'response' => $User->getUserDetail($userDetail->id)
+				        		];
+				        		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+			            }
+			        	} 
+
+			        	else if( $isChangedMobile == 0 && $isChangedCountryCode == 1) {
+			        		// dd( "isChangedCountryCode" );
+			        		$User = new \App\User;
 							$UserDetail = $User::find($userDetail->id);
-							$UserDetail->mobile = $mobile;
+							$UserDetail->country_code = $country_code;
 							$UserDetail->save();
 
 							$OTP = Otp::find($userDetail->id);
@@ -528,68 +650,53 @@ class CommonController extends Controller
 			        			// 'response' => $User->getUserDetail($userDetail->id)
 			        		];
 			        		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
-		            }
-		        	} 
+			        	}
 
-		        	else if( $isChangedMobile == 0 && $isChangedCountryCode == 1) {
-		        		// dd( "isChangedCountryCode" );
-		        		$User = new \App\User;
-						$UserDetail = $User::find($userDetail->id);
-						$UserDetail->country_code = $country_code;
-						$UserDetail->save();
+			        	else if( $isChangedMobile == 1 && $isChangedCountryCode == 1){
+			        		// dd("both");
+			        		$User = new \App\User;
+							$UserDetail = $User::find($userDetail->id);
+							$UserDetail->mobile = $mobile;
+							$UserDetail->country_code = $country_code;
+							$UserDetail->save();
 
-						$OTP = Otp::find($userDetail->id);
-						$OTP->otp = $otp;
-						$OTP->varified = 0;
-						$OTP->save();
+							$OTP = Otp::find($userDetail->id);
+							$OTP->otp = $otp;
+							$OTP->varified = 0;
+							$OTP->save();
 
-		        		$this->sendOtp($country_code.$mobile , $otp);
-		        		$response = [
-		        			'message' => __('messages.success.success'),
-		        			// 'response' => $User->getUserDetail($userDetail->id)
-		        		];
-		        		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
-		        	}
+			        		$this->sendOtp($country_code.$mobile,$otp);
+			        		$response = [
+			        			'message' => __('messages.success.success'),
+			        			// 'response' => $User->getUserDetail($userDetail->id)
+			        		];
+			        		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+			        	}
 
-		        	else if( $isChangedMobile == 1 && $isChangedCountryCode == 1){
-		        		// dd("both");
-		        		$User = new \App\User;
-						$UserDetail = $User::find($userDetail->id);
-						$UserDetail->mobile = $mobile;
-						$UserDetail->country_code = $country_code;
-						$UserDetail->save();
-
-						$OTP = Otp::find($userDetail->id);
-						$OTP->otp = $otp;
-						$OTP->varified = 0;
-						$OTP->save();
-
-		        		$this->sendOtp($country_code.$mobile,$otp);
-		        		$response = [
-		        			'message' => __('messages.success.success'),
-		        			// 'response' => $User->getUserDetail($userDetail->id)
-		        		];
-		        		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
-		        	}
-
-		        	else {
-		        		$User = new \App\User;
-		        		$Response = [
-							'message'  => trans('messages.same.same_number'),
-							// 'response' =>  $User->getUserDetail($userDetail->id),
-						];
-		        		return Response::json($Response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-		        	}
-	        }
-	      }else{
-	      	$response['message'] = trans('messages.invalid.detail');
-	      	return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
-	      }
-	   }else {
-	    	$Response = [
-				'message'  => trans('messages.required.accessToken'),
+			        	else {
+			        		$User = new \App\User;
+			        		$Response = [
+								'message'  => trans('messages.same.same_number'),
+								// 'response' =>  $User->getUserDetail($userDetail->id),
+							];
+			        		return Response::json($Response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+			        	}
+		        }
+		      }else{
+		      	$response['message'] = trans('messages.invalid.detail');
+		      	return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+		      }
+		   }else {
+		    	$Response = [
+					'message'  => trans('messages.required.accessToken'),
+				];
+		      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+		   }
+		}else{
+	   	$response = [
+				'message' =>  __('messages.required.locale')
 			];
-	      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
 	   }
 	}
 
@@ -613,126 +720,138 @@ class CommonController extends Controller
 		$mobile = $request->mobile;
 		$medical_licence_number = $request->medical_licence_number;
 		$issuing_country = $request->issuing_country;
-		// dd($motherLanguageArr);
-		if( !empty( $accessToken ) ) {
-			$USER = User::Where(['remember_token' => $accessToken])->first();
-			if(count($USER)){
-				// dd($USER);
-				$type = $USER->user_type;
-				$validations = [
-					'key' => 'required',
-					'profileImage' => 'required_if:key,==,1|image',
-					'fullName' => 'required_if:type,==,2|max:255',
-				];
-				if($USER->user_type == 1){
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+
+		if(!empty($locale)){
+			\App::setLocale($locale);
+			if( !empty( $accessToken ) ) {
+				$USER = User::Where(['remember_token' => $accessToken])->first();
+				if(count($USER)){
+					// dd($USER);
+					$type = $USER->user_type;
 					$validations = [
 						'key' => 'required',
 						'profileImage' => 'required_if:key,==,1|image',
-						// 'fullName' => 'required|max:255',
-						'specialityId' => 'required',
-						'qualification' => 'required',
-						'experience' => 'required',
-						'workingPlace' => 'required',
-						// 'latitude' => 'required',
-						// 'longitude' => 'required',
-						'motherLanguage' => 'required',
-						'medical_licence_number' => 'required',
-						'issuing_country' => 'required',
+						'fullName' => 'required_if:type,==,2|max:255',
 					];
-				}
-				if($key == 2 && count($USER)){ // Edit profile
-					/*$validations['email'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];
-					$validations['mobile'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];*/
-				}
-				$validator = Validator::make($request->all(),$validations);
-				if( $validator->fails() ) {
-					$response = [
-						'message' => $validator->errors($validator)->first(),
-					];
-					return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-				} else {
-					// dd('else');
-					if($USER){
-						if($USER->user_type == 1){
-							$USER->speciality_id = $specialityId;
-							$USER->experience = $experience;
-							$USER->working_place = $workingPlace; 
-							$USER->latitude = $latitude; 
-							$USER->longitude = $longitude; 
-							$USER->about_me = $aboutMe;
-							if($key == 1){ // only run in complete profile of doctor
-								$USER->medical_licence_number = $medical_licence_number;
-								$USER->issuing_country = $issuing_country;
-							}
-						}
-						if(isset($_FILES['profileImage']['tmp_name'])){
-							$uploadedfile = $_FILES['profileImage']['tmp_name'];
-							$fileName1 = substr($this->uploadImage($photo,$uploadedfile,$destinationPathOfProfile),9); 
-							$USER->profile_image = $fileName1;
-						}
-
-						if($key == 2){
-							/*$USER->email = $email;
-							$USER->mobile = $mobile;*/	
-						}
-						if(!empty($fullName)){
-							$USER->name = $fullName;
-						}
-						$USER->profile_status = 1;
-						$USER->save();
-
-						if($USER->user_type == 1){
-							$DoctorQualification = DoctorQualification::where(['user_id' => $USER->id])->get();
-							$DoctorMotherlanguage = DoctorMotherlanguage::where(['user_id' => $USER->id])->get();
-
-							if(count($DoctorQualification)){
-								DoctorQualification::where(['user_id' => $USER->id])->delete();
-							}
-							foreach ($qualificationArr as $key => $value) {
-								$DoctorQualification = new \App\DoctorQualification;
-								$DoctorQualification->user_id = $USER->id;
-								$DoctorQualification->qualification_id = $value;
-								$DoctorQualification->save();
-							}
-
-							if(count($DoctorMotherlanguage)){
-								DoctorMotherlanguage::where(['user_id' => $USER->id])->delete();
-							}
-							foreach ($motherLanguageArr as $key => $value) {
-								$DoctorMotherlanguage = new \App\DoctorMotherlanguage;
-								$DoctorMotherlanguage->user_id = $USER->id;
-								$DoctorMotherlanguage->mother_language_id = $value;
-								$DoctorMotherlanguage->save();
-							}
-						}
-
-						$user = new User;
-						$result =$this->getUserDetail($user->getUserDetail($USER->id));
-						$response = [
-							'message' => __('messages.success.success'),
-							// 'response' => $user->getUserDetail($USER->id)
-							'response' => $result
+					if($USER->user_type == 1){
+						$validations = [
+							'key' => 'required',
+							'profileImage' => 'required_if:key,==,1|image',
+							// 'fullName' => 'required|max:255',
+							'specialityId' => 'required',
+							'qualification' => 'required',
+							'experience' => 'required',
+							'workingPlace' => 'required',
+							// 'latitude' => 'required',
+							// 'longitude' => 'required',
+							'motherLanguage' => 'required',
+							'medical_licence_number' => 'required',
+							'issuing_country' => 'required',
 						];
-						return Response::json($response,trans('messages.statusCode.ACTION_COMPLETE'));
-					}else{
-						$response = [
-							'message' => __('messages.invalid.detail'),
-						];
-						return Response::json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
 					}
+					if($key == 2 && count($USER)){ // Edit profile
+						/*$validations['email'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];
+						$validations['mobile'] = ['required',Rule::unique('users')->ignore($USER->id, 'id')];*/
+					}
+					$validator = Validator::make($request->all(),$validations);
+					if( $validator->fails() ) {
+						$response = [
+							'message' => $validator->errors($validator)->first(),
+						];
+						return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+					} else {
+						// dd('else');
+						if($USER){
+							if($USER->user_type == 1){
+								$USER->speciality_id = $specialityId;
+								$USER->experience = $experience;
+								$USER->working_place = $workingPlace; 
+								$USER->latitude = $latitude; 
+								$USER->longitude = $longitude; 
+								$USER->about_me = $aboutMe;
+								if($key == 1){ // only run in complete profile of doctor
+									$USER->medical_licence_number = $medical_licence_number;
+									$USER->issuing_country = $issuing_country;
+								}
+							}
+							if(isset($_FILES['profileImage']['tmp_name'])){
+								$uploadedfile = $_FILES['profileImage']['tmp_name'];
+								$fileName1 = substr($this->uploadImage($photo,$uploadedfile,$destinationPathOfProfile),9); 
+								$USER->profile_image = $fileName1;
+							}
+
+							if($key == 2){
+								/*$USER->email = $email;
+								$USER->mobile = $mobile;*/	
+							}
+							if(!empty($fullName)){
+								$USER->name = $fullName;
+							}
+							$USER->profile_status = 1;
+							$USER->save();
+
+							if($USER->user_type == 1){
+								$DoctorQualification = DoctorQualification::where(['user_id' => $USER->id])->get();
+								$DoctorMotherlanguage = DoctorMotherlanguage::where(['user_id' => $USER->id])->get();
+
+								if(count($DoctorQualification)){
+									DoctorQualification::where(['user_id' => $USER->id])->delete();
+								}
+								foreach ($qualificationArr as $key => $value) {
+									$DoctorQualification = new \App\DoctorQualification;
+									$DoctorQualification->user_id = $USER->id;
+									$DoctorQualification->qualification_id = $value;
+									$DoctorQualification->save();
+								}
+
+								if(count($DoctorMotherlanguage)){
+									DoctorMotherlanguage::where(['user_id' => $USER->id])->delete();
+								}
+								foreach ($motherLanguageArr as $key => $value) {
+									$DoctorMotherlanguage = new \App\DoctorMotherlanguage;
+									$DoctorMotherlanguage->user_id = $USER->id;
+									$DoctorMotherlanguage->mother_language_id = $value;
+									$DoctorMotherlanguage->save();
+								}
+							}
+
+							$user = new User;
+							$result =$this->getUserDetail($user->getUserDetail($USER->id));
+							$response = [
+								'message' => __('messages.success.success'),
+								// 'response' => $user->getUserDetail($USER->id)
+								'response' => $result
+							];
+							return Response::json($response,trans('messages.statusCode.ACTION_COMPLETE'));
+						}else{
+							$response = [
+								'message' => __('messages.invalid.detail'),
+							];
+							return Response::json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+						}
+					}
+				}else{
+					$response = [
+						'message' => __('messages.invalid.detail'),
+					];
+					return Response::json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
 				}
-			}else{
-				$response = [
-					'message' => __('messages.invalid.detail'),
+			} else {
+				$Response = [
+					'message'  => trans('messages.required.accessToken'),
 				];
-				return Response::json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+				return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
 			}
-		} else {
-			$Response = [
-				'message'  => trans('messages.required.accessToken'),
+		}else{
+	   	$response = [
+				'message' =>  __('messages.required.locale')
 			];
-			return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
-		}
+			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+	   }
    }
 
    public function settings(Request $request){
@@ -741,43 +860,56 @@ class CommonController extends Controller
    	$notification = $request->input('notification');
    	$language = $request->input('language');
 		$accessToken = $request->header('accessToken');
-   	if( !empty( $accessToken ) ) {
-   		$userDetail = User::Where(['remember_token' => $accessToken])->first();
-   		if(!empty($userDetail)){
-		   	$validations = [
-					'notification' => 'required|numeric',
-					'language' => 'required|alpha',
-		    	];
-		    	$validator = Validator::make($request->all(),$validations);
-		    	if($validator->fails()){
-		    		$response = [
-					'message' => $validator->errors($validator)->first()
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+
+		if(!empty($locale)){
+			\App::setLocale($locale);
+	   	if( !empty( $accessToken ) ) {
+	   		$userDetail = User::Where(['remember_token' => $accessToken])->first();
+	   		if(!empty($userDetail)){
+			   	$validations = [
+						'notification' => 'required|numeric',
+						'language' => 'required|alpha',
+			    	];
+			    	$validator = Validator::make($request->all(),$validations);
+			    	if($validator->fails()){
+			    		$response = [
+						'message' => $validator->errors($validator)->first()
+						];
+						return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+			    	}else{
+			    		// dd($userDetail);
+			    		$User = new \App\User;
+			    		$userData = $User::find($userDetail->id); 
+			    		$userData->language = $language;
+			    		$userData->notification = $notification;
+			    		$userData->save();
+			    		$response = [
+							'message' =>  __('messages.success.success'),
+						];
+						return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+			    	}
+			   }else{
+	    			$response = [
+						'message' =>  __('messages.invalid.detail')
 					];
-					return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-		    	}else{
-		    		// dd($userDetail);
-		    		$User = new \App\User;
-		    		$userData = $User::find($userDetail->id); 
-		    		$userData->language = $language;
-		    		$userData->notification = $notification;
-		    		$userData->save();
-		    		$response = [
-						'message' =>  __('messages.success.success'),
-					];
-					return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
-		    	}
-		   }else{
-    			$response = [
-					'message' =>  __('messages.invalid.detail')
+					return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+	    		}
+		   }else {
+		    	$Response = [
+				  'message'  => trans('messages.required.accessToken'),
 				];
-				return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
-    		}
-	   }else {
-	    	$Response = [
-			  'message'  => trans('messages.required.accessToken'),
+		      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+	    	}
+	   }else{
+	   	$response = [
+				'message' =>  __('messages.required.locale')
 			];
-	      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-    	}
+			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+	   }
    }
 
    public function uploadImage($photo,$uploadedfile,$destinationPathOfPhoto){

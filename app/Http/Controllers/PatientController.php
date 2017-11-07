@@ -35,6 +35,11 @@ class PatientController extends Controller
 		$patient_id = $request->patient_id;
 		$doctor_id = $request->doctor_id;
 		$key = $request->key; // 1 for bookmark or 0 for un bookmark
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
 
     	if( !empty( $accessToken ) ) {
     		$UserDetail = User::where(['remember_token'=>$accessToken])->first();
@@ -95,6 +100,12 @@ class PatientController extends Controller
  		Log::info('------------------PatientController------------get_patient_bookmarks_doctors'.print_r($request->all(),True));
  		$accessToken = $request->header('accessToken');
  		$result = [];
+ 		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
+
 		if( !empty( $accessToken ) ) {
 			$UserDetail = User::where(['remember_token'=>$accessToken])->first();
     		if(count($UserDetail)){
@@ -143,6 +154,12 @@ class PatientController extends Controller
 		$time_slot_id = $request->time_slot_id;
 		$day_id = $request->day_id;
 		$appointment_date = $request->appointment_date;
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
+
  		if( !empty( $accessToken ) ) {
  			$UserDetail = User::where(['remember_token'=>$accessToken])->first();
  			if(count($UserDetail)){
@@ -254,7 +271,12 @@ class PatientController extends Controller
  		$accessToken = $request->header('accessToken');
  		$date = date('Y-m-d',strtotime($request->date));
 	   $page_number = $request->page_number;
- 		// dd($date);
+ 		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
+
  		if( !empty( $accessToken ) ) {
  			$UserDetail = User::where(['remember_token'=>$accessToken])->first();
  			if(count($UserDetail)){
@@ -305,6 +327,11 @@ class PatientController extends Controller
  		$time_slot_id = $request->time_slot_id;
 		$day_id = $request->day_id;
 		$accept_or_reject = $request->accept_or_reject;
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
 
  		if( !empty( $accessToken ) ) {
  			$UserDetail = User::where(['remember_token'=>$accessToken])->first();
@@ -395,6 +422,12 @@ class PatientController extends Controller
  		Log::info('------------------PatientController------------search_doctor');
  		$accessToken = $request->header('accessToken');
  		$name = $request->name;
+ 		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
+		
  		if( !empty( $accessToken ) ) {
 			$UserDetail = User::where(['remember_token'=>$accessToken])->first();
     		if(count($UserDetail)){

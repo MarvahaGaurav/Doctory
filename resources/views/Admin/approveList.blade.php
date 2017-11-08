@@ -1,4 +1,4 @@
-    <?php include 'header.php';?>
+    @include('Admin/header')
         <!-- Page wrapper  -->
         <!-- ============================================================== -->
         <div class="page-wrapper">
@@ -76,7 +76,7 @@
             <!-- ============================================================== -->
             <!-- footer -->
             <!-- ============================================================== -->
-            <?php include 'footer.php';?>
+            @include('Admin/footer')
              
             <script>
     $(document).ready(function() {

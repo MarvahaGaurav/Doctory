@@ -25,12 +25,7 @@
     <link href="css/style.css" rel="stylesheet">
     <!-- You can change the theme colors from here -->
     <link href="css/colors/blue.css" id="theme" rel="stylesheet">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
+    
 </head>
 
 <body class="fix-header fix-sidebar card-no-border">
@@ -54,7 +49,7 @@
                 <!-- Logo -->
                 <!-- ============================================================== -->
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="index.php">
+                    <a class="navbar-brand" href="{{url('Admin/dashboard')}}">
                         <!-- Logo icon --><b>
                             <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
                             <!-- Dark Logo icon -->
@@ -132,15 +127,7 @@
                                 </ul>
                             </div>
                         </li>
-                        <!-- ============================================================== -->
-                        <!-- End Comment -->
-                        <!-- ============================================================== -->
-                        <!-- ============================================================== -->
-                        <!-- Messages -->
-                        <!-- ============================================================== -->
-                        <!-- ============================================================== -->
-                        <!-- Profile -->
-                        <!-- ============================================================== -->
+                        
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="assets/images/users/1.jpg" alt="user" class="profile-pic" /></a>
                             <div class="dropdown-menu dropdown-menu-right scale-up">
@@ -149,28 +136,23 @@
                                         <div class="dw-user-box">
                                             <div class="u-img"><img src="assets/images/users/1.jpg" alt="user"></div>
                                             <div class="u-text">
-                                                <h4>Steave Jobs</h4>
-                                                <p class="text-muted">varun@gmail.com</p><a href="profile.php" class="btn btn-rounded btn-danger btn-sm">View Profile</a></div>
+                                                <h4>{{$AdminDetail->name}}</h4>
+                                                <p class="text-muted">{{$AdminDetail->email}}</p><a href="profile.php" class="btn btn-rounded btn-danger btn-sm">View Profile</a></div>
                                         </div>
                                     </li>
                                     <li role="separator" class="divider"></li>
                                     <li><a href="#"><i class="ti-user"></i> My Profile</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="#"><i class="fa fa-power-off"></i> Logout</a></li>
+                                    <li><a href="{{url('Admin/logout')}}"><i class="fa fa-power-off"></i> Logout</a></li>
                                 </ul>
                             </div>
                         </li>
-                        <!-- ============================================================== -->
                     </ul>
                 </div>
             </nav>
         </header>
-        <!-- ============================================================== -->
-        <!-- End Topbar header -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
-        <!-- Left Sidebar - style you can find in sidebar.scss  -->
-        <!-- ============================================================== -->
+        
+        
         <aside class="left-sidebar">
             <!-- Sidebar scroll-->
             <div class="scroll-sidebar">
@@ -180,8 +162,13 @@
                     <div class="profile-img"> <img src="assets/images/users/profile.png" alt="user" /> </div>
                     <!-- User profile text-->
                     <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Markarn Doe</a>
-                        <div class="dropdown-menu animated flipInY"> <a href="#" class="dropdown-item"><i class="ti-user"></i> My Profile</a> 
-                            <div class="dropdown-divider"></div> <a href="login.html" class="dropdown-item"><i class="fa fa-power-off"></i> Logout</a> </div>
+                        <div class="dropdown-menu animated flipInY"> 
+                        <a href="{{url('Admin/profile')}}" class="dropdown-item">
+                            <i class="ti-user"></i> My Profile
+                        </a> 
+                        <div class="dropdown-divider"></div>
+                             <a href="{{url('Admin/logout')}}" class="dropdown-item"><i class="fa fa-power-off"></i> Logout</a>
+                        </div>
                     </div>
                 </div>
                 <!-- End User profile text-->
@@ -189,19 +176,19 @@
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
                         <li class="nav-small-cap">Navigation</li>
-                        <li> <a class="waves-effect waves-dark" href="index.php"><i class="mdi mdi-gauge"></i><span class="hide-menu">Deshboard</span></a>
+                        <li> <a class="waves-effect waves-dark" href="{{url('Admin/dashboard')}}"><i class="mdi mdi-gauge"></i><span class="hide-menu">Deshboard</span></a>
                         </li>
-                        <li> <a class="waves-effect waves-dark" href="approveList.php"><i class="mdi mdi-laptop-windows"></i><span class="hide-menu">Approved List</span></a>
+                        <li> <a class="waves-effect waves-dark" href="{{url('Admin/approve_list')}}"><i class="mdi mdi-laptop-windows"></i><span class="hide-menu">Approved List</span></a>
                         </li>
-                        <li> <a class="waves-effect waves-dark" href="pendingList.php"><i class="mdi mdi-laptop-windows"></i><span class="hide-menu">Pending List</span></a>
+                        <li> <a class="waves-effect waves-dark" href="{{url('Admin/pending_list')}}"><i class="mdi mdi-laptop-windows"></i><span class="hide-menu">Pending List</span></a>
                         </li>
-                        <li> <a class="waves-effect waves-dark" href="specialityMgt.php"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Speciality Mgt. </span></a>
+                        <li> <a class="waves-effect waves-dark" href="{{url('Admin/speciality_management')}}"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Speciality Mgt. </span></a>
                         </li>
-                        <li> <a class="waves-effect waves-dark" href="addQualification.php"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Add Qualification</span></a>
+                        <li> <a class="waves-effect waves-dark" href="{{url('Admin/add_qualification')}}"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Add Qualification</span></a>
                         </li>
-                        <li> <a class="waves-effect waves-dark" href="addLanguage.php"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Add Language </span></a>
+                        <li> <a class="waves-effect waves-dark" href="{{url('Admin/add_language')}}"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Add Language </span></a>
                         </li>
-                        <li> <a class="waves-effect waves-dark" href="patientList.php"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Patient List</span></a>
+                        <li> <a class="waves-effect waves-dark" href="{{url('Admin/patient_list')}}"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Patient List</span></a>
                         </li>
                     </ul>
                 </nav>
@@ -209,7 +196,4 @@
             </div>
             <!-- End Sidebar scroll-->
         </aside>
-        <!-- ============================================================== -->
-        <!-- End Left Sidebar - style you can find in sidebar.scss  -->
-        <!-- ============================================================== -->
-        <!-- ============================================================== -->
+        

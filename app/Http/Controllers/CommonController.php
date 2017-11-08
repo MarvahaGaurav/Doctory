@@ -247,7 +247,7 @@ class CommonController extends Controller
 				    			$OTP->varified = 1;
 				    			$OTP->save();
 				    			$Response = [
-			        			  'message'  => trans('messages.success.success'),
+			        			  'message'  => trans('messages.success.otp_verified'),
 			        			  'status' => 1,
 			        			  'response' => $user->getUserDetail($userDetail->id)
 			        			];
@@ -362,11 +362,21 @@ class CommonController extends Controller
 		 			$userOtp->otp = $otp;
 		 			$userOtp->varified = 0;
 		 			$userOtp->save();
-		 			$Response = [
-	     			  'message'  => trans('messages.success.success'),
-	     			  'response' => $USER->getUserDetail($userDetail->id)
-	     			];
-	     			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );		
+
+		 			if($key == 1){ // otp at mobile
+			 			$Response = [
+		     			  'message'  => trans('messages.success.otp_resend'),
+		     			  'response' => $USER->getUserDetail($userDetail->id)
+		     			];
+		     		}
+		     		if($key == 2){ // otp at email
+		     			$Response = [
+		     			  'message'  => trans('messages.success.email_forget_otp'),
+		     			  'response' => $USER->getUserDetail($userDetail->id)
+		     			];
+		     		}
+		     			return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );	
+
 		 		}else{
 					$response['message'] = trans('messages.invalid.detail');
 					return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
@@ -427,7 +437,7 @@ class CommonController extends Controller
 					$UserOtp->otp = $otp;
 					$UserOtp->save();
 					$response=[
-						'message' => trans('messages.success.success'),
+						'message' => trans('messages.success.email_forget_otp'),
 						'response' => ['user_id'=> $UserDetail->id]
 			      ];
 			      return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
@@ -479,7 +489,7 @@ class CommonController extends Controller
 		    			$userDetail = new \App\User;
 
 		    			$Response = [
-		    			  'message'  => trans('messages.success.success'),
+		    			  'message'  => trans('messages.success.password_updated'),
 		    			  'response' => $userDetail->getUserDetail($UserDetail->id)
 		    			];
 		        		return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
@@ -667,7 +677,7 @@ class CommonController extends Controller
 
 			        		$this->sendOtp($country_code.$mobile,$otp);
 			        		$response = [
-			        			'message' => __('messages.success.success'),
+			        			'message' => __('messages.success.mobile_changed'),
 			        			// 'response' => $User->getUserDetail($userDetail->id)
 			        		];
 			        		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
@@ -822,7 +832,7 @@ class CommonController extends Controller
 							$user = new User;
 							$result =$this->getUserDetail($user->getUserDetail($USER->id));
 							$response = [
-								'message' => __('messages.success.success'),
+								'message' => __('messages.success.complete_profile'),
 								// 'response' => $user->getUserDetail($USER->id)
 								'response' => $result
 							];

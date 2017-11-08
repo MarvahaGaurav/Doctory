@@ -9,8 +9,6 @@ return [
 		'update' => 'Update Successfull.',
 		'unsuccess' => 'Unsuccessful.',
 		'logout' => 'Logout Successfull.',
-		'request_accepted' => 'request accepted successfully.',
-		'request_rejected' => 'request rejected.',
 		'review_published' => 'review published successfully.',
 		'review_un_published' => 'review un published successfully.',
 		'appointment_accepted' => 'Appointment accepted Successfully.',
@@ -18,7 +16,13 @@ return [
 		'password_updated' => 'Password updated Successfully.',
 		'appointment_rescheduled' => 'Appointment rescheduled Successfully.',
 		'appointment_scheduled' => 'Appointment scheduled Successfully.',
-		'NO_DATA_FOUND' => 'NO DATA FOUND'
+		'NO_DATA_FOUND' => 'NO DATA FOUND',
+		'otp_resend' => 'OTP resend successfully.',
+		'otp_verified' => 'OTP verified successfully.',
+		'email_forget_otp' => 'Code send successfully.',
+		'reset_password' => 'Password is successfully reset .Please login again.',
+		'mobile_changed' => 'Mobile number successfully changed',
+		'complete_profile' => 'Profile is created.'
 	],
 
 	'error' => [

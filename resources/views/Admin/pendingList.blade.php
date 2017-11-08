@@ -1,4 +1,4 @@
-    <?php include 'header.php';?>
+    @include('Admin/header')
         <!-- Page wrapper  -->
         <!-- ============================================================== -->
         <div class="page-wrapper">
@@ -11,40 +11,14 @@
                 <!-- ============================================================== -->
                 <div class="row page-titles">
                     <div class="col-md-12 col-12 align-self-center">
-                        <h3 class="text-themecolor">Language Management</h3>
+                        <h3 class="text-themecolor">Pending List of Doctors</h3>
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                            <li class="breadcrumb-item active">Language Mgt.</li>
+                            <li class="breadcrumb-item active">Doctor list</li>
                         </ol>
                     </div>
                 </div>
                 <!-- ============================================================== -->
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="card card-outline-info">
-                            <div class="card-header">
-                                <h4 class="m-b-0 text-white">Add new Language</h4>
-                            </div>
-                            <div class="card-body">
-                                <form action="#">
-                                    <div class="form-body">
-                                       <div class="row">
-                                            <div class="col-md-12 ">
-                                                <div class="form-group">
-                                                    <label>Language Name</label>
-                                                    <input type="text" class="form-control">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Add</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
               <div class="row">
                <div class="col-md-12">
                 <div class="card">
@@ -54,24 +28,28 @@
                                         <thead>
                                             <tr>
                                                 <th>Name</th>
-                                                <th>Action</th>
+                                                <th>Email</th>
+                                                <th>Mobile</th>
+                                                <th>View profile</th>
+                                                <th>Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
                                                 <td>Aiger Nixon</td>
-                                                <td><a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
-                                                  <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
-                                                </td>
+                                                <td>doctor@gmail.com</td>
+                                                <td>098378537653</td>
+                                                <td><a href="docProfile.php" class="btn btn-danger btn-sm"> Profile</a></td>
+                                                <td><label class="label label-rounded label-success">Pending</label></td>
                                             </tr>
                                             <tr>
-                                                <td>Tiger Nixon</td>
-                                                <td><a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
-                                                  <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
-                                                </td>
+                                                <td>Aiger Nixon</td>
+                                                <td>doctor@gmail.com</td>
+                                                <td>098378537653</td>
+                                                <td><a href="docProfile.php" class="btn btn-danger btn-sm"> Profile</a></td>
+                                                <td><label class="label label-rounded label-success">Pending</label></td>
                                             </tr>
-                                            
-                                        </tbody>
+                                            </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -95,7 +73,8 @@
             <!-- ============================================================== -->
             <!-- footer -->
             <!-- ============================================================== -->
-            <?php include 'footer.php';?>
+            @include('Admin/footer')
+             
             <script>
     $(document).ready(function() {
         $('#myTable').DataTable();

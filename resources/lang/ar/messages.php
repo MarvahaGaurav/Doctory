@@ -16,7 +16,13 @@ return [
 		'password_updated' => 'تم تحديث كلمة السر بنجاح',
 		'appointment_rescheduled' => 'تم إعادة جدولة الموعد بنجاح',
 		'appointment_scheduled' => 'تم تعيين الموعد بنجاح',
-		'NO_DATA_FOUND' => 'لاتوجد بيانات'
+		'NO_DATA_FOUND' => 'لاتوجد بيانات',
+		'otp_resend' => 'إعادة إرسال أوتب بنجاح.',
+		'otp_verified' => 'تم التحقق من مكتب المدعي العام بنجاح.',
+		'email_forget_otp' => 'إرسال رمز بنجاح.',
+		'reset_password' => 'تم إعادة تعيين كلمة المرور بنجاح. الرجاء تسجيل الدخول مرة أخرى.',
+		'mobile_changed' => 'تم تغيير رقم الجوال بنجاح',
+		'complete_profile' => 'تم إنشاء الملف الشخصي'
 	],
 
 	'error' => [

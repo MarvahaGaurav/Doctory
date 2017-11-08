@@ -1,4 +1,4 @@
-    <?php include 'header.php';?>
+    @include('Admin/header')
         <!-- Page wrapper  -->
         <!-- ============================================================== -->
         <div class="page-wrapper">
@@ -26,25 +26,29 @@
                                 <h4 class="m-b-0 text-white">Add new Speciality</h4>
                             </div>
                             <div class="card-body">
-                                <form action="#">
+                                <form action="{{url('Admin/speciality_management')}}" method="POST" enctype="multipart/form-data">
+                                {{ csrf_field() }}
+
+                                <span class="SpecialityErrors" style="color:red">{{$errors->first()}}</span>
+                                <span class="message" style="color:green">{{session()->get('speciality_added')}}</span>
                                     <div class="form-body">
                                        <div class="row">
                                             <div class="col-md-4 ">
                                                 <div class="form-group">
                                                     <label>Name</label>
-                                                    <input type="text" class="form-control">
+                                                    <input type="text" name="name" class="form-control" value="{{old('name')}}">
                                                 </div>
                                             </div>
                                             <div class="col-md-4 ">
                                                 <div class="form-group">
                                                     <label>Image</label>
-                                                    <input type="file" class="form-control">
+                                                    <input type="file" name="iconImage" class="form-control">
                                                 </div>
                                             </div>
                                             <div class="col-md-4 ">
                                                 <div class="form-group">
                                                     <label>Description</label>
-                                                    <input type="text" class="form-control">
+                                                    <input type="text" name="desc" class="form-control" value="{{old('desc')}}">
                                                 </div>
                                             </div>
                                         </div>
@@ -72,30 +76,16 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>Aiger Nixon</td>
-                                                <td><img src="assets/images/big/img1.jpg" alt="Doc img" class="img-responsive radius" style="width: 100px;"></td>
-                                                <td>Heart</td>
-                                                <td><a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
-                                                  <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Tiger Nixon</td>
-                                                <td><img src="assets/images/big/img1.jpg" alt="Doc img" class="img-responsive radius" style="width: 100px;"></td>
-                                                <td>Heart</td>
-                                                <td><a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
-                                                  <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
-                                                </td>
-                                            </tr><tr>
-                                                <td>Tiger Nixon</td>
-                                                <td><img src="assets/images/big/img1.jpg" alt="Doc img" class="img-responsive radius" style="width: 100px;"></td>
-                                                <td>Heart</td>
-                                                <td><a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
-                                                  <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
-                                                </td>
-                                            </tr>
-
+                                            @foreach($CategoryList as $data)
+                                                <tr>
+                                                    <td>{{$data->name}}</td>
+                                                    <td><img src="{{url('iconImages')}}/{{$data->icon_path}}" alt="Doc img" class="img-responsive radius" style="width: 100px;"></td>
+                                                    <td>Heart</td>
+                                                    <td><a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
+                                                      <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -120,7 +110,7 @@
             <!-- ============================================================== -->
             <!-- footer -->
             <!-- ============================================================== -->
-            <?php include 'footer.php';?>
+            @include('Admin/footer')
             <script>
     $(document).ready(function() {
         $('#myTable').DataTable();

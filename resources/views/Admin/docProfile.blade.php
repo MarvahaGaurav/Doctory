@@ -22,9 +22,9 @@
                 <div class="row">
                     <div class="col-md-6">
                         <!-- Column -->
-                        <div class="card"> <img class="" src="assets/images/background/profile-bg.jpg" alt="Card image cap">
+                        <div class="card"> <img class="" src="{{asset('Admin/assets/images/background/profile-bg.jpg')}}" alt="Card image cap">
                             <div class="card-body little-profile text-center">
-                                <div class="pro-img"><img src="assets/images/users/4.jpg" alt="user" /></div>
+                                <div class="pro-img"><img src="{{asset('Admin/assets/images/users/4.jpg')}}" alt="user" /></div>
                                 <h3 class="m-b-0">Doctor Name</h3>
                                 <div class="row text-center m-t-20">
                                     <div class="col-lg-4 col-md-4 m-t-20">

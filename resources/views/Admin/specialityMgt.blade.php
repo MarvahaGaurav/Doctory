@@ -23,7 +23,11 @@
                     <div class="col-md-12">
                     <span class="SpecialityErrors" style="color:red">{{$errors->first()}}</span>
                     <span class='message' style="color: green">{{Session::get('speciality_added')}}</span>
+                    <span class='message' style="color: green">{{Session::get('SP_deleted')}}</span>
                     <span class='message' style="color: red">{{Session::get('SP_already_exist')}}</span>
+                    <span class='message' style="color: red">{{Session::get('invalid_detail')}}</span>
+                    <span class='message' style="color: red">{{Session::get('SP_exist_under_doctor')}}</span>
+
                         <div class="card card-outline-info">
                             <div class="card-header">
                                 <h4 class="m-b-0 text-white">Add new Speciality</h4>
@@ -80,9 +84,10 @@
                                                 <tr>
                                                     <td>{{$data->name}}</td>
                                                     <td><img src="{{url('iconImages')}}/{{$data->icon_path}}" alt="Doc img" class="img-responsive radius" style="width: 100px;"></td>
-                                                    <td>Heart</td>
-                                                    <td><a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
-                                                      <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
+                                                    <td>{{$data->desc}}</td>
+                                                    <td>
+                                                        <a href="{{url('Admin/speciality/edit')}}/{{$data->id}}" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
+                                                        <a onclick="return confirm('Do you want to delete?')" href="{{url('Admin/delete_speciality')}}/{{$data->id}}" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
                                                     </td>
                                                 </tr>
                                             @endforeach

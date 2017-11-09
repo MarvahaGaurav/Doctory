@@ -24,13 +24,17 @@ return [
 		'mobile_changed' => 'Mobile number successfully changed',
 		'complete_profile' => 'Profile is created.',
 		'QA_added' => 'Qualification added successfully.',
+		'QA_deleted' => 'Qualification deleted successfully.',
 		'QA_already_exist' => 'Qualification already exist.',
 		'mother_language_added' => 'Mother language added successfully.',
 		'mother_language_already_exist' => 'Mother language already exist.',
+		'ML_deleted' => 'Mother language deleted.',
 		'speciality_added' => 'Speciality added successfully.',
+		'SP_deleted' => 'Speciality deleted.',
 		'speciality_already_exist' => 'Speciality already exist.',
 		'patient_unblocked' => 'Patient unblocked successfully.',
-		'patient_blocked' => 'Patient blocked successfully.'
+		'patient_blocked' => 'Patient blocked successfully.',
+		'docotr_approved' => 'Doctor approved successfully.'
 	],
 
 	'error' => [
@@ -83,5 +87,7 @@ return [
 	'Patient_Already_Booked_appointment' => 'you have already booked your appointment.',
 	'Appointment_already_booked_at_this_time_slot_for_this_patient' => 'Appointment already booked at this time slot for this patient.',
 
-
+	'QA_exist_under_doctor' => 'Unable to delete.',
+	'ML_exist_under_doctor' => 'Unable to delete',
+	'SP_exist_under_doctor' => 'Unable to delete'
 ];

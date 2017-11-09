@@ -21,6 +21,7 @@
                 <!-- ============================================================== -->
               <div class="row">
                <div class="col-md-12">
+               <span style="color:green">{{Session::get('docotr_approved')}}</span>
                 <div class="card">
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -41,7 +42,7 @@
                                                 <td>{{$ADL->name}}</td>
                                                 <td>{{$ADL->email}}</td>
                                                 <td>{{$ADL->mobile}}</td>
-                                                <td><a href="docProfile.php" class="btn btn-danger btn-sm"> Profile</a></td>
+                                                <td><a href="{{url('Admin/doctor_profile')}}/{{$ADL->id}}" class="btn btn-danger btn-sm"> Profile</a></td>
                                                 <td><a href="appointmentView.php" class="btn btn-danger btn-sm"> See list</a></td>
                                                 <td><label class="label label-rounded label-success">Approved</label></td>
                                             </tr>

@@ -23,7 +23,10 @@
             <div class="col-md-8">
                <span style="color: red">{{$errors->first()}}</span>
                     <span class='message' style="color: green">{{Session::get('mother_language_added')}}</span>
+                    <span class='message' style="color: green">{{Session::get('ML_deleted')}}</span>
                     <span class='message' style="color: red">{{Session::get('mother_language_already_exist')}}</span>
+                    <span class='message' style="color: red">{{Session::get('invalid_detail')}}</span>
+                    <span class='message' style="color: red">{{Session::get('ML_exist_under_doctor')}}</span>
 
                 <div class="card card-outline-info">
                     <div class="card-header">
@@ -68,7 +71,7 @@
                                         <td>{{ucfirst($ML->name)}}</td>
                                         <td>
                                             <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
-                                            <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
+                                            <a onclick="return confirm('Do you want to delete?')" href="{{url('Admin/mother_language_delete')}}/{{$ML->id}}" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
                                         </td>
                                     </tr>
                                     @endforeach

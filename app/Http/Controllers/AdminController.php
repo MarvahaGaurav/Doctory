@@ -7,6 +7,8 @@ use \App\Admin;
 use \App\Category;
 use \App\Qualification;
 use \App\MotherLanguage;
+use \App\DoctorQualification;
+use \App\DoctorMotherlanguage;
 use \App\User;
 use Auth;
 use Hash;
@@ -79,17 +81,17 @@ class AdminController extends Controller
    } 
 
    public function profile(Request $request){
-      if($request->method() == "GET"){
-         $loggedIn = Session::get('Dr_Admin_loggedIn');
-         if($loggedIn){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         if($request->method() == "GET"){
             $id = Session::get('Dr_Admin_Id');
             $role = Session::get('Dr_Admin_Role');
             $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
             // dd($AdminDetail);
-            return view('Admin/docProfile',compact('AdminDetail'));
-         }else{
-            return redirect('Admin/login');
+            // return view('Admin/docProfile',compact('AdminDetail'));
          }
+      }else{
+         return redirect('Admin/login');
       }
    }
 
@@ -133,6 +135,44 @@ class AdminController extends Controller
       } 
    }
 
+   public function qualification_edit(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         if($request->method() == "GET"){
+            $id = Session::get('Dr_Admin_Id');
+            $role = Session::get('Dr_Admin_Role');
+            $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);   
+            return view('Admin/editQualification',compact('AdminDetail'));
+         }
+         if($request->method() == "POST"){
+         }
+      }else{
+         return redirect('Admin/login');
+      }
+   }
+
+   public function qualification_delete(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         if($request->method() == "GET"){
+            $qualification_detail = Qualification::find($request->qualification_id);
+            if($qualification_detail){
+               $DoctorQualification = DoctorQualification::Where(['qualification_id' => $request->qualification_id])->first();
+               if(!$DoctorQualification){
+                  $qualification_detail->delete();
+                  return redirect('Admin/add_qualification')->with('QA_deleted',__('messages.success.QA_deleted'));
+               }else{
+                  return redirect('Admin/add_qualification')->with('QA_exist_under_doctor',__('messages.QA_exist_under_doctor'));
+               }
+            }else{
+               return redirect('Admin/add_qualification')->with('invalid_detail',__('messages.invalid.detail'));
+            }
+         }
+      }else{
+         return redirect('Admin/login');
+      }
+   }
+
    public function approved_list(Request $request){
       $loggedIn = Session::get('Dr_Admin_loggedIn');
       if($loggedIn){
@@ -143,13 +183,13 @@ class AdminController extends Controller
             $Approved_doctor_list = User::where(['status'=>1,'user_type'=>1])->get();
             return view('Admin/approveList',compact('AdminDetail','Approved_doctor_list'));
          }
-
       }else{
          return redirect('Admin/login');
       }
    }
 
    public function pending_list(Request $request){
+
       if($request->method() == "GET"){
          $loggedIn = Session::get('Dr_Admin_loggedIn');
          if($loggedIn){
@@ -162,6 +202,46 @@ class AdminController extends Controller
             return redirect('Admin/login');
          }
       }  
+   }
+
+   public function approve_doctor(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+         if($loggedIn){
+            $doctor_id = $request->doctor_id;
+            $doctor_detail = User::find($doctor_id);
+            if($doctor_detail){
+               $doctor_detail->status = 1;
+               $doctor_detail->save();
+               return redirect('Admin/approve_list')->with('docotr_approved',__('messages.success.docotr_approved'));
+            }else{
+               return redirect('Admin/pending_list')->with('invalid_detail',__('messages.invalid.detail'));
+            }
+         }else{
+            return redirect('Admin/login');
+         }
+   }
+
+   public function edit_speciality_management(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         if($request->method() == "GET"){
+            $id = Session::get('Dr_Admin_Id');
+            $role = Session::get('Dr_Admin_Role');
+            $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
+            $speciality_id = $request->speciality_id;
+            $speciality_detail = Category::find($speciality_id);
+            if($speciality_detail){
+               // dd($speciality_detail);
+               return view('Admin/editSpecialityMgt',compact('AdminDetail'));
+            }else{
+               return redirect('Admin/speciality_management')->with('invalid_detail',__('messages.invalid.detail'));
+            }
+         }
+         if($request->method() == "POST"){
+         }
+      }else{
+         return redirect('Admin/login');
+      }
    }
 
    public function speciality_management(Request $request){
@@ -216,6 +296,27 @@ class AdminController extends Controller
       }
    }  
 
+   public function delete_speciality(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         if($request->method() == "GET"){
+            $speciality_detail = Category::find($request->speciality_id);
+            if($speciality_detail){
+               $DoctorSpeciality = User::where(['speciality_id'=>$request->speciality_id])->first();
+               if(!$DoctorSpeciality){
+                  $speciality_detail->delete();
+                  return redirect('Admin/speciality_management')->with('SP_deleted',__('messages.success.SP_deleted'));   
+               }else{
+                  return redirect('Admin/speciality_management')->with('SP_exist_under_doctor',__('messages.SP_exist_under_doctor'));
+               }
+            }else{
+               return redirect('Admin/speciality_management')->with('invalid_detail',__('messages.invalid.detail'));
+            }
+         }
+      }else{
+         return redirect('Admin/login');
+      }
+   }
    public function add_mother_language(Request $request){
          $loggedIn = Session::get('Dr_Admin_loggedIn');
          if($loggedIn){
@@ -254,6 +355,29 @@ class AdminController extends Controller
          }
    }
 
+   public function mother_language_delete(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         if($request->method() == "GET"){
+            $mother_language_detail = MotherLanguage::find($request->mother_language_id);
+            if($mother_language_detail){
+               $DoctorMotherLanguage = DoctorMotherlanguage::Where(['mother_language_id' => $request->mother_language_id])->first();
+               if(!$DoctorMotherLanguage){
+                  $mother_language_detail->delete();
+                  return redirect('Admin/add_mother_language')->with('ML_deleted',__('messages.success.ML_deleted'));
+               }else{
+                  return redirect('Admin/add_mother_language')->with('ML_exist_under_doctor',__('messages.ML_exist_under_doctor'));
+               }
+            }else{
+               return redirect('Admin/add_mother_language')
+                  ->with('invalid_detail',__('messages.invalid.detail'));
+            }
+         }
+      }else{
+         return redirect('Admin/login');
+      }
+   }
+
    public function patient_list(Request $request){
       if($request->method() == "GET"){
          $loggedIn = Session::get('Dr_Admin_loggedIn');
@@ -290,11 +414,29 @@ class AdminController extends Controller
       }else{
          return redirect('Admin/login');
       }
-      
    }
 
    public function getAdminDetail($query){
    	$AdminDetail = Admin::Where($query)->first();
    	return $AdminDetail;
+   }
+
+   public function doctor_profile(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         if($request->method() == "GET"){
+            $id = Session::get('Dr_Admin_Id');
+            $role = Session::get('Dr_Admin_Role');
+            $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
+            $Doctor_detail = User::find($request->doctor_id);
+            if($Doctor_detail){
+               return view('Admin/docProfile',compact('AdminDetail','Doctor_detail'));
+            }else{
+               
+            }
+         }
+      }else{
+         return redirect('Admin/login');
+      }
    }
 }

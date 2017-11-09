@@ -37,16 +37,18 @@
                                         </thead>
                                         <tbody>
                                           @foreach($Pending_doctor_list as $PDL)
-                                            <tr>
+                                             <tr>
                                                 <td>{{$PDL->name}}</td>
                                                 <td>{{$PDL->email}}</td>
                                                 <td>{{$PDL->mobile}}</td>
                                                 <td><a href="docProfile.php" class="btn btn-danger btn-sm"> Profile</a></td>
                                                 <td><label class="label label-rounded label-success">Pending</label></td>
                                                 <td>
-                                                   <a href="{{url('Admin/block_patient')}}" class="btn btn-success">Approve</a>
+                                                   @if($PDL->status == 0)
+                                                      <a onclick="return confirm('Do you want to approve?')" href="{{url('Admin/approve_doctor')}}/{{$PDL->id}}" class="btn btn-success">Approve</a>
+                                                   @endif
                                                 </td>
-                                            </tr>
+                                             </tr>
                                           @endforeach
                                             </tbody>
                                     </table>

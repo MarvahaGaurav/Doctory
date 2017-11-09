@@ -21,6 +21,8 @@
                 <!-- ============================================================== -->
               <div class="row">
                <div class="col-md-12">
+                  <span class='message' style="color: green">{{Session::get('patient_unblocked')}}</span>
+                  <span class='message' style="color: green">{{Session::get('patient_blocked')}}</span>
                 <div class="card">
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -35,20 +37,22 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                          @foreach($patientList as $PL)  
                                             <tr>
-                                                <td>Aiger Nixon</td>
-                                                <td>patient@gmail</td>
-                                                <td>0986465467</td>
+                                                <td>{{$PL->name}}</td>
+                                                <td>{{$PL->email}}</td>
+                                                <td>{{$PL->mobile}}</td>
                                                 <td><a href="appointmentView.php" class="btn btn-danger btn-sm"> See list</a></td>
-                                                <td><button class="btn btn-danger">Block</button> </td>
+                                                <td>
+                                                   @if($PL->status == 1)
+                                                   <a href="{{url('Admin/block_patient')}}/{{$PL->id}}/0" class="btn btn-danger">Block</a>
+                                                   @endif
+                                                   @if($PL->status == 0)
+                                                      <a href="{{url('Admin/block_patient')}}/{{$PL->id}}/1" class="btn btn-success">Un Block</a>
+                                                   @endif
+                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td>Aiger Nixon</td>
-                                                <td>patient@gmail</td>
-                                                <td>0986465467</td>
-                                                <td><a href="appointmentView.php" class="btn btn-danger btn-sm"> See list</a></td>
-                                                <td><button class="btn btn-danger">Block</button> </td>
-                                            </tr>
+                                          @endforeach  
                                             </tbody>
                                     </table>
                                 </div>

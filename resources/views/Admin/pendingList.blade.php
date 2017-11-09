@@ -32,23 +32,22 @@
                                                 <th>Mobile</th>
                                                 <th>View profile</th>
                                                 <th>Status</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                          @foreach($Pending_doctor_list as $PDL)
                                             <tr>
-                                                <td>Aiger Nixon</td>
-                                                <td>doctor@gmail.com</td>
-                                                <td>098378537653</td>
+                                                <td>{{$PDL->name}}</td>
+                                                <td>{{$PDL->email}}</td>
+                                                <td>{{$PDL->mobile}}</td>
                                                 <td><a href="docProfile.php" class="btn btn-danger btn-sm"> Profile</a></td>
                                                 <td><label class="label label-rounded label-success">Pending</label></td>
+                                                <td>
+                                                   <a href="{{url('Admin/block_patient')}}" class="btn btn-success">Approve</a>
+                                                </td>
                                             </tr>
-                                            <tr>
-                                                <td>Aiger Nixon</td>
-                                                <td>doctor@gmail.com</td>
-                                                <td>098378537653</td>
-                                                <td><a href="docProfile.php" class="btn btn-danger btn-sm"> Profile</a></td>
-                                                <td><label class="label label-rounded label-success">Pending</label></td>
-                                            </tr>
+                                          @endforeach
                                             </tbody>
                                     </table>
                                 </div>

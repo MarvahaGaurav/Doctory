@@ -22,7 +22,15 @@ return [
 		'email_forget_otp' => 'Code send successfully.',
 		'reset_password' => 'Password is successfully reset .Please login again.',
 		'mobile_changed' => 'Mobile number successfully changed',
-		'complete_profile' => 'Profile is created.'
+		'complete_profile' => 'Profile is created.',
+		'QA_added' => 'Qualification added successfully.',
+		'QA_already_exist' => 'Qualification already exist.',
+		'mother_language_added' => 'Mother language added successfully.',
+		'mother_language_already_exist' => 'Mother language already exist.',
+		'speciality_added' => 'Speciality added successfully.',
+		'speciality_already_exist' => 'Speciality already exist.',
+		'patient_unblocked' => 'Patient unblocked successfully.',
+		'patient_blocked' => 'Patient blocked successfully.'
 	],
 
 	'error' => [
@@ -50,6 +58,7 @@ return [
 		'user_id' => 'User id is required.',
 		'requestToUserId' => 'RequestToUserId is required',
 		'locale' => 'Locale is required',
+		
 	],
 
 	'invalid' =>[

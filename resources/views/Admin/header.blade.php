@@ -161,7 +161,7 @@
                     <!-- User profile image -->
                     <div class="profile-img"> <img src="assets/images/users/profile.png" alt="user" /> </div>
                     <!-- User profile text-->
-                    <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Markarn Doe</a>
+                    <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">{{ucfirst($AdminDetail->name)}}</a>
                         <div class="dropdown-menu animated flipInY"> 
                         <a href="{{url('Admin/profile')}}" class="dropdown-item">
                             <i class="ti-user"></i> My Profile
@@ -186,7 +186,7 @@
                         </li>
                         <li> <a class="waves-effect waves-dark" href="{{url('Admin/add_qualification')}}"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Add Qualification</span></a>
                         </li>
-                        <li> <a class="waves-effect waves-dark" href="{{url('Admin/add_language')}}"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Add Language </span></a>
+                        <li> <a class="waves-effect waves-dark" href="{{url('Admin/add_mother_language')}}"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Add Mother Language </span></a>
                         </li>
                         <li> <a class="waves-effect waves-dark" href="{{url('Admin/patient_list')}}"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Patient List</span></a>
                         </li>

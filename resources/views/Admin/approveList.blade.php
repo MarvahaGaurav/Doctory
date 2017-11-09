@@ -36,22 +36,16 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                          @foreach($Approved_doctor_list as $ADL)
                                             <tr>
-                                                <td>Aiger Nixon</td>
-                                                <td>doctor@gmail.com</td>
-                                                <td>098378537653</td>
+                                                <td>{{$ADL->name}}</td>
+                                                <td>{{$ADL->email}}</td>
+                                                <td>{{$ADL->mobile}}</td>
                                                 <td><a href="docProfile.php" class="btn btn-danger btn-sm"> Profile</a></td>
                                                 <td><a href="appointmentView.php" class="btn btn-danger btn-sm"> See list</a></td>
                                                 <td><label class="label label-rounded label-success">Approved</label></td>
                                             </tr>
-                                            <tr>
-                                                <td>Aiger Nixon</td>
-                                                <td>doctor@gmail.com</td>
-                                                <td>098378537653</td>
-                                                <td><a href="docProfile.php" class="btn btn-danger btn-sm"> Profile</a></td>
-                                                <td><a href="appointmentView.php" class="btn btn-danger btn-sm"> See list</a></td>
-                                                <td><label class="label label-rounded label-success">Approved</label></td>
-                                            </tr>
+                                          @endforeach
                                             </tbody>
                                     </table>
                                 </div>

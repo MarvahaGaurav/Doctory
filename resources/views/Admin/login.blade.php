@@ -48,6 +48,7 @@
         <div class="login-register" style="background-image:url(assets/images/background/login-register.jpg);">
             <div class="login-box card">
                 <div class="card-body">
+                    <span class='message' style="color: red">{{Session::get('invalid_credentials')}}</span>
                     <form class="form-horizontal form-material" id="loginform" action="{{url('Admin/login')}}" method='POST'>
                         {{ csrf_field() }}
                         <h3 class="box-title m-b-20">Sign In</h3>
@@ -59,7 +60,7 @@
                         @else
                             <div class="form-group ">
                                 <div class="col-xs-12">
-                                    <input class="form-control" type="text" name="email" required="" placeholder="Email" value=""> </div>
+                                    <input class="form-control" type="text" name="email" required="" placeholder="Email" value="{{old('email')}}"> </div>
                             </div>
                         @endif
 
@@ -72,16 +73,15 @@
 
                             <div class="form-group">
                                 <div class="col-xs-12">
-                                    <input class="form-control" type="password" required="" name="password" placeholder="Password" value=""> 
+                                    <input class="form-control" type="password" required="" name="password" placeholder="Password" value="{{old('password')}}"> 
                                 </div>
                             </div>
                         @endif
 
-
                         <div class="form-group">
                             <div class="col-md-12">
                                 <div class="checkbox checkbox-primary pull-left p-t-0">
-                                    <input id="checkbox-signup" name="remember" type="checkbox" "<?php if(isset($_COOKIE['Dr_Admin_Remember'])){ echo "selected";}?>">
+                                    <input id="checkbox-signup" name="remember" type="checkbox"  @if(isset($_COOKIE['Dr_Admin_Remember'])) checked @endif>
                                     <label for="checkbox-signup"> Remember me </label>
                                 </div>
                             </div>

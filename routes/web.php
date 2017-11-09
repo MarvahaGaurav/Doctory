@@ -24,13 +24,13 @@ Route::group(['prefix' => 'Admin'],function(){
 	Route::match(['get'],'logout', 'AdminController@logout');
 	Route::get('dashboard','AdminController@dashboard');
 	Route::get('profile','AdminController@profile');
-	Route::get('approve_list','AdminController@approve_list');
+	Route::get('approve_list','AdminController@approved_list');
 	Route::get('pending_list','AdminController@pending_list');
 	Route::match(['get','post'],'speciality_management','AdminController@speciality_management');
-	Route::get('add_qualification','AdminController@addQualification');
-	Route::get('add_language','AdminController@add_language');
+	Route::match(['get','post'],'add_qualification','AdminController@addQualification');
+	Route::match(['get','post'],'add_mother_language','AdminController@add_mother_language');
 	Route::get('patient_list','AdminController@patient_list');
-
+	Route::get('block_patient/{patient_id}/{status}','AdminController@block_patient');
 
 });
 

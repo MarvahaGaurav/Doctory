@@ -100,9 +100,14 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'qualification_name' => [
+            'required' => 'Qualification name is required',
         ],
+
+        'language_name' => [
+            'required' => 'Language name is required.'
+        ],
+        
     ],
 
     /*

@@ -21,6 +21,9 @@
                 <!-- ============================================================== -->
                 <div class="row">
                     <div class="col-md-12">
+                    <span class="SpecialityErrors" style="color:red">{{$errors->first()}}</span>
+                    <span class='message' style="color: green">{{Session::get('speciality_added')}}</span>
+                    <span class='message' style="color: red">{{Session::get('SP_already_exist')}}</span>
                         <div class="card card-outline-info">
                             <div class="card-header">
                                 <h4 class="m-b-0 text-white">Add new Speciality</h4>
@@ -28,21 +31,18 @@
                             <div class="card-body">
                                 <form action="{{url('Admin/speciality_management')}}" method="POST" enctype="multipart/form-data">
                                 {{ csrf_field() }}
-
-                                <span class="SpecialityErrors" style="color:red">{{$errors->first()}}</span>
-                                <span class="message" style="color:green">{{session()->get('speciality_added')}}</span>
                                     <div class="form-body">
                                        <div class="row">
                                             <div class="col-md-4 ">
                                                 <div class="form-group">
                                                     <label>Name</label>
-                                                    <input type="text" name="name" class="form-control" value="{{old('name')}}">
+                                                    <input type="text" required name="name" class="form-control" value="{{old('name')}}">
                                                 </div>
                                             </div>
                                             <div class="col-md-4 ">
                                                 <div class="form-group">
                                                     <label>Image</label>
-                                                    <input type="file" name="iconImage" class="form-control">
+                                                    <input type="file" required name="iconImage" class="form-control">
                                                 </div>
                                             </div>
                                             <div class="col-md-4 ">

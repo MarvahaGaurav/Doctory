@@ -21,18 +21,23 @@
         <!-- ============================================================== -->
         <div class="row">
             <div class="col-md-8">
+               <span style="color: red">{{$errors->first()}}</span>
+                    <span class='message' style="color: green">{{Session::get('mother_language_added')}}</span>
+                    <span class='message' style="color: red">{{Session::get('mother_language_already_exist')}}</span>
+
                 <div class="card card-outline-info">
                     <div class="card-header">
                         <h4 class="m-b-0 text-white">Add new Language</h4>
                     </div>
                     <div class="card-body">
-                        <form action="#">
+                        <form action="{{url('Admin/add_mother_language')}}" method="POST">
+                           {{ csrf_field() }}
                             <div class="form-body">
                                 <div class="row">
                                     <div class="col-md-12 ">
                                         <div class="form-group">
-                                            <label>Language Name</label>
-                                            <input type="text" class="form-control">
+                                            <label>Mother Language Name</label>
+                                            <input type="text" name="language_name" required class="form-control">
                                         </div>
                                     </div>
                                 </div>
@@ -58,21 +63,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @foreach($MotherLanguage as $ML)
                                     <tr>
-                                        <td>Aiger Nixon</td>
+                                        <td>{{ucfirst($ML->name)}}</td>
                                         <td>
                                             <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
                                             <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td>Tiger Nixon</td>
-                                        <td>
-                                            <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
-                                            <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
-                                        </td>
-                                    </tr>
-
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>

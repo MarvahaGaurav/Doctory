@@ -433,6 +433,49 @@ class AdminController extends Controller
       }
    }
 
+   public function edit_mother_language(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         if($request->method() == "GET"){
+            $id = Session::get('Dr_Admin_Id');
+            $role = Session::get('Dr_Admin_Role');
+            $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
+            $mother_language_id = $request->mother_language_id;
+            $mother_language_detail = MotherLanguage::find($request->mother_language_id);
+            if($mother_language_detail){
+               return view('Admin/editLanguage',compact('AdminDetail','mother_language_detail'));
+            }else{
+               return redirect('Admin/mother_language/edit/'.$mother_language_id)->with('invalid_detail',__('messages.invalid.detail'));
+            }
+         }
+      }else{
+         return redirect('Admin/login');
+      }
+   }
+
+   public function save_mother_language(Request $request){
+      $lg_id = $request->lg_id;
+      $Language_name = $request->Language_name;
+      $validaions = [
+         'Language_name' => 'required|max:255',
+         'lg_id' => 'required|numeric'
+      ];
+      $Validator = Validator::make($request->all(),$validaions);
+      if($Validator->passes()){
+         $Exist = MotherLanguage::where('id','<>',$lg_id)->where('name',$Language_name)->first();
+         if(!$Exist){
+            $MotherLanguage = MotherLanguage::find($lg_id);
+            $MotherLanguage->name = $Language_name;
+            $MotherLanguage->save();
+            return redirect('Admin/mother_language/edit/'.$lg_id)->with('mother_language_updated',__('messages.success.mother_language_updated'));
+         }else{
+            return redirect('Admin/mother_language/edit/'.$lg_id)->with('mother_language_already_exist',__('messages.mother_language_already_exist'));
+         }
+      }else{
+         return redirect('Admin/mother_language/edit/'.$lg_id)->withErrors($Validator);
+      }
+   }
+
    public function patient_list(Request $request){
       if($request->method() == "GET"){
          $loggedIn = Session::get('Dr_Admin_loggedIn');

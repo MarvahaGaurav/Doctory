@@ -70,7 +70,7 @@
                                     <tr>
                                         <td>{{ucfirst($ML->name)}}</td>
                                         <td>
-                                            <a href="#" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
+                                            <a href="{{url('Admin/mother_language/edit/')}}/{{$ML->id}}" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
                                             <a onclick="return confirm('Do you want to delete?')" href="{{url('Admin/mother_language_delete')}}/{{$ML->id}}" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>
                                         </td>
                                     </tr>

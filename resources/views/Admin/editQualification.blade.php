@@ -24,6 +24,7 @@
                     <div class="col-md-8">
                     <span class="SpecialityErrors" style="color:red">{{$errors->first()}}</span>
                     <span class='message' style="color: red">{{Session::get('qualificationy_already_exist')}}</span>
+                    
                     <span class='message' style="color: green">{{Session::get('qualificationy_updated')}}</span>
                         <div class="card card-outline-info">
                             <div class="card-header">

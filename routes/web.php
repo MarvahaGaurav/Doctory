@@ -41,9 +41,12 @@ Route::group(['prefix' => 'Admin'],function(){
 	Route::post('save_qualification','AdminController@save_qualification');
 
 	Route::get('qualification_delete/{qualification_id}','AdminController@qualification_delete');
+
 	Route::match(['get','post'],'add_mother_language','AdminController@add_mother_language');
 	Route::get('mother_language_delete/{mother_language_id}','AdminController@mother_language_delete');
-
+	Route::match(['get','post'],'mother_language/edit/{mother_language_id}','AdminController@edit_mother_language');
+	Route::post('save_mother_language','AdminController@save_mother_language');
+	
 	Route::get('patient_list','AdminController@patient_list');
 	Route::get('approve_doctor/{doctor_id}','AdminController@approve_doctor');
 	Route::get('block_patient/{patient_id}/{status}','AdminController@block_patient');

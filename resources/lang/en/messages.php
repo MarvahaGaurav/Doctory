@@ -34,7 +34,9 @@ return [
 		'speciality_already_exist' => 'Speciality already exist.',
 		'patient_unblocked' => 'Patient unblocked successfully.',
 		'patient_blocked' => 'Patient blocked successfully.',
-		'docotr_approved' => 'Doctor approved successfully.'
+		'docotr_approved' => 'Doctor approved successfully.',
+		'speciality_updated' => 'Speciality updated successfully.',
+		'qualificationy_updated' => 'Qualification updated successfully.'
 	],
 
 	'error' => [
@@ -89,5 +91,7 @@ return [
 
 	'QA_exist_under_doctor' => 'Unable to delete.',
 	'ML_exist_under_doctor' => 'Unable to delete',
-	'SP_exist_under_doctor' => 'Unable to delete'
+	'SP_exist_under_doctor' => 'Unable to delete',
+	'speciality_already_exist' => 'Speciality already exist',
+	'qualificationy_already_exist' => 'Qualificationy already exist'
 ];

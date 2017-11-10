@@ -22,18 +22,23 @@
                 <!-- ============================================================== -->
                 <div class="row">
                     <div class="col-md-8">
+                    <span class="SpecialityErrors" style="color:red">{{$errors->first()}}</span>
+                    <span class='message' style="color: red">{{Session::get('qualificationy_already_exist')}}</span>
+                    <span class='message' style="color: green">{{Session::get('qualificationy_updated')}}</span>
                         <div class="card card-outline-info">
                             <div class="card-header">
                                 <h4 class="m-b-0 text-white">Edit Qualification</h4>
                             </div>
                             <div class="card-body">
-                                <form action="#">
+                                <form action="{{url('Admin/save_qualification')}}" method="POST">
+                                    {{csrf_field()}}
+                                    <input type="hidden" name="qa_id" value="{{Request::segment(3)}}">
                                     <div class="form-body">
                                        <div class="row">
                                             <div class="col-md-12 ">
                                                 <div class="form-group">
                                                     <label>Qualification Name</label>
-                                                    <input type="text" class="form-control">
+                                                    <input type="text" name="qualification_name" value="{{ucfirst($Qualification->name)}}" required class="form-control">
                                                 </div>
                                             </div>
                                         </div>
@@ -46,20 +51,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- ============================================================== -->
-                <!-- ============================================================== -->
-                <!-- Right sidebar -->
-                <!-- ============================================================== -->
-                <!-- .right-sidebar -->
                 
-                <!-- ============================================================== -->
-                <!-- End Right sidebar -->
-                <!-- ============================================================== -->
             </div>
-            <!-- ============================================================== -->
-            <!-- End Container fluid  -->
-            <!-- ============================================================== -->
-            <!-- ============================================================== -->
-            <!-- footer -->
-            <!-- ============================================================== -->
+            
              @include('Admin/footer')

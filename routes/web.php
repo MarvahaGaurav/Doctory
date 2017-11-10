@@ -33,10 +33,14 @@ Route::group(['prefix' => 'Admin'],function(){
 
 	Route::match(['get','post'],'speciality/edit/{speciality_id}','AdminController@edit_speciality_management');
 
+	Route::post('save_speciality','AdminController@save_speciality');
+
 	Route::match(['get','post'],'add_qualification','AdminController@addQualification');
 	Route::match(['get','post'],'qualification_edit/{qualification_id}','AdminController@qualification_edit');
-	Route::get('qualification_delete/{qualification_id}','AdminController@qualification_delete');
+	
+	Route::post('save_qualification','AdminController@save_qualification');
 
+	Route::get('qualification_delete/{qualification_id}','AdminController@qualification_delete');
 	Route::match(['get','post'],'add_mother_language','AdminController@add_mother_language');
 	Route::get('mother_language_delete/{mother_language_id}','AdminController@mother_language_delete');
 

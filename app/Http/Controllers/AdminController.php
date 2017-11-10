@@ -141,13 +141,39 @@ class AdminController extends Controller
          if($request->method() == "GET"){
             $id = Session::get('Dr_Admin_Id');
             $role = Session::get('Dr_Admin_Role');
-            $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);   
-            return view('Admin/editQualification',compact('AdminDetail'));
-         }
-         if($request->method() == "POST"){
+            $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]); 
+            $Qualification = Qualification::find($request->qualification_id); 
+            if($Qualification){
+               return view('Admin/editQualification',compact('AdminDetail','Qualification'));
+            }else{
+               return redirect('Admin/add_qualification')->with('invalid_detail',__('messages.invalid.detail'));
+            } 
          }
       }else{
          return redirect('Admin/login');
+      }
+   }
+
+   public function save_qualification(Request $request){
+      $qualification_name = $request->qualification_name;
+      $qa_id = $request->qa_id;
+      $validaions = [
+         'qualification_name' => 'required|max:255',
+         'qa_id' => 'required|numeric'
+      ];
+      $Validator = Validator::make($request->all(),$validaions);
+      if($Validator->passes()){
+         $Exist = Qualification::where('id','<>',$qa_id)->where('name',$qualification_name)->first();
+         if(!$Exist){
+            $Qualification = Qualification::find($qa_id);
+            $Qualification->name = $qualification_name;
+            $Qualification->save();
+            return redirect('Admin/qualification_edit/'.$qa_id)->with('qualificationy_updated',__('messages.success.qualificationy_updated'));
+         }else{
+            return redirect('Admin/qualification_edit/'.$qa_id)->with('qualificationy_already_exist',__('messages.qualificationy_already_exist'));
+         }
+      }else{
+         return redirect('Admin/qualification_edit/'.$qa_id)->withErrors($Validator);
       }
    }
 
@@ -232,15 +258,44 @@ class AdminController extends Controller
             $speciality_detail = Category::find($speciality_id);
             if($speciality_detail){
                // dd($speciality_detail);
-               return view('Admin/editSpecialityMgt',compact('AdminDetail'));
+               return view('Admin/editSpecialityMgt',compact('AdminDetail','speciality_detail'));
             }else{
                return redirect('Admin/speciality_management')->with('invalid_detail',__('messages.invalid.detail'));
             }
          }
-         if($request->method() == "POST"){
-         }
       }else{
          return redirect('Admin/login');
+      }
+   }
+
+   public function save_speciality(Request $request){
+      $speciality_id = $request->sp_id;
+      $speciality_name = $request->speciality_name;
+      $iconImage = $request->file('iconImage');
+      $desc = $request->desc;
+      $validaions = [
+         'speciality_name' => 'required|max:255',
+         'sp_id' => 'required|numeric'
+      ];
+      $Validator = Validator::make($request->all(),$validaions);
+      if($Validator->passes()){
+         $Exist = Category::where('id','<>',$speciality_id)->where('name',$speciality_name)->first();
+         if(!$Exist){
+            $Speciality = Category::find($speciality_id);
+            $Speciality->name = $speciality_name;
+            $Speciality->description = $desc;
+            if($iconImage){
+               $name = time()."_".str_replace(' ','_',$iconImage->getClientOriginalName());
+               $iconImage->move(public_path('iconImages'),$name);
+               $Speciality->icon_path = $name;
+            }
+            $Speciality->save();
+            return redirect('Admin/speciality/edit/'.$speciality_id)->with('speciality_updated',__('messages.success.speciality_updated'));
+         }else{
+            return redirect('Admin/speciality/edit/'.$speciality_id)->with('speciality_already_exist',__('messages.speciality_already_exist'));
+         }
+      }else{
+         return redirect('Admin/speciality/edit/'.$speciality_id)->withErrors($Validator);
       }
    }
 
@@ -428,8 +483,10 @@ class AdminController extends Controller
             $id = Session::get('Dr_Admin_Id');
             $role = Session::get('Dr_Admin_Role');
             $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
-            $Doctor_detail = User::find($request->doctor_id);
+            $User = New User;
+            $Doctor_detail = $this->getUserDetail($User->getUserDetail($request->doctor_id));
             if($Doctor_detail){
+               // dd($Doctor_detail);
                return view('Admin/docProfile',compact('AdminDetail','Doctor_detail'));
             }else{
                

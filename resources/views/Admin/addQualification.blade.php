@@ -23,6 +23,7 @@
                     <div class="col-md-8">
                     <span style="color: red">{{$errors->first()}}</span>
                     <span class='message' style="color: green">{{Session::get('QA_added')}}</span>
+                    <span class='message' style="color: red">{{Session::get('invalid_detail')}}</span>
                     <span class='message' style="color: red">{{Session::get('QA_already_exist')}}</span>
                     <span class='message' style="color: green">{{Session::get('QA_deleted')}}</span>
                     <span class='message' style="color: red">{{Session::get('QA_exist_under_doctor')}}</span>

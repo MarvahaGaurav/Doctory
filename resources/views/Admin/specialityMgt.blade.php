@@ -84,7 +84,7 @@
                                                 <tr>
                                                     <td>{{$data->name}}</td>
                                                     <td><img src="{{url('iconImages')}}/{{$data->icon_path}}" alt="Doc img" class="img-responsive radius" style="width: 100px;"></td>
-                                                    <td>{{$data->desc}}</td>
+                                                    <td>{{ucfirst($data->description)}}</td>
                                                     <td>
                                                         <a href="{{url('Admin/speciality/edit')}}/{{$data->id}}" class="btn btn-danger btn-sm"> <i class="fa fa-edit"></i></a>
                                                         <a onclick="return confirm('Do you want to delete?')" href="{{url('Admin/delete_speciality')}}/{{$data->id}}" class="btn btn-danger btn-sm"> <i class="fa fa-bank"></i></a>

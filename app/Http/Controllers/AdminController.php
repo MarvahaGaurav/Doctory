@@ -88,52 +88,129 @@ class AdminController extends Controller
             $role = Session::get('Dr_Admin_Role');
             $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
             // dd($AdminDetail);
-            // return view('Admin/docProfile',compact('AdminDetail'));
+            return view('Admin/profile',compact('AdminDetail'));
          }
       }else{
          return redirect('Admin/login');
       }
    }
 
+   public function edit_profile(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         $id = Session::get('Dr_Admin_Id');
+         $role = Session::get('Dr_Admin_Role');
+         if($request->method() == "GET"){
+            $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
+            return view('Admin/editProfile',compact('AdminDetail'));
+         }
+         if($request->method() == "POST"){
+            $validaions = [
+               'name' => 'required|max:255',
+               'mobile' =>'required|numeric',
+               'location' => 'required'
+            ];
+            $Validator = Validator::make($request->all(),$validaions);
+            if($Validator->passes()){
+               $adminDetail = Admin::find($id);
+               if($adminDetail){
+                  $profile_image = $request->file('profile_image');
+                  $adminDetail->name = $request->name;
+                  $adminDetail->mobile = $request->mobile;
+                  $adminDetail->location = $request->location;
+                  $adminDetail->linkedin = $request->linkedin;
+                  $adminDetail->twitter = $request->twitter;
+                  if($profile_image){
+                     $destinationPath = public_path('Admin/images');
+                     $getClientOriginalName = $profile_image->getClientOriginalName();
+                     $Name = time()."_".str_replace(' ','_',$getClientOriginalName);
+                     $profile_image->move($destinationPath,$Name);
+                     $adminDetail->profile_image = $Name;
+                  }
+                  $adminDetail->save();
+                  return redirect('Admin/edit_profile')->with('Admin_profile_updated',__('messages.success.Admin_profile_updated'));
+               }else{
+                  dd('else');
+               }
+            }else{
+               return redirect('Admin/edit_profile')->withErrors($Validator);
+            }
+         }
+      }else{
+         return redirect('Admin/login');
+      }
+   }
+
+   public function change_password(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         $id = Session::get('Dr_Admin_Id');
+         $role = Session::get('Dr_Admin_Role');
+         $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
+         if($request->method() == "GET"){
+            return view('Admin/changePassword',compact('AdminDetail'));
+         }
+         if($request->method() == "POST"){
+            if(!Hash::check($request->old_password,$AdminDetail->password)){
+               return redirect('Admin/change_password')->withInput()->with('invalid_old_password',__('messages.invalid_old_password'));
+            }else{
+               $validaions = [
+                  'new_password' => 'required|min:8',
+                  'confirm_password' => 'required|same:new_password'
+               ];
+               $Validator = Validator::make($request->all(),$validaions);
+               if($Validator->passes()){
+                  $AdminDetail->password = Hash::make($request->new_password);
+                  $AdminDetail->save();
+                  return redirect('Admin/change_password')->with('password_updated',__('messages.success.password_updated'));
+               }else{
+                  return redirect('Admin/change_password')->withInput()->withErrors($Validator);
+               }
+               
+            }
+         }
+      }else{
+         return redirect('Admin/login');
+      }
+   }
 
    public function addQualification(Request $request){
-      if($request->method() == "GET"){
-         $loggedIn = Session::get('Dr_Admin_loggedIn');
-         if($loggedIn){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         if($request->method() == "GET"){
             $id = Session::get('Dr_Admin_Id');
             $role = Session::get('Dr_Admin_Role');
             $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
             $QualificationList = Qualification::where(['status'=>1])->get();
             return view('Admin/addQualification',compact('AdminDetail','QualificationList'));
-         }else{
-            return redirect('Admin/login');
          }
-      } 
-
-      if($request->method() == "POST"){
-         $Qualification = $request->qualification_name;
-         $validaions = [
-            'qualification_name' => 'required|max:255',
-         ];
-         $Validator = Validator::make($request->all(),$validaions);
-         if($Validator->passes()){
-            $Exist = Qualification::where(['name' => $Qualification])->first();
-            if(!$Exist){
-               $QA = new Qualification;
-               $QA->name = $Qualification;
-               $QA->save();
-               return redirect('Admin/add_qualification')
-                  ->with('QA_added',__('messages.success.QA_added'));
+         if($request->method() == "POST"){
+            $Qualification = $request->qualification_name;
+            $validaions = [
+               'qualification_name' => 'required|max:255',
+            ];
+            $Validator = Validator::make($request->all(),$validaions);
+            if($Validator->passes()){
+               $Exist = Qualification::where(['name' => $Qualification])->first();
+               if(!$Exist){
+                  $QA = new Qualification;
+                  $QA->name = $Qualification;
+                  $QA->save();
+                  return redirect('Admin/add_qualification')
+                     ->with('QA_added',__('messages.success.QA_added'));
+               }else{
+                   return redirect('Admin/add_qualification')
+                     ->withInput()
+                     ->with('QA_already_exist',__('messages.success.QA_already_exist'));
+               }
             }else{
-                return redirect('Admin/add_qualification')
-                  ->withInput()
-                  ->with('QA_already_exist',__('messages.success.QA_already_exist'));
+               return redirect('Admin/add_qualification')->withInput()->withErrors($Validator);
             }
-         }else{
-            return redirect('Admin/add_qualification')->withInput()->withErrors($Validator);
-         }
-      } 
-   }
+         } 
+      }else{
+         return redirect('Admin/login');
+      }
+   } 
 
    public function qualification_edit(Request $request){
       $loggedIn = Session::get('Dr_Admin_loggedIn');

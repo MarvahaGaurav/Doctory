@@ -25,6 +25,9 @@ Route::group(['prefix' => 'Admin'],function(){
 	Route::match(['get'],'logout', 'AdminController@logout');
 	Route::get('dashboard','AdminController@dashboard');
 	Route::get('profile','AdminController@profile');
+	Route::match(['get','post'],'edit_profile','AdminController@edit_profile');
+	Route::match(['get','post'],'change_password','AdminController@change_password');
+
 	Route::get('approve_list','AdminController@approved_list');
 	Route::get('pending_list','AdminController@pending_list');
 

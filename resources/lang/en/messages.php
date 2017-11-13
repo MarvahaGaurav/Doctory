@@ -37,7 +37,8 @@ return [
 		'docotr_approved' => 'Doctor approved successfully.',
 		'speciality_updated' => 'Speciality updated successfully.',
 		'qualificationy_updated' => 'Qualification updated successfully.',
-		'mother_language_updated' => 'Mother language updated successfully'
+		'mother_language_updated' => 'Mother language updated successfully',
+		'Admin_profile_updated' => 'Admin profile updated successfully.'
 	],
 
 	'error' => [
@@ -95,5 +96,6 @@ return [
 	'SP_exist_under_doctor' => 'Unable to delete',
 	'speciality_already_exist' => 'Speciality already exist',
 	'qualificationy_already_exist' => 'Qualificationy already exist',
-	'mother_language_already_exist' => 'Mother language already exist'
+	'mother_language_already_exist' => 'Mother language already exist',
+	'invalid_old_password' => 'Old password is incorrect.'
 ];

@@ -129,7 +129,7 @@
                         </li>
                         
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{asset('Admin/assets/images/users/1.jpg')}}" alt="user" class="profile-pic" /></a>
+                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="{{asset('Admin/images')}}/{{$AdminDetail->profile_image}}" alt="user" class="profile-pic" /></a>
                             <div class="dropdown-menu dropdown-menu-right scale-up">
                                 <ul class="dropdown-user">
                                     <li>
@@ -137,7 +137,7 @@
                                             <div class="u-img"><img src="{{asset('Admin/assets/images/users/1.jpg')}}" alt="user"></div>
                                             <div class="u-text">
                                                 <h4>{{$AdminDetail->name}}</h4>
-                                                <p class="text-muted">{{$AdminDetail->email}}</p><a href="profile.php" class="btn btn-rounded btn-danger btn-sm">View Profile</a></div>
+                                                <p class="text-muted">{{$AdminDetail->email}}</p><a href="{{url('Admin/profile')}}" class="btn btn-rounded btn-danger btn-sm">View Profile</a></div>
                                         </div>
                                     </li>
                                     <li role="separator" class="divider"></li>
@@ -159,7 +159,7 @@
                 <!-- User profile -->
                 <div class="user-profile" style="background: url({{asset('Admin/assets/images/background/user-info.jpg')}}) no-repeat;">
                     <!-- User profile image -->
-                    <div class="profile-img"> <img src="{{asset('Admin/assets/images/users/profile.png')}}" alt="user" /> </div>
+                    <div class="profile-img"> <img src="{{asset('Admin/images')}}/{{$AdminDetail->profile_image}}" alt="user" /> </div>
                     <!-- User profile text-->
                     <div class="profile-text"> <a href="#" class="dropdown-toggle u-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">{{ucfirst($AdminDetail->name)}}</a>
                         <div class="dropdown-menu animated flipInY"> 

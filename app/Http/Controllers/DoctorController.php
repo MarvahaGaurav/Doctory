@@ -153,7 +153,7 @@ class DoctorController extends Controller
         }
     }
 
-    public function save_doctor_timing_for_availability(Request $request){
+    public function save_doctor_timing_for_availability_OLD(Request $request){
         Log::info('----------------------DoctorController--------------------------save_doctor_timing_for_availability'.print_r($request->all(),True));
         $accessToken = $request->header('accessToken');
         $daysArr = $request->days;
@@ -226,6 +226,130 @@ class DoctorController extends Controller
         }
     }
 
+    public function save_doctor_timing_for_availability(Request $request){
+        Log::info('----------------------DoctorController--------------------------save_doctor_timing_for_availability'.print_r($request->all(),True));
+        $accessToken = $request->header('accessToken');
+        // dd($request->all());
+        $day = $request->day;
+        $timeslotsArr = $request->timeslots;
+        $locale = $request->header('locale');
+        if(empty($locale)){
+            $locale = 'en';
+        }
+        \App::setLocale($locale);
+        if( !empty( $accessToken ) ) {
+            $validations = [
+                'day' => 'required',
+                'timeslots' => 'required',
+            ];
+            $validator = Validator::make($request->all(),$validations);
+            if( $validator->fails() ) {
+                $response = [ 'message'=>$validator->errors($validator)->first()
+                ];
+                return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+            } else {
+                $DoctorDetail = User::where(['remember_token' => $accessToken])->first();
+                if($DoctorDetail){
+                    DoctorAvailability::where(['doctor_id' => $DoctorDetail->id,'day_id'=>$day])->delete();
+                    foreach ($timeslotsArr as $key => $timeSlotId) {
+                        DoctorAvailability::insert([
+                        'day_id' => $day,
+                        'time_slot_id' => $timeSlotId,
+                        'doctor_id' => $DoctorDetail->id
+                        ]);
+                    }
+                    $result = DoctorAvailability::where(['doctor_id' => $DoctorDetail->id])->get();
+                    $response = [
+                        'message' => __('messages.success.success'),
+                        'response' => $result
+                    ];
+                    return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+                }else {
+                    $response=[
+                        'message' => trans('messages.invalid.request'),
+                    ];
+                    return Response::json($response,__('messages.statusCode.INVALID_ACCESS_TOKEN'));
+                }
+            }
+        }else {
+            $Response = [
+                'message'  => trans('messages.required.accessToken'),
+            ];
+            return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+        }
+    }
+
+    public function get_doctor_availability(Request $request){
+        $accessToken = $request->header('accessToken');
+        if( !empty( $accessToken ) ) {
+            $UserDetail = User::where(['remember_token'=>$accessToken])->first();
+            if(count($UserDetail)){
+                if($UserDetail->user_type == 1){
+                    $DoctorAvailability = DoctorAvailability::where(['doctor_id' => $UserDetail->id])->get();  
+                    $day1 = []; 
+                    $day2 = []; 
+                    $day3 = []; 
+                    $day4 = []; 
+                    $day5 = []; 
+                    $day6 = []; 
+                    $day7 = []; 
+
+                    foreach ($DoctorAvailability as $key => $value) {
+                        if($value->day_id == 1){
+                            array_push($day1,$value->time_slot_id);
+                        }
+                        if($value->day_id == 2){
+                            array_push($day2,$value->time_slot_id);
+                        }
+                        if($value->day_id == 3){
+                            array_push($day3,$value->time_slot_id);
+                        }
+                        if($value->day_id == 4){
+                            array_push($day4,$value->time_slot_id);
+                        }
+                        if($value->day_id == 5){
+                            array_push($day5,$value->time_slot_id);
+                        }
+                        if($value->day_id == 6){
+                            array_push($day6,$value->time_slot_id);
+                        }
+                        if($value->day_id == 7){
+                            array_push($day7,$value->time_slot_id);
+                        }
+                    }
+                    $result = [
+                        '1' => $day1,
+                        '2' => $day2,
+                        '3' => $day3,
+                        '4' => $day4,
+                        '5' => $day5,
+                        '6' => $day6,
+                        '7' => $day7,
+                    ];
+                    $Response = [
+                        'message'  => trans('messages.success.success'),
+                        'response' => $result
+                    ];
+                    return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                }else{
+                  $Response = [
+                     'message'  => trans('messages.invalid.request'),
+                  ];
+                  return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                }
+            }else{
+                $Response = [
+                  'message'  => trans('messages.invalid.detail'),
+                ];
+                return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+            }
+        }else {
+            $Response = [
+                'message'  => trans('messages.required.accessToken'),
+            ];
+            return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+        }
+    }
 
     /*public function get_review_rating_at_doctor_app(Request $request){
         $accessToken =  $request->header('accessToken');
@@ -306,7 +430,7 @@ class DoctorController extends Controller
         }
     }*/
 
-    public function get_all_appointment_of_doctor_by_date(Request $request){
+    /*public function get_all_appointment_of_doctor_by_date(Request $request){
         $accessToken = $request->header('accessToken');
         $date = date('Y-m-d',strtotime($request->date));
         $page_number = $request->page_number;
@@ -331,7 +455,7 @@ class DoctorController extends Controller
                             'message'  => trans('messages.success.success'),
                             'response' => $result
                         ];
-                      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                        return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                     }
                 }else{
                     $Response = [
@@ -350,7 +474,7 @@ class DoctorController extends Controller
                 'message'  => trans('messages.required.accessToken'),
             ];
           return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
-       }
+        }
     }
 
     public function accept_or_reject_appointment(Request $request){
@@ -552,6 +676,6 @@ class DoctorController extends Controller
             ];
           return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
         }
-    }
+    }*/
 
 }

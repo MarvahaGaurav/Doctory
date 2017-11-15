@@ -100,7 +100,6 @@ class DoctorController extends Controller
                     $otp_detail = [];
                     if(count($list)) {
                         foreach ($list as $key => $value) {
-                            // dd($value);
                             $data = $this->getUserDetail($value);
                             $bookmarked = PatientBookmark::where(['patient_id' => $PATIENT_DETAIL->id , 'doctor_id' => $data['id']])->count();
                             $Review = Review::where(['doctor_id' => $data['id'] , 'status_by_doctor' => 1])->get();
@@ -150,79 +149,6 @@ class DoctorController extends Controller
                 'message'  => trans('messages.required.accessToken'),
             ];
           return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
-        }
-    }
-
-    public function save_doctor_timing_for_availability_OLD(Request $request){
-        Log::info('----------------------DoctorController--------------------------save_doctor_timing_for_availability'.print_r($request->all(),True));
-        $accessToken = $request->header('accessToken');
-        $daysArr = $request->days;
-        $timeslotsArr = $request->timeslots;
-        $locale = $request->header('locale');
-        if(empty($locale)){
-            $locale = 'en';
-        }
-        \App::setLocale($locale);
-
-        if( !empty( $accessToken ) ) {
-            $validations = [
-                'days' => 'required|array',
-                'timeslots' => 'required|array',
-            ];
-            $validator = Validator::make($request->all(),$validations);
-            if( $validator->fails() ) {
-                $response = [ 'message'=>$validator->errors($validator)->first()
-                ];
-                return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-            } else {
-                $DoctorDetail = User::where(['remember_token' => $accessToken])->first();
-                if($DoctorDetail){
-                    DoctorAvailability::where(['doctor_id' => $DoctorDetail->id])->delete();
-                    foreach ($daysArr as $key => $dayId) {
-                        foreach ($timeslotsArr as $key => $timeSlotId) {
-                            DoctorAvailability::insert([
-                            'day_id' => $dayId,
-                            'time_slot_id' => $timeSlotId,
-                            'doctor_id' => $DoctorDetail->id
-                            ]);
-
-                            /*$doctor_availabilities_Data = [
-                                'day_id' => $dayId,
-                                'time_slot_id' => $timeSlotId,
-                                'doctor_id' => $DoctorDetail->id
-                            ]; 
-                            $exist = DoctorAvailability::where([
-                                'day_id' => $dayId,
-                                'time_slot_id' => $timeSlotId,
-                                'doctor_id' => $DoctorDetail->id
-                                ])->first();
-                            if(!$exist){
-                                DoctorAvailability::insert([
-                                'day_id' => $dayId,
-                                'time_slot_id' => $timeSlotId,
-                                'doctor_id' => $DoctorDetail->id
-                                ]);
-                            }*/
-                        }
-                    }
-                    $result = DoctorAvailability::where(['doctor_id' => $DoctorDetail->id])->get();
-                    $response = [
-                        'message' => __('messages.success.success'),
-                        'response' => $result
-                    ];
-                    return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
-                }else {
-                    $response=[
-                        'message' => trans('messages.invalid.request'),
-                    ];
-                    return Response::json($response,__('messages.statusCode.INVALID_ACCESS_TOKEN'));
-                }
-            }
-        }else {
-            $Response = [
-                'message'  => trans('messages.required.accessToken'),
-            ];
-          return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
         }
     }
 
@@ -293,7 +219,6 @@ class DoctorController extends Controller
                     $day5 = []; 
                     $day6 = []; 
                     $day7 = []; 
-
                     foreach ($DoctorAvailability as $key => $value) {
                         if($value->day_id == 1){
                             array_push($day1,$value->time_slot_id);
@@ -430,7 +355,7 @@ class DoctorController extends Controller
         }
     }*/
 
-    /*public function get_all_appointment_of_doctor_by_date(Request $request){
+    public function get_all_appointment_of_doctor_by_date(Request $request){
         $accessToken = $request->header('accessToken');
         $date = date('Y-m-d',strtotime($request->date));
         $page_number = $request->page_number;
@@ -498,17 +423,16 @@ class DoctorController extends Controller
                     }else{
                         $AppointmentDetail = Appointment::Where(['id' => $appointment_id, 'doctor_id' => $DOCTOR_DETAIL->id])->first();
                         if($AppointmentDetail && $AppointmentDetail->doctor_id == $DOCTOR_DETAIL->id){
-
                             $appointmentDateInDb = Carbon::parse($AppointmentDetail->appointment_date)->format('Y-m-d');
-                            // dd($appointmentDateInDb);
-
-                            if($appointmentDateInDb >= Carbon::now()->format('Y-m-d')){
-
+                            // dd($appointmentDateInDb >= Carbon::now()->format('Y-m-d'));
+                            if($appointmentDateInDb == Carbon::now()->format('Y-m-d')){
+                                // dd(Carbon::now()->format('Y-m-d'));
                                 $Time_slot_detail = TimeSlot::find($AppointmentDetail->time_slot_id);
+                                // dd($Time_slot_detail);
                                 $Appointment_TimeSlot_StartTime = $Time_slot_detail->start_time;
                                 $Appointment_TimeSlot_EndTime = $Time_slot_detail->end_time;
 
-                                if( Carbon::parse(strtoupper(($Appointment_TimeSlot_StartTime)))->format('g:i A') > Carbon::now()->format('g:i A') ){
+                                if( date('g:i A',strtotime($Appointment_TimeSlot_StartTime )) > Carbon::now()->format('g:i A') ){
                                     $AppointmentDetail->status_of_appointment = $accept_or_reject;
                                     $AppointmentDetail->save();
                                     if($accept_or_reject == 'Accepted'){
@@ -533,8 +457,30 @@ class DoctorController extends Controller
                                     ];
                                     return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
                                 }
+                            }else if($appointmentDateInDb > Carbon::now()->format('Y-m-d')){
+                                // dd(Carbon::now()->format('Y-m-d'));
+                                $Time_slot_detail = TimeSlot::find($AppointmentDetail->time_slot_id);
+                                // dd($Time_slot_detail);
+                                $Appointment_TimeSlot_StartTime = $Time_slot_detail->start_time;
+                                $Appointment_TimeSlot_EndTime = $Time_slot_detail->end_time;
+                                
+                                $AppointmentDetail->status_of_appointment = $accept_or_reject;
+                                $AppointmentDetail->save();
+                                if($accept_or_reject == 'Accepted'){
+                                    $Response = [
+                                        'message'  => trans('messages.success.appointment_accepted'),
+                                    ];
+                                    //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
+                                    return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                                }
+                                if($accept_or_reject == 'Rejected'){
+                                    $Response = [
+                                        'message'  => trans('messages.success.appointment_rejected'),
+                                    ];
+                                    //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
+                                    return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                                }
                             }else{
-
                                 $response = [
                                     'message' => __('messages.invalid.appointment_expired')
                                 ];
@@ -565,7 +511,7 @@ class DoctorController extends Controller
         }
     }
 
-    public function reschedule_appointment_by_doctor(Request $request){
+    public  function reschedule_appointment_by_doctor(Request $request){
         $accessToken =  $request->header('accessToken');
         $appointment_id = $request->appointment_id;
         $patient_id = $request->patient_id;
@@ -676,6 +622,6 @@ class DoctorController extends Controller
             ];
           return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
         }
-    }*/
+    }
 
 }

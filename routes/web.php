@@ -19,7 +19,7 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::group(['prefix' => 'Admin'],function(){
+/*Route::group(['prefix' => 'Admin'],function(){
 	Route::get('doctor_profile/{doctor_id}','AdminController@doctor_profile');
 	Route::match(['get','post'],'login', 'AdminController@index');
 	Route::match(['get'],'logout', 'AdminController@logout');
@@ -54,5 +54,5 @@ Route::group(['prefix' => 'Admin'],function(){
 	Route::get('approve_doctor/{doctor_id}','AdminController@approve_doctor');
 	Route::get('block_patient/{patient_id}/{status}','AdminController@block_patient');
 
-});
+});*/
 

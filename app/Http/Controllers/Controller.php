@@ -27,6 +27,7 @@ use App\Qualification;
 use App\TimeSlot;
 use App\User;
 use App\UserDetail;
+use App\Appointment;
 use Hash;
 use Auth;
 use Exception;
@@ -37,11 +38,9 @@ class Controller extends BaseController
 
    public function getUserDetail($data){
    	// dd($data);
-
    	$result = [];
    	$qualification = [];
    	$DoctorMotherlanguage = [];
-   	
    	if($data->user_type == 1){ // doctor
    		if(isset(($data['qualification']))) {
 	   		foreach ($data['qualification'] as $key => $value) {
@@ -66,6 +65,69 @@ class Controller extends BaseController
 	   		}
 	   	}
    		$doctor_availabilities = DoctorAvailability::Where(['doctor_id' => $data->id])->get();
+   		$day1 = []; 
+			$day2 = []; 
+			$day3 = []; 
+			$day4 = []; 
+			$day5 = []; 
+			$day6 = []; 
+			$day7 = []; 
+			foreach ($doctor_availabilities as $key => $value) {
+				// dd(Date('Y-m-d'));
+			   if($value->day_id == 1){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])
+			   	->where('status_of_appointment','<>','rejected')
+			   	->where('appointment_date',Date('Y-m-d'))
+			   	->count();
+			       array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>$busyOrFree]);
+			   }
+			   if($value->day_id == 2){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+			   		->where('appointment_date',Date('Y-m-d'))
+			   		->count();
+			      array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>$busyOrFree]);
+			   }
+			   if($value->day_id == 3){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+				   	->where('appointment_date',Date('Y-m-d'))
+				   	->count();
+		       	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>$busyOrFree]);
+			   }
+			   if($value->day_id == 4){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+				   	->where('appointment_date',Date('Y-m-d'))
+				   	->count();
+		       	array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>$busyOrFree]);
+			   }
+			   if($value->day_id == 5){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+			   		->where('appointment_date',Date('Y-m-d'))
+			   		->count();
+			      array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>$busyOrFree]);
+			   }
+			   if($value->day_id == 6){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+			   		->where('appointment_date',Date('Y-m-d'))
+			   		->count();
+		       	array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>$busyOrFree]);
+			   }
+			   if($value->day_id == 7){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+			   		->where('appointment_date',Date('Y-m-d'))
+			   		->count();
+		      	array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>$busyOrFree]);
+			   }
+			}
+			$doctor_availabilities_result = [
+			   '1' => $day1,
+			   '2' => $day2,
+			   '3' => $day3,
+			   '4' => $day4,
+			   '5' => $day5,
+			   '6' => $day6,
+			   '7' => $day7,
+        	];
+
 	   	$result = [
 	   		'UserIdentificationType' => "Doctor",
 	   		'id' => $data['id'],
@@ -86,7 +148,6 @@ class Controller extends BaseController
 	   		'user_type' => $data['user_type'],
 	   		'medical_licence_number' => $data['medical_licence_number'],
 	   		'issuing_country' => $data['issuing_country'],
-	   		
 	   		'status' => $data['status'],
 	   		'profile_status' => $data['profile_status'],
 	   		'notification' => $data['notification'],
@@ -97,7 +158,7 @@ class Controller extends BaseController
 	   		'otp_detail' => $data['Otp_detail'],
 	   		'qualification' => $qualification,
 	   		'mother_language' => $DoctorMotherlanguage,
-	   		'doctor_availabilities' => $doctor_availabilities
+	   		'doctor_availabilities' => $doctor_availabilities_result
 	   	];
 	   	return $result;
    	}
@@ -116,7 +177,6 @@ class Controller extends BaseController
 	   		'device_token' => $data['device_token'],
 	   		'device_type' => $data['device_type'],
 	   		'user_type' => $data['user_type'],
-	   		
 	   		'status' => $data['status'],
 	   		'profile_status' => $data['profile_status'],
 	   		'notification' => $data['notification'],
@@ -128,6 +188,5 @@ class Controller extends BaseController
 	   	];
 	   	return $result;
    	}
-   	
    }
 }

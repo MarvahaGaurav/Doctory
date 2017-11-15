@@ -643,7 +643,6 @@ class CommonController extends Controller
 			        	} 
 
 			        	else if( $isChangedMobile == 0 && $isChangedCountryCode == 1) {
-			        		// dd( "isChangedCountryCode" );
 			        		$User = new \App\User;
 							$UserDetail = $User::find($userDetail->id);
 							$UserDetail->country_code = $country_code;
@@ -663,24 +662,34 @@ class CommonController extends Controller
 			        	}
 
 			        	else if( $isChangedMobile == 1 && $isChangedCountryCode == 1){
-			        		// dd("both");
-			        		$User = new \App\User;
-							$UserDetail = $User::find($userDetail->id);
-							$UserDetail->mobile = $mobile;
-							$UserDetail->country_code = $country_code;
-							$UserDetail->save();
+			        		$validations = [
+								'mobile' => 'unique:users',
+							];
+			    			$validator = Validator::make($request->all(),$validations);
+			    			if( $validator->fails() ) {
+			        			$response = [
+									'message'	=>	$validator->errors($validator)->first()
+								];
+			            	return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+			            } else {
+				        		$User = new \App\User;
+								$UserDetail = $User::find($userDetail->id);
+								$UserDetail->mobile = $mobile;
+								$UserDetail->country_code = $country_code;
+								$UserDetail->save();
 
-							$OTP = Otp::find($userDetail->id);
-							$OTP->otp = $otp;
-							$OTP->varified = 0;
-							$OTP->save();
+								$OTP = Otp::find($userDetail->id);
+								$OTP->otp = $otp;
+								$OTP->varified = 0;
+								$OTP->save();
 
-			        		$this->sendOtp($country_code.$mobile,$otp);
-			        		$response = [
-			        			'message' => __('messages.success.mobile_changed'),
-			        			// 'response' => $User->getUserDetail($userDetail->id)
-			        		];
-			        		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+				        		$this->sendOtp($country_code.$mobile,$otp);
+				        		$response = [
+				        			'message' => __('messages.success.mobile_changed'),
+				        			// 'response' => $User->getUserDetail($userDetail->id)
+				        		];
+				        		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+				        	}
 			        	}
 
 			        	else {
@@ -716,6 +725,7 @@ class CommonController extends Controller
 		$accessToken = $request->header('accessToken');
 		$photo = $request->file('profileImage');
 		$destinationPathOfProfile = base_path().'/'.'userImages/';
+		// dd($destinationPathOfProfile);
 		$fullName = $request->fullName;
 		$specialityId = $request->specialityId;
 		$qualificationArr = json_decode($request->qualification); // it would be array
@@ -974,8 +984,6 @@ class CommonController extends Controller
    }
 
    public function getAllStaticData(Request $request){
-		// dd(strstr($request->url(),'api'));
-		// dd(strpos($request->url(), 'api'));
 		Log::info('----------------------CommonController--------------------------getAllStaticData'.print_r($request->all(),True));
 
    	$MotherLanguage = MotherLanguage::all();
@@ -983,10 +991,17 @@ class CommonController extends Controller
    	$Category = Category::all();
    	$Day = Day::all();
    	$TimeSlot = TimeSlot::all();
-   	
+   	$time_slot_result = [];
+   	foreach ($TimeSlot as $key => $value) {
+   		$time_slot_result [] = [
+   			'id' => $value->id,
+   			'start_time' => date('g:i A',strtotime($value->start_time)),
+   			'end_time' => date('g:i A',strtotime($value->end_time))
+   		];
+   	}
    	$response = [
    		'Day' => $Day,
-   		'TimeSlot' => $TimeSlot,
+   		'TimeSlot' => $time_slot_result,
    		'MotherLanguage' => $MotherLanguage,
    		'Qualification' => $Qualification,
    		'Speciality' => $Category,

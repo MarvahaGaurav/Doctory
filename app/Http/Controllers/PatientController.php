@@ -162,6 +162,7 @@ class PatientController extends Controller
 
  		if( !empty( $accessToken ) ) {
  			$UserDetail = User::where(['remember_token'=>$accessToken])->first();
+ 			// dd($UserDetail);
  			if(count($UserDetail)){
  				if($UserDetail->user_type == 2){ // for Patient Only
  					$validations = [

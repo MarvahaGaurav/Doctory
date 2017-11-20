@@ -18,6 +18,7 @@ use App\DoctorAvailability;
 use App\PatientBookmark;
 use App\Category;
 use App\Appointment;
+use App\Notification;
 use Hash;
 use Auth;
 use Exception;
@@ -166,7 +167,7 @@ class DoctorController extends Controller
         if( !empty( $accessToken ) ) {
             $validations = [
                 'day' => 'required',
-                'timeslots' => 'required',
+                // 'timeslots' => 'required_with:day',
             ];
             $validator = Validator::make($request->all(),$validations);
             if( $validator->fails() ) {
@@ -175,14 +176,17 @@ class DoctorController extends Controller
                 return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
             } else {
                 $DoctorDetail = User::where(['remember_token' => $accessToken])->first();
+                // dd($timeslotsArr);
                 if($DoctorDetail){
                     DoctorAvailability::where(['doctor_id' => $DoctorDetail->id,'day_id'=>$day])->delete();
-                    foreach ($timeslotsArr as $key => $timeSlotId) {
-                        DoctorAvailability::insert([
-                        'day_id' => $day,
-                        'time_slot_id' => $timeSlotId,
-                        'doctor_id' => $DoctorDetail->id
-                        ]);
+                    if(!empty($timeslotsArr)){
+                        foreach ($timeslotsArr as $key => $timeSlotId) {
+                            DoctorAvailability::insert([
+                            'day_id' => $day,
+                            'time_slot_id' => $timeSlotId,
+                            'doctor_id' => $DoctorDetail->id
+                            ]);
+                        }
                     }
                     $result = DoctorAvailability::where(['doctor_id' => $DoctorDetail->id])->get();
                     $response = [
@@ -383,10 +387,67 @@ class DoctorController extends Controller
                         return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                     }
                 }else{
+                  $Response = [
+                     'message'  => trans('messages.invalid.request'),
+                  ];
+                  return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                }
+            }else{
+                $Response = [
+                  'message'  => trans('messages.invalid.detail'),
+                ];
+                return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+            }
+        }else {
+            $Response = [
+                'message'  => trans('messages.required.accessToken'),
+            ];
+          return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+        }
+    }
+
+    public function get_all_appointment_of_doctor(Request $request){
+        $accessToken = $request->header('accessToken');
+        $date = date('Y-m-d');
+        $page_number = $request->page_number;
+        // dd($date);
+        if( !empty( $accessToken ) ) {
+            $UserDetail = User::where(['remember_token'=>$accessToken])->first();
+            if(count($UserDetail)){
+                if($UserDetail->user_type == 1){
+                    $result = Appointment::get_all_appointment_of_doctor($date,$UserDetail->id, $page_number);
+                    $final_result = [];
+                    foreach ($result as $key => $value) {
+                        // dd($value);
+                        // dd(Carbon::now()->format('Y-m-d'));
+                        $TimeSlotDetail = TimeSlot::find($value->time_slot_id);
+                        // dd($TimeSlotDetail);
+                        $start_time = date('g:i A',strtotime($TimeSlotDetail->start_time));
+                        // dd($start_time);
+                        // dd($value->appointment_date);
+                        if($value->appointment_date == Carbon::now()->format('Y-m-d')  ){
+                            // dd($start_time);
+                            // dd($start_time > Carbon::now()->format('g:i A'));
+                            if($start_time >= Carbon::now()->format('g:i A')){
+                                $final_result[] = $value;
+                            }
+                        }
+                        if($value->appointment_date > Carbon::now()->format('Y-m-d')){
+                            // dd('else if');
+                            $final_result[] = $value;
+                        }
+                       // dd($value->time_slot_id);
+                    }
+                    $Response = [
+                        'message'  => trans('messages.success.success'),
+                        'response' => $final_result
+                    ];
+                    return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                }else{
                     $Response = [
                         'message'  => trans('messages.invalid.request'),
                     ];
-                  return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                    return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                 }
             }else{
                 $Response = [
@@ -553,9 +614,17 @@ class DoctorController extends Controller
                                 if(!count($AlreadyBusyTimeSlot)){
                                     $AppointmentDetail = Appointment::find($appointment_id);
                                     if($AppointmentDetail && $AppointmentDetail->patient_id = $patient_id){
-                                        $AppointmentDetail->time_slot_id = $time_slot_id;
-                                        $AppointmentDetail->day_id = $day_id;
-                                        $AppointmentDetail->appointment_date = $appointment_date_from_user;
+
+                                        // $AppointmentDetail->time_slot_id = $time_slot_id;
+                                        $AppointmentDetail->rescheduled_time_slot_id = $time_slot_id;
+
+                                        // $AppointmentDetail->day_id = $day_id;
+                                        $AppointmentDetail->rescheduled_day_id = $day_id;
+
+                                        // $AppointmentDetail->appointment_date = $appointment_date_from_user;
+                                        $AppointmentDetail->rescheduled_date = $appointment_date_from_user;
+
+
                                         $AppointmentDetail->rescheduled_by_doctor = 1;
                                         $AppointmentDetail->status_of_appointment = 'Pending';
                                         $AppointmentDetail->save();
@@ -574,12 +643,21 @@ class DoctorController extends Controller
                                 }else{
                                     if($AlreadyBusyTimeSlot[0]->patient_id == $patient_id){
                                         $AppointmentDetail = Appointment::find($appointment_id);
-                                        $AppointmentDetail->time_slot_id = $time_slot_id;
-                                        $AppointmentDetail->day_id = $day_id;
-                                        $AppointmentDetail->appointment_date = $appointment_date_from_user;
+                                        // $AppointmentDetail->time_slot_id = $time_slot_id;
+                                        $AppointmentDetail->rescheduled_time_slot_id = $time_slot_id;
+
+                                        // $AppointmentDetail->day_id = $day_id;
+                                        $AppointmentDetail->rescheduled_day_id = $day_id;
+
+                                        // $AppointmentDetail->appointment_date = $appointment_date_from_user;
+                                        $AppointmentDetail->rescheduled_date = $appointment_date_from_user;
+
+
                                         $AppointmentDetail->rescheduled_by_doctor = 1;
                                         $AppointmentDetail->status_of_appointment = 'Pending';
                                         $AppointmentDetail->save();
+
+
                                         // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
                                         $Response = [
                                             'message'  => trans('messages.success.appointment_rescheduled'),
@@ -623,5 +701,208 @@ class DoctorController extends Controller
           return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
         }
     }
+
+   public function get_doctor_available_time_slots(Request $request){
+      $accessToken = $request->header('accessToken');
+      if( !empty( $accessToken ) ) {
+         $UserDetail = User::where(['remember_token'=>$accessToken])->first();
+         if(count($UserDetail)){
+            if($UserDetail->user_type == 1){
+                 $drId = $UserDetail->id;
+                 $doctor_availabilities = DoctorAvailability::Where(['doctor_id' => $drId])->get();
+                 $day1 = []; 
+                 $day2 = []; 
+                 $day3 = []; 
+                 $day4 = []; 
+                 $day5 = []; 
+                 $day6 = []; 
+                 $day7 = []; 
+                 $dates = [ 
+                     Carbon::now()->addDay(1)->format('Y-m-d'),
+                     Carbon::now()->addDay(2)->format('Y-m-d'),
+                     Carbon::now()->addDay(3)->format('Y-m-d'),
+                     Carbon::now()->addDay(4)->format('Y-m-d'),
+                     Carbon::now()->addDay(5)->format('Y-m-d'),
+                     Carbon::now()->addDay(6)->format('Y-m-d')
+                 ];
+                 // dd($dates);
+                 $days = [
+                     Carbon::now()->addDay(1)->dayOfWeek+1,
+                     Carbon::now()->addDay(2)->dayOfWeek+1,
+                     Carbon::now()->addDay(3)->dayOfWeek+1,
+                     Carbon::now()->addDay(4)->dayOfWeek+1,
+                     Carbon::now()->addDay(5)->dayOfWeek+1,
+                     Carbon::now()->addDay(6)->dayOfWeek+1
+                 ];
+
+               foreach ($doctor_availabilities as $key => $value) {
+                  foreach ($days as $key => $value1) {
+                     if($value1 == 1 && $value->day_id == 1){
+                           $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])
+                           ->where('status_of_appointment','<>','rejected')
+                           ->where('appointment_date',$dates[$key])
+                           ->first();
+                             if($busyOrFree){
+                                 array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                              }else{
+                               array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+                              }
+                     }
+                     if($value1 == 2 && $value->day_id == 2){
+                        $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+                            ->where('appointment_date',$dates[$key])
+                            ->first();
+                        if($busyOrFree){
+                                array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                            }else{
+                            array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+                        }
+                     }
+
+                     if($value1 == 3 && $value->day_id == 3){
+                        $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+                            ->where('appointment_date',$dates[$key])
+                            ->first();
+                           if($busyOrFree){
+                            array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                           }else{
+                                array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);           
+                           }
+                     }
+                     if($value1 == 4 && $value->day_id == 4){
+                        $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+                            ->where('appointment_date',Carbon::now()->addDay(4)->format('Y-m-d'))
+                            ->first();
+                           if($busyOrFree){
+                            array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                        }else{
+                            array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+                        }
+                     }
+                     if($value1 == 5 && $value->day_id == 5){
+                        $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+                            ->where('appointment_date',Carbon::now()->addDay(5)->format('Y-m-d'))
+                            ->first();
+                        if($busyOrFree){
+                                array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                            }else{
+                            array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+                        }
+                     }
+                     if($value1 == 6 && $value->day_id == 6){
+                        $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+                            ->where('appointment_date',Carbon::now()->addDay(6)->format('Y-m-d'))
+                            ->first();
+                        if($busyOrFree){
+                            array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                        }else{
+                            array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+                        }
+                     }
+                     if($value1 == 7 && $value->day_id == 7){
+                        $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+                            ->where('appointment_date',Carbon::now()->addDay(7)->format('Y-m-d'))
+                            ->first();
+                        if($busyOrFree){
+                            array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                        }else{
+                            array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+                        }
+                     }
+                  }
+
+                  if($value->day_id == 1){
+                     if(Carbon::now()->dayOfWeek+1 == 1){
+                          $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])
+                          ->where('status_of_appointment','<>','rejected')
+                          ->where('appointment_date',Carbon::now()->addDay(1)->format('Y-m-d'))
+                          ->first();
+                             array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                      }
+                  }
+                  if($value->day_id == 2){
+                     if(Carbon::now()->dayOfWeek+1 == 2){
+                       $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+                           ->where('appointment_date',Date('Y-m-d'))
+                           ->first();
+                         array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                     }
+                  }
+                  if($value->day_id == 3){
+                     if(Carbon::now()->dayOfWeek+1 == 3){
+                       $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+                           ->where('appointment_date',Date('Y-m-d'))
+                           ->first();
+                       array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                     }
+                  }
+                  if($value->day_id == 4){
+                     if(Carbon::now()->dayOfWeek+1 == 4){
+                       $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+                           ->where('appointment_date',Date('Y-m-d'))
+                           ->first();
+                       array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                     }
+                  }
+                  if($value->day_id == 5){
+                     if(Carbon::now()->dayOfWeek+1 == 5){
+                       $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+                           ->where('appointment_date',Date('Y-m-d'))
+                           ->first();
+                         array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                      }
+                  }
+                  if($value->day_id == 6){
+                     if(Carbon::now()->dayOfWeek+1 == 6){
+                       $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+                           ->where('appointment_date',Date('Y-m-d'))
+                           ->first();
+                       array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                     }
+                  }
+                  if($value->day_id == 7){
+                     if(Carbon::now()->dayOfWeek+1 == 7){
+                       $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+                           ->where('appointment_date',Date('Y-m-d'))
+                           ->first();
+                       array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+                     }
+                  }
+               }
+
+               $doctor_availabilities_result = [
+                  '1' => $day1,
+                  '2' => $day2,
+                  '3' => $day3,
+                  '4' => $day4,
+                  '5' => $day5,
+                  '6' => $day6,
+                  '7' => $day7,
+               ];
+               $Response = [
+                     'message'  => trans('messages.success.success'),
+                     'response' => $doctor_availabilities_result
+               ];
+               return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+            }else{
+              $Response = [
+                  'message'  => trans('messages.invalid.request'),
+              ];
+               return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+            }
+         }else{
+            $Response = [
+            'message'  => trans('messages.invalid.detail'),
+            ];
+            return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+         }
+      }else {
+         $Response = [
+             'message'  => trans('messages.required.accessToken'),
+         ];
+         return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+      }
+        
+   }
 
 }

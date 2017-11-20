@@ -38,7 +38,7 @@ class CommonController extends Controller
 		$device_token = $request->device_token;
 		$device_type = $request->device_type;
 		$user_type = $request->user_type;
-		$otp = rand(100000,1000000);
+		$otp = rand(1000,10000);
 		$language = $request->language;
 		$accessToken  = md5(uniqid(rand(), true));
 		$locale = $request->header('locale');
@@ -241,7 +241,7 @@ class CommonController extends Controller
 				   } else {
 				    	$Exist =  $user->getUserDetail($userDetail->id);
 				    	if( count($Exist) ) {
-				    		if( $Exist->Otp_detail->otp == $otp || $otp == 123456 ){
+				    		if( $Exist->Otp_detail->otp == $otp || $otp == 1234 ){
 				    			$OTP = Otp::find($Exist->id);
 				    			$OTP->otp = "";
 				    			$OTP->varified = 1;
@@ -313,7 +313,7 @@ class CommonController extends Controller
 		$mobile = $request->mobile;
 		$country_code = $request->country_code;
 	   $user_id  		 = $request->input('user_id');
-		$otp = rand(100000,1000000);
+		$otp = rand(1000,10000);
 		$locale = $request->header('locale');
 
 		if(empty($locale)){
@@ -395,7 +395,7 @@ class CommonController extends Controller
 		/*$country_code = $request->country_code;
 		$mobile = $request->mobile;*/
 		$email = $request->email;
-		$otp = rand(100000,1000000);
+		$otp = rand(1000,10000);
 		$locale = $request->header('locale');
 
 		if(empty($locale)){
@@ -584,7 +584,7 @@ class CommonController extends Controller
 		$country_code = $request->country_code;
 		$mobile 	 =  $request->mobile;
 		$accessToken =  $request->header('accessToken');
-   	$otp = rand(100000,1000000);
+   	$otp = rand(1000,10000);
 		$isChangedCountryCode = $request->isChangedCountryCode;
 		$isChangedMobile = $request->isChangedMobile;
 		$userDetail  = [];

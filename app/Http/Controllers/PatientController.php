@@ -22,6 +22,7 @@ use App\DoctorAvailability;
 use App\Qualification;
 use App\DoctorQualification;
 use App\Appointment;
+use App\Notification;
 use Hash;
 use Auth;
 use Exception;
@@ -364,27 +365,36 @@ class PatientController extends Controller
 								if( Carbon::parse(strtoupper(($Appointment_TimeSlot_StartTime)))->format('g:i A') > Carbon::now()->format('g:i A') )
 								{
                                     $AppointmentDetail->status_of_appointment = $accept_or_reject;
-                                    $AppointmentDetail->save();
+                                    
                                     if($accept_or_reject == 'Accepted'){
+                                    	$AppointmentDetail->time_slot_id = $AppointmentDetail->rescheduled_time_slot_id;
+
+                                    	$AppointmentDetail->day_id = $AppointmentDetail->rescheduled_day_id;
+                                    	
+                                    	$AppointmentDetail->appointment_date = $AppointmentDetail->rescheduled_date;
+
+
+                                    	$AppointmentDetail->save();
                                         $Response = [
                                             'message'  => trans('messages.success.appointment_accepted'),
                                         ];
                                         return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                     }
                                     if($accept_or_reject == 'Rejected'){
+                                    	$AppointmentDetail->save();
                                         $Response = [
                                             'message'  => trans('messages.success.appointment_rejected'),
                                         ];
                                         return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                     }
-                                }else{
-                                    $AppointmentDetail->status_of_appointment = "Expired";
-                                    $AppointmentDetail->save();
-                                    $response = [
-                                        'message' => __('messages.invalid.appointment_expired')
-                                    ];
-                                    return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-                                }
+								}else{
+								   $AppointmentDetail->status_of_appointment = "Expired";
+								   $AppointmentDetail->save();
+								   $response = [
+								       'message' => __('messages.invalid.appointment_expired')
+								   ];
+								   return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+								}
 			    			}else{
 								$response = [
 								   'message' => __('messages.invalid.appointment_expired')
@@ -479,5 +489,61 @@ class PatientController extends Controller
 			];
 	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
 		}
+ 	}
+
+ 	public function get_notification_list(Request $request){
+ 		Log::info('------------------PatientController------------get_notification_list');
+ 		$accessToken = $request->header('accessToken');
+ 		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
+
+		if( !empty( $accessToken ) ) {
+			$UserDetail = User::where(['remember_token'=>$accessToken])->first();
+    		if(count($UserDetail)){
+				Log::info('UserDetail'.print_r($UserDetail,True));
+    			if($UserDetail->user_type == 2){
+	    			$Notification = Notification::where(['patient_id'=>$UserDetail->id])->get();
+	    			$result = [];
+	    			foreach ($Notification as $key => $value) {
+	    				$drName = User::where(['id'=>$value->doctor_id])->select('name')->first()->name;
+	    				$patient_Name = User::where(['id'=>$value->patient_id])->select('name')->first()->name;
+	    				$result[] = [
+	    					'id' => $value->id,
+	    					'doctor_id' => $value->doctor_id,
+	    					'doctor_name' => $drName,
+	    					'patient_id' => $value->patient_id,
+	    					'patient_name' => $patient_Name,
+	    					'type' => $value->type,
+	    					'created_at' => Carbon::parse($value->created_at)->format('Y-m-d h:i:s a'),
+	    					'updated_at' => Carbon::parse($value->updated_at)->format('Y-m-d h:i:s a'),
+	    				];
+	    			}
+	    			$response = [
+						'message' => __('messages.success.success'),
+						'response' => $result
+					];
+					return response()->json($response,trans('messages.statusCode.ACTION_COMPLETE'));
+		    	}else{
+			    	$Response = [
+						'message'  => trans('messages.invalid.request'),
+					];
+			      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE'));
+    			}
+		   }else{
+    			$Response = [
+    			  'message'  => trans('messages.invalid.credentials'),
+    			];
+        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+    		}
+		}else {
+	    	$Response = [
+				'message'  => trans('messages.required.accessToken')
+			];
+	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+		}
+
  	}
 }

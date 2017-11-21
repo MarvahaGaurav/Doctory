@@ -30,6 +30,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('completeProfile','CommonController@completeProfileOrEditProfile');
 	Route::post('change_password','CommonController@change_password');
 	Route::post('logout','CommonController@logout');
+	Route::post('get_all_event_dates','CommonController@get_all_event_dates');
 
 ////////////////////////////////////////////////
 ////// Doctor Api's
@@ -47,6 +48,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('reschedule_appointment_by_doctor','DoctorController@reschedule_appointment_by_doctor');
 	Route::post('get_doctor_availability','DoctorController@get_doctor_availability');
 	Route::post('get_doctor_available_time_slots','DoctorController@get_doctor_available_time_slots');
+	Route::post('get_notification_list_for_doctor','DoctorController@get_notification_list');
+
+	Route::post('updateRescheduledAppointmentByDcotor','DoctorController@accept_or_reject_appointment_by_doctor_rescheduled_by_patient');
+
 ////////////////////////////////////////////////
 ////// Doctor Api's END
 ////////////////////////////////////////////////
@@ -59,10 +64,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('bookmark_UnBookMark_Doctor','PatientController@bookmark_UnBookMark_Doctor');
 	Route::post('get_patient_bookmarks_doctors','PatientController@get_patient_bookmarks_doctors');
 	Route::post('schedule_appointment_with_doctor','PatientController@schedule_appointment_with_doctor');
+
 	Route::post('get_all_appointment_of_patient_by_date','PatientController@get_all_appointment_of_patient_by_date');
-	Route::post('accept_or_reject_appointment_by_patient_rescheduled_by_doctor','PatientController@accept_or_reject_appointment_by_patient_rescheduled_by_doctor');
+
+	Route::post('updateRescheduledAppointmentByPatient','PatientController@accept_or_reject_appointment_by_patient_rescheduled_by_doctor');
 	Route::post('search_doctor_by_patient','PatientController@search_doctor');
 	Route::post('get_notification_list_for_patient','PatientController@get_notification_list');
+	Route::post('reschedule_appointment_by_patient','PatientController@reschedule_appointment_by_patient');
+
 ////////////////////////////////////////////////
 ////// PATIENT's Api's END
 ////////////////////////////////////////////////

@@ -13,6 +13,7 @@ use \Carbon\Carbon;
 use App\User;
 use App\Otp;
 use App\UserDetail;
+use App\Appointment;
 use App\Category;
 use App\TimeSlot;
 use App\Day;
@@ -211,7 +212,6 @@ class CommonController extends Controller
 			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
 	   }
 	}
-
 
 	public function otpVerify( Request $request ) {
 		Log::info('----------------------CommonController--------------------------otpVerify'.print_r($request->all(),True));
@@ -942,11 +942,11 @@ class CommonController extends Controller
         $l = strlen($fileName) - $i;
         $ext = substr($fileName,$i+1);
 
-        if($ext=="jpg" || $ext=="jpeg" ){
+        if($ext=="jpg" || $ext=="jpeg" || $ext=="JPG" || $ext=="JPEG"){
             $src = imagecreatefromjpeg($uploadedfile);
-        }else if($ext=="png"){
+        }else if($ext=="png" || $ext=="PNG"){
             $src = imagecreatefrompng($uploadedfile);
-        }else if($ext=="gif"){
+        }else if($ext=="gif" || $ext=="GIF"){
             $src = imagecreatefromgif($uploadedfile);
         }else{
             $src = imagecreatefrombmp($uploadedfile);
@@ -1007,5 +1007,52 @@ class CommonController extends Controller
    		'Speciality' => $Category,
    	];
 		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+   }
+
+   public function get_all_event_dates(Request $request){
+   	Log::info('----------------------CommonController--------------------------get_all_event_dates'.print_r($request->all(),True));
+		$accessToken = $request->header('accessToken');
+		$month = $request->month;
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		if( !empty( $accessToken ) ) {
+			$validations = [
+				'month' => 'required',
+	    	];
+	    	$validator = Validator::make($request->all(),$validations);
+	    	if($validator->fails()){
+	    		$response = [
+					'message' => $validator->errors($validator)->first()
+				];
+				return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+	    	}else{
+	    		$UserDetail = User::where(['remember_token' => $accessToken])->first();
+	    		if(count($UserDetail)){
+	    			$List = Appointment::whereMonth('appointment_date',$month)->select('appointment_date')->get();
+	    			$result = [];
+	    			foreach ($List as $key => $value) {
+	    				if(!in_array($value->appointment_date, $result)){	    					$result[] = $value->appointment_date;
+	    				}
+	    			}
+	    			$response = [
+	    				'messages' => __('messages.success.success'),
+	    				'response' => $result
+	    			];
+	    			return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
+	    		}else{
+	    			$Response = [
+	    			  'message'  => trans('messages.invalid.detail'),
+	    			];
+	        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+	    		}
+	    	}
+		}else {
+	    	$Response = [
+				'message'  => trans('messages.required.accessToken'),
+			];
+	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+	   }
    }
 }

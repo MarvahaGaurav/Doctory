@@ -510,16 +510,22 @@ class PatientController extends Controller
 	    			foreach ($Notification as $key => $value) {
 	    				$drName = User::where(['id'=>$value->doctor_id])->select('name')->first()->name;
 	    				$patient_Name = User::where(['id'=>$value->patient_id])->select('name')->first()->name;
-	    				$result[] = [
-	    					'id' => $value->id,
-	    					'doctor_id' => $value->doctor_id,
-	    					'doctor_name' => $drName,
-	    					'patient_id' => $value->patient_id,
-	    					'patient_name' => $patient_Name,
-	    					'type' => $value->type,
-	    					'created_at' => Carbon::parse($value->created_at)->format('Y-m-d h:i:s a'),
-	    					'updated_at' => Carbon::parse($value->updated_at)->format('Y-m-d h:i:s a'),
-	    				];
+	    				$Appointment = Appointment::find($value->appointment_id);
+                        // dd($Appointment);
+                        $result[] = [
+                            'notification_id' => $value->id,
+                            'doctor_id' => $value->doctor_id,
+                            'doctor_name' => $drName,
+                            'patient_id' => $value->patient_id,
+                            'patient_name' => $patient_Name,
+                            'appointment_id' => $value->appointment_id,
+                            'time_slot_id' => $Appointment->time_slot_id,
+                            'day_id' => $Appointment->day_id,
+                            'appointment_date' => $Appointment->appointment_date,
+                            'type' => $value->type,
+                            'created_at' => Carbon::parse($value->created_at)->format('Y-m-d h:i:s a'),
+                            'updated_at' => Carbon::parse($value->updated_at)->format('Y-m-d h:i:s a'),
+                        ];
 	    			}
 	    			$response = [
 						'message' => __('messages.success.success'),
@@ -544,6 +550,139 @@ class PatientController extends Controller
 			];
 	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
 		}
-
  	}
+
+ 	public  function reschedule_appointment_by_patient(Request $request){
+        $accessToken =  $request->header('accessToken');
+        $appointment_id = $request->appointment_id;
+        $doctor_id = $request->doctor_id;
+        $day_id = $request->day_id;
+        $time_slot_id = $request->time_slot_id;
+        $appointment_date = $request->appointment_date;
+        if( !empty( $accessToken ) ) {
+            $PatientDetail = User::Where(['remember_token' => $accessToken])->first();
+            // dd($PatientDetail);
+            if(count($PatientDetail)){
+                if($PatientDetail->user_type == 2){
+                    $validations = [
+                        'doctor_id' => 'required|numeric',
+                        'appointment_id' => 'required|numeric',
+                        'time_slot_id' => 'required|numeric',
+                        'day_id' => 'required|numeric',
+                        'appointment_date' => 'required|date_format:"Y-m-d"'
+                    ];
+                    $validator = Validator::make($request->all(),$validations);
+                    if($validator->fails()){
+                        $response = [
+                            'message' => $validator->errors($validator)->first()
+                        ];
+                        return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                    }else{
+                        $appointment_date_from_user = Carbon::parse($appointment_date);
+                        // dd($appointment_date_from_user);
+                        if(!$appointment_date_from_user->isYesterday()){
+                         	$check_doctor_availability = DoctorAvailability::where(['doctor_id' => $doctor_id,'day_id' => $day_id ,'time_slot_id' => $time_slot_id])->first();
+                         	// dd($check_doctor_availability);
+                            if($check_doctor_availability){
+
+                                $AlreadyBusyTimeSlot = Appointment::where([
+                                    'doctor_id' => $doctor_id,
+                                    'time_slot_id' => $time_slot_id, 
+                                    'day_id' => $day_id,
+                                    'appointment_date' => $appointment_date_from_user
+                                ])
+                                ->where('status_of_appointment','<>','Rejected')
+                                ->where('patient_id','<>',$PatientDetail->id)
+                                ->get();
+                                // dd($AlreadyBusyTimeSlot);
+                                if(!count($AlreadyBusyTimeSlot)){
+                                    $AppointmentDetail = Appointment::find($appointment_id);
+                                    if($AppointmentDetail && $AppointmentDetail->patient_id = $PatientDetail->id){
+
+                                        // $AppointmentDetail->time_slot_id = $time_slot_id;
+                                        $AppointmentDetail->rescheduled_time_slot_id = $time_slot_id;
+
+                                        // $AppointmentDetail->day_id = $day_id;
+                                        $AppointmentDetail->rescheduled_day_id = $day_id;
+
+                                        // $AppointmentDetail->appointment_date = $appointment_date_from_user;
+                                        $AppointmentDetail->rescheduled_date = $appointment_date_from_user;
+
+
+                                        $AppointmentDetail->rescheduled_by_patient = 1;
+                                        $AppointmentDetail->status_of_appointment = 'Pending';
+                                        $AppointmentDetail->save();
+                                        // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
+                                        $Response = [
+                                            'message'  => trans('messages.success.appointment_rescheduled'),
+                                            'response' => Appointment::find($appointment_id)
+                                        ];
+                                        return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                                    }else{
+                                        $Response = [
+                                            'message'  => trans('messages.success.NO_DATA_FOUND'),
+                                        ];
+                                        return Response::json( $Response , __('messages.statusCode.NO_DATA_FOUND'));
+                                    }
+                                }else{
+                                    if($AlreadyBusyTimeSlot[0]->patient_id == $patient_id){
+                                        $AppointmentDetail = Appointment::find($appointment_id);
+                                        // $AppointmentDetail->time_slot_id = $time_slot_id;
+                                        $AppointmentDetail->rescheduled_time_slot_id = $time_slot_id;
+
+                                        // $AppointmentDetail->day_id = $day_id;
+                                        $AppointmentDetail->rescheduled_day_id = $day_id;
+
+                                        // $AppointmentDetail->appointment_date = $appointment_date_from_user;
+                                        $AppointmentDetail->rescheduled_date = $appointment_date_from_user;
+
+
+                                        $AppointmentDetail->rescheduled_by_patient = 1;
+                                        $AppointmentDetail->status_of_appointment = 'Pending';
+                                        $AppointmentDetail->save();
+
+
+                                        // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
+                                        $Response = [
+                                            'message'  => trans('messages.success.appointment_rescheduled'),
+                                            'response' => Appointment::find($appointment_id)
+                                        ];
+                                        return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                                    }else{
+                                        $response = [
+                                            'messages' => __('messages.Already_Busy_Time_Slot_With_Other_Patient')
+                                        ];
+                                        return response()->json($response,__('messages.statusCode.ALREADY_EXIST'));
+                                    }
+                                }
+                            }else{
+                                $response = [
+                                    'message' => __('messages.invalid.doctor_not_available_at_this_time_slot')
+                                ];
+                                return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                            }
+                        }else{
+                            $response = [
+                                'message' => __('messages.invalid.appointment_date')
+                            ];
+                            return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                        }
+                    }
+                }else{
+                    $Response = [
+                        'message'  => trans('messages.invalid.request'),
+                    ];
+                    return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                }
+            }else{
+                $response['message'] = trans('messages.invalid.detail');
+                return response()->json($response,__('messages.statusCode.INVALID_ACCESS_TOKEN'));
+            }
+        }else {
+            $Response = [
+                'message'  => trans('messages.required.accessToken'),
+            ];
+          return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+        }
+    }
 }

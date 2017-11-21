@@ -363,7 +363,12 @@ class DoctorController extends Controller
         $accessToken = $request->header('accessToken');
         $date = date('Y-m-d',strtotime($request->date));
         $page_number = $request->page_number;
-        // dd($date);
+        $locale = $request->header('locale');
+        if(empty($locale)){
+            $locale = 'en';
+        }
+        \App::setLocale($locale);
+
         if( !empty( $accessToken ) ) {
             $UserDetail = User::where(['remember_token'=>$accessToken])->first();
             if(count($UserDetail)){
@@ -410,7 +415,12 @@ class DoctorController extends Controller
         $accessToken = $request->header('accessToken');
         $date = date('Y-m-d');
         $page_number = $request->page_number;
-        // dd($date);
+        $locale = $request->header('locale');
+        if(empty($locale)){
+            $locale = 'en';
+        }
+        \App::setLocale($locale);
+
         if( !empty( $accessToken ) ) {
             $UserDetail = User::where(['remember_token'=>$accessToken])->first();
             if(count($UserDetail)){
@@ -467,6 +477,12 @@ class DoctorController extends Controller
         $accessToken =  $request->header('accessToken');
         $appointment_id = $request->appointment_id;
         $accept_or_reject = $request->accept_or_reject;
+        $locale = $request->header('locale');
+        if(empty($locale)){
+            $locale = 'en';
+        }
+        \App::setLocale($locale);
+
         if( !empty( $accessToken ) ) {
             $DOCTOR_DETAIL = User::Where(['remember_token' => $accessToken])->first();
             if(count($DOCTOR_DETAIL)){
@@ -579,6 +595,12 @@ class DoctorController extends Controller
         $day_id = $request->day_id;
         $time_slot_id = $request->time_slot_id;
         $appointment_date = $request->appointment_date;
+        $locale = $request->header('locale');
+        if(empty($locale)){
+            $locale = 'en';
+        }
+        \App::setLocale($locale);
+
         if( !empty( $accessToken ) ) {
             $DOCTOR_DETAIL = User::Where(['remember_token' => $accessToken])->first();
             if(count($DOCTOR_DETAIL)){
@@ -702,7 +724,122 @@ class DoctorController extends Controller
         }
     }
 
-   public function get_doctor_available_time_slots(Request $request){
+    public function accept_or_reject_appointment_by_doctor_rescheduled_by_patient(Request $request){
+        Log::info('----------------------PatientController--------------------------accept_or_reject_appointment_by_doctor_rescheduled_by_patient'.print_r($request->all(),True));
+        $accessToken = $request->header('accessToken');
+        $appointment_id = $request->appointment_id;
+        $patient_id = $request->patient_id;
+        $time_slot_id = $request->time_slot_id;
+        $day_id = $request->day_id;
+        $accept_or_reject = $request->accept_or_reject;
+        $locale = $request->header('locale');
+        if(empty($locale)){
+            $locale = 'en';
+        }
+        \App::setLocale($locale);
+
+        if( !empty( $accessToken ) ) {
+            $UserDetail = User::where(['remember_token'=>$accessToken])->first();
+            if(count($UserDetail)){
+                if($UserDetail->user_type == 1){ // for Doctor Only
+
+                    $validations = [
+                        'appointment_id' => 'required|numeric',
+                        'patient_id' => 'required|numeric',
+                        // 'time_slot_id' => 'required|numeric',
+                        // 'day_id' => 'required|numeric',
+                        'accept_or_reject' => 'required|alpha',
+                    ];
+                    $validator = Validator::make($request->all(),$validations);
+                    if($validator->fails()){
+                        $response = [
+                            'message' => $validator->errors($validator)->first()
+                        ];
+                        return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                    }else{
+                        $AppointmentDetail = Appointment::find($appointment_id);
+                        // dd($AppointmentDetail);
+                        if($AppointmentDetail && $AppointmentDetail->patient_id == $patient_id && $AppointmentDetail->rescheduled_by_patient == 1)
+                        {
+                            $appointmentDateInDb = Carbon::parse($AppointmentDetail->appointment_date)->format('Y-m-d');
+                            // dd($appointmentDateInDb);
+                            if($appointmentDateInDb >= Carbon::now()->format('Y-m-d')){
+                                $Time_slot_detail = TimeSlot::find($AppointmentDetail->time_slot_id);
+                                $Appointment_TimeSlot_StartTime = $Time_slot_detail->start_time;
+                                $Appointment_TimeSlot_EndTime = $Time_slot_detail->end_time;
+                                // dd($Time_slot_detail);
+                                if( Carbon::parse(strtoupper(($Appointment_TimeSlot_StartTime)))->format('g:i A') > Carbon::now()->format('g:i A') )
+                                {
+
+                                    $AppointmentDetail->status_of_appointment = $accept_or_reject;
+                                    
+                                    if($accept_or_reject == 'Accepted'){
+                                        // dd('Accepted');
+                                        $AppointmentDetail->time_slot_id = $AppointmentDetail->rescheduled_time_slot_id;
+                                        /*$AppointmentDetail->rescheduled_time_slot_id = "";*/
+
+                                        $AppointmentDetail->day_id = $AppointmentDetail->rescheduled_day_id;
+                                        /*$AppointmentDetail->rescheduled_day_id = '';*/
+                                        
+                                        $AppointmentDetail->appointment_date = $AppointmentDetail->rescheduled_date;
+                                        /*$AppointmentDetail->rescheduled_date = "";*/
+
+                                        $AppointmentDetail->save();
+                                        $Response = [
+                                            'message'  => trans('messages.success.appointment_accepted'),
+                                        ];
+                                        return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                                    }
+                                    if($accept_or_reject == 'Rejected'){
+                                        $AppointmentDetail->save();
+                                        $Response = [
+                                            'message'  => trans('messages.success.appointment_rejected'),
+                                        ];
+                                        return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                                    }
+                                }else{
+                                    // dd('expired');
+                                   $AppointmentDetail->status_of_appointment = "Expired";
+                                   $AppointmentDetail->save();
+                                   $response = [
+                                       'message' => __('messages.invalid.appointment_expired')
+                                   ];
+                                   return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                                }
+                            }else{
+                                $response = [
+                                   'message' => __('messages.invalid.appointment_expired')
+                                ];
+                                return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                            }   
+                        }else{
+                            $response = [
+                                'message' => __('messages.success.NO_DATA_FOUND')
+                            ];
+                            return response()->json($response,trans('messages.statusCode.NO_DATA_FOUND'));
+                        }
+                    }
+                }else{
+                    $response=[
+                        'message' => trans('messages.invalid.request'),
+                ];
+                    return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                }
+           }else{
+                $Response = [
+                  'message'  => trans('messages.invalid.detail'),
+                ];
+                return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+            }
+        }else {
+            $Response = [
+                'message'  => trans('messages.required.accessToken'),
+            ];
+          return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+       }
+    }
+
+    public function get_doctor_available_time_slots(Request $request){
       $accessToken = $request->header('accessToken');
       if( !empty( $accessToken ) ) {
          $UserDetail = User::where(['remember_token'=>$accessToken])->first();
@@ -903,6 +1040,67 @@ class DoctorController extends Controller
          return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
       }
         
-   }
+    }
+
+    public function get_notification_list(Request $request){
+        Log::info('------------------DoctorController------------get_notification_list');
+        $accessToken = $request->header('accessToken');
+        $locale = $request->header('locale');
+        if(empty($locale)){
+            $locale = 'en';
+        }
+        \App::setLocale($locale);
+
+        if( !empty( $accessToken ) ) {
+            $UserDetail = User::where(['remember_token'=>$accessToken])->first();
+            if(count($UserDetail)){
+                Log::info('UserDetail'.print_r($UserDetail,True));
+                if($UserDetail->user_type == 1){
+                    $Notification = Notification::where(['doctor_id'=>$UserDetail->id])->get();
+                    $result = [];
+                    foreach ($Notification as $key => $value) {
+                        $drName = User::where(['id'=>$value->doctor_id])->select('name')->first()->name;
+                        $patient_Name = User::where(['id'=>$value->patient_id])->select('name')->first()->name;
+                        $Appointment = Appointment::find($value->appointment_id);
+                        // dd($Appointment);
+                        $result[] = [
+                            'notification_id' => $value->id,
+                            'doctor_id' => $value->doctor_id,
+                            'doctor_name' => $drName,
+                            'patient_id' => $value->patient_id,
+                            'patient_name' => $patient_Name,
+                            'appointment_id' => $value->appointment_id,
+                            'time_slot_id' => $Appointment->time_slot_id,
+                            'day_id' => $Appointment->day_id,
+                            'appointment_date' => $Appointment->appointment_date,
+                            'type' => $value->type,
+                            'created_at' => Carbon::parse($value->created_at)->format('Y-m-d h:i:s a'),
+                            'updated_at' => Carbon::parse($value->updated_at)->format('Y-m-d h:i:s a'),
+                        ];
+                    }
+                    $response = [
+                        'message' => __('messages.success.success'),
+                        'response' => $result
+                    ];
+                    return response()->json($response,trans('messages.statusCode.ACTION_COMPLETE'));
+                }else{
+                    $Response = [
+                        'message'  => trans('messages.invalid.request'),
+                    ];
+                  return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                }
+           }else{
+                $Response = [
+                  'message'  => trans('messages.invalid.credentials'),
+                ];
+                return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+            }
+        }else {
+            $Response = [
+                'message'  => trans('messages.required.accessToken')
+            ];
+          return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+        }
+    }
 
 }

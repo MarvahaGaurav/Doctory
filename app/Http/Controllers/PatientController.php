@@ -295,9 +295,210 @@ class PatientController extends Controller
 						return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
 		    		}else{
 		    			$result = Appointment::get_all_appointment_of_patient_by_date($date,$UserDetail->id,$page_number);
+		    			$final_result = [];
+		    			$day1 = []; 
+						$day2 = []; 
+						$day3 = []; 
+						$day4 = []; 
+						$day5 = []; 
+						$day6 = []; 
+						$day7 = []; 
+		    			foreach ($result as $key => $res) {
+		    				$dates = [ 
+								Carbon::now()->addDay(1)->format('Y-m-d'),
+								Carbon::now()->addDay(2)->format('Y-m-d'),
+								Carbon::now()->addDay(3)->format('Y-m-d'),
+								Carbon::now()->addDay(4)->format('Y-m-d'),
+								Carbon::now()->addDay(5)->format('Y-m-d'),
+								Carbon::now()->addDay(6)->format('Y-m-d')
+							];
+							$days = [
+								Carbon::now()->addDay(1)->dayOfWeek+1,
+								Carbon::now()->addDay(2)->dayOfWeek+1,
+								Carbon::now()->addDay(3)->dayOfWeek+1,
+								Carbon::now()->addDay(4)->dayOfWeek+1,
+								Carbon::now()->addDay(5)->dayOfWeek+1,
+								Carbon::now()->addDay(6)->dayOfWeek+1
+							];
+							// dd($dates);
+							// dd($days);
+							// dd($res->doctor_availability);
+							foreach ($res->doctor_availability as $key => $value) {
+								/*if($res->doctor_id == 124){
+									dd($value);
+								}*/
+
+								foreach ($days as $key => $value1) {
+									if($value1 == 1 && $value->day_id == 1){
+									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])
+									   	->where('status_of_appointment','<>','rejected')
+									   	->where('appointment_date',$dates[$key])
+									   	->first();
+									      if($busyOrFree){
+										      array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+										   }else{
+										   	array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+										   }
+								   }
+								   if($value1 == 2 && $value->day_id == 2){
+								   	// dd($value->doctor_id);
+									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+									   		->where('appointment_date',$dates[$key])
+									   		->first();
+									   	// dd($busyOrFree);
+									   	if($busyOrFree){
+									     		array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+									     	}else{
+								      		array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+								      	}
+								   }
+								   if($value1 == 3 && $value->day_id == 3){
+
+									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+										   	->where('appointment_date',$dates[$key])
+										   	->first();
+										   if($busyOrFree){
+										   	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+										   }else{
+												array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);   		
+										   }
+								   }
+								   if($value1 == 4 && $value->day_id == 4){
+
+									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+										   	->where('appointment_date',Carbon::now()->addDay(4)->format('Y-m-d'))
+										   	->first();
+										   if($busyOrFree){
+								       		array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+								       	}else{
+								       		array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+								       	}
+								   }
+								   if($value1 == 5 && $value->day_id == 5){
+									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+									   		->where('appointment_date',Carbon::now()->addDay(5)->format('Y-m-d'))
+									   		->first();
+									   	if($busyOrFree){
+									     		array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+									     	}else{
+									   		array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+									   	}
+								   }
+								   if($value1 == 6 && $value->day_id == 6){
+									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+									   		->where('appointment_date',Carbon::now()->addDay(6)->format('Y-m-d'))
+									   		->first();
+									   	if($busyOrFree){
+								       		array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+								       	}else{
+								      		array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+								      	}
+								   }
+								   if($value1 == 7 && $value->day_id == 7){
+									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+									   		->where('appointment_date',Carbon::now()->addDay(7)->format('Y-m-d'))
+									   		->first();
+									   	if($busyOrFree){
+								      		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+								      	}else{
+								      		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+								      	}
+							   	}
+								}
+
+							   if($value->day_id == 1){
+							   	if(Carbon::now()->dayOfWeek+1 == 1){
+								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])
+								   	->where('status_of_appointment','<>','rejected')
+								   	->where('appointment_date',Carbon::now()->addDay(1)->format('Y-m-d'))
+								   	->first();
+								       array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+								   }
+							   }
+							   if($value->day_id == 2){
+							   	if(Carbon::now()->dayOfWeek+1 == 2){
+								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+								   		->where('appointment_date',Date('Y-m-d'))
+								   		->first();
+								      array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+								   }
+							   }
+							   if($value->day_id == 3){
+							   	if(Carbon::now()->dayOfWeek+1 == 3){
+								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+									   	->where('appointment_date',Date('Y-m-d'))
+									   	->first();
+							       	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+							      }
+							   }
+							   if($value->day_id == 4){
+							   	if(Carbon::now()->dayOfWeek+1 == 4){
+								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+									   	->where('appointment_date',Date('Y-m-d'))
+									   	->first();
+							       	array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+							      }
+							   }
+							   if($value->day_id == 5){
+							   	if(Carbon::now()->dayOfWeek+1 == 5){
+								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+								   		->where('appointment_date',Date('Y-m-d'))
+								   		->first();
+								      array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+								   }
+							   }
+							   if($value->day_id == 6){
+							   	if(Carbon::now()->dayOfWeek+1 == 6){
+								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+								   		->where('appointment_date',Date('Y-m-d'))
+								   		->first();
+							       	array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+							      }
+							   }
+							   if($value->day_id == 7){
+							   	if(Carbon::now()->dayOfWeek+1 == 7){
+								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+								   		->where('appointment_date',Date('Y-m-d'))
+								   		->first();
+							      	array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+							      }
+							   }
+							}
+							$doctor_availabilities_result = [
+							   '1' => $day1,
+							   '2' => $day2,
+							   '3' => $day3,
+							   '4' => $day4,
+							   '5' => $day5,
+							   '6' => $day6,
+							   '7' => $day7,
+				        	];
+		    				$final_result[] = [
+		    					'id' => $res->id,
+		    					'patient_id' => $res->patient_id,
+		    					'patient_age' => $res->patient_age,
+		    					'patient_gender' => $res->patient_gender,
+		    					'question' => $res->question,
+		    					'previous_illness_desc' => $res->previous_illness_desc,
+		    					'doctor_id' => $res->doctor_id,
+		    					'time_slot_id' => $res->time_slot_id,
+		    					'day_id' => $res->day_id,
+		    					'appointment_date' => $res->appointment_date,
+		    					'status_of_appointment' => $res->status_of_appointment,
+		    					'reffered_to_doctor_id' => $res->reffered_to_doctor_id,
+		    					'rescheduled_by_doctor' => $res->rescheduled_by_doctor,
+		    					'rescheduled_time_slot_id' => $res->rescheduled_time_slot_id,
+		    					'rescheduled_day_id' => $res->rescheduled_day_id,
+		    					'rescheduled_date' => $res->rescheduled_date,
+		    					'rescheduled_by_patient' => $res->rescheduled_by_patient,
+		    					'doctor_detail' => $res->DoctorDetail,
+		    					'reffered__to__doctor__detail' => $res->reffered__to__doctor__detail,
+		    					'doctor_availability' => $doctor_availabilities_result,
+		    				];
+		    			}
 		    			$Response = [
 							'message'  => trans('messages.success.success'),
-							'response' => $result
+							'response' => $final_result
 						];
 				      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
 		    		}
@@ -523,8 +724,8 @@ class PatientController extends Controller
                             'day_id' => $Appointment->day_id,
                             'appointment_date' => $Appointment->appointment_date,
                             'type' => $value->type,
-                            'created_at' => Carbon::parse($value->created_at)->format('Y-m-d h:i:s a'),
-                            'updated_at' => Carbon::parse($value->updated_at)->format('Y-m-d h:i:s a'),
+                            'created_at' => Carbon::parse($value->created_at)->format('h:i A, d M'),
+                            'updated_at' => Carbon::parse($value->updated_at)->format('h:i A, d M'),
                         ];
 	    			}
 	    			$response = [
@@ -684,5 +885,173 @@ class PatientController extends Controller
             ];
           return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
         }
-    }
+   }
+
+   /*public function doctor_availability(){
+   	$dates = [ 
+			Carbon::now()->addDay(1)->format('Y-m-d'),
+			Carbon::now()->addDay(2)->format('Y-m-d'),
+			Carbon::now()->addDay(3)->format('Y-m-d'),
+			Carbon::now()->addDay(4)->format('Y-m-d'),
+			Carbon::now()->addDay(5)->format('Y-m-d'),
+			Carbon::now()->addDay(6)->format('Y-m-d')
+		];
+		$days = [
+			Carbon::now()->addDay(1)->dayOfWeek+1,
+			Carbon::now()->addDay(2)->dayOfWeek+1,
+			Carbon::now()->addDay(3)->dayOfWeek+1,
+			Carbon::now()->addDay(4)->dayOfWeek+1,
+			Carbon::now()->addDay(5)->dayOfWeek+1,
+			Carbon::now()->addDay(6)->dayOfWeek+1
+		];
+		foreach ($res->doctor_availability as $key => $value) {
+			foreach ($days as $key => $value1) {
+				if($value1 == 1 && $value->day_id == 1){
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])
+				   	->where('status_of_appointment','<>','rejected')
+				   	->where('appointment_date',$dates[$key])
+				   	->first();
+				      if($busyOrFree){
+					      array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					   }else{
+					   	array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+					   }
+			   }
+			   if($value1 == 2 && $value->day_id == 2){
+			   	// dd($value->doctor_id);
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+				   		->where('appointment_date',$dates[$key])
+				   		->first();
+				   	// dd($busyOrFree);
+				   	if($busyOrFree){
+				     		array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+				     	}else{
+			      		array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+			      	}
+			   }
+			   if($value1 == 3 && $value->day_id == 3){
+			   	
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+					   	->where('appointment_date',$dates[$key])
+					   	->first();
+					   if($busyOrFree){
+					   	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					   }else{
+							array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);   		
+					   }
+			   }
+			   if($value1 == 4 && $value->day_id == 4){
+
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+					   	->where('appointment_date',Carbon::now()->addDay(4)->format('Y-m-d'))
+					   	->first();
+					   if($busyOrFree){
+			       		array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			       	}else{
+			       		array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+			       	}
+			   }
+			   if($value1 == 5 && $value->day_id == 5){
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+				   		->where('appointment_date',Carbon::now()->addDay(5)->format('Y-m-d'))
+				   		->first();
+				   	if($busyOrFree){
+				     		array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+				     	}else{
+				   		array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+				   	}
+			   }
+			   if($value1 == 6 && $value->day_id == 6){
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+				   		->where('appointment_date',Carbon::now()->addDay(6)->format('Y-m-d'))
+				   		->first();
+				   	if($busyOrFree){
+			       		array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			       	}else{
+			      		array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+			      	}
+			   }
+			   if($value1 == 7 && $value->day_id == 7){
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+				   		->where('appointment_date',Carbon::now()->addDay(7)->format('Y-m-d'))
+				   		->first();
+				   	if($busyOrFree){
+			      		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			      	}else{
+			      		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+			      	}
+		   	}
+			}
+
+		   if($value->day_id == 1){
+		   	if(Carbon::now()->dayOfWeek+1 == 1){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])
+			   	->where('status_of_appointment','<>','rejected')
+			   	->where('appointment_date',Carbon::now()->addDay(1)->format('Y-m-d'))
+			   	->first();
+			       array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			   }
+		   }
+		   if($value->day_id == 2){
+		   	if(Carbon::now()->dayOfWeek+1 == 2){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+			   		->where('appointment_date',Date('Y-m-d'))
+			   		->first();
+			      array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			   }
+		   }
+		   if($value->day_id == 3){
+		   	if(Carbon::now()->dayOfWeek+1 == 3){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+				   	->where('appointment_date',Date('Y-m-d'))
+				   	->first();
+		       	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+		      }
+		   }
+		   if($value->day_id == 4){
+		   	if(Carbon::now()->dayOfWeek+1 == 4){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+				   	->where('appointment_date',Date('Y-m-d'))
+				   	->first();
+		       	array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+		      }
+		   }
+		   if($value->day_id == 5){
+		   	if(Carbon::now()->dayOfWeek+1 == 5){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+			   		->where('appointment_date',Date('Y-m-d'))
+			   		->first();
+			      array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			   }
+		   }
+		   if($value->day_id == 6){
+		   	if(Carbon::now()->dayOfWeek+1 == 6){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+			   		->where('appointment_date',Date('Y-m-d'))
+			   		->first();
+		       	array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+		      }
+		   }
+		   if($value->day_id == 7){
+		   	if(Carbon::now()->dayOfWeek+1 == 7){
+			   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+			   		->where('appointment_date',Date('Y-m-d'))
+			   		->first();
+		      	array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+		      }
+		   }
+		}
+		$doctor_availabilities_result = [
+		   '1' => $day1,
+		   '2' => $day2,
+		   '3' => $day3,
+		   '4' => $day4,
+		   '5' => $day5,
+		   '6' => $day6,
+		   '7' => $day7,
+     	];
+
+     	return $doctor_availabilities_result;
+   }*/
+
 }

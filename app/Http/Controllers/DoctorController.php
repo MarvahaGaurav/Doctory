@@ -1074,8 +1074,8 @@ class DoctorController extends Controller
                             'day_id' => $Appointment->day_id,
                             'appointment_date' => $Appointment->appointment_date,
                             'type' => $value->type,
-                            'created_at' => Carbon::parse($value->created_at)->format('Y-m-d h:i:s a'),
-                            'updated_at' => Carbon::parse($value->updated_at)->format('Y-m-d h:i:s a'),
+                            'created_at' => Carbon::parse($value->created_at)->format('h:i A, d M'),
+                            'updated_at' => Carbon::parse($value->updated_at)->format('h:i A, d M'),
                         ];
                     }
                     $response = [

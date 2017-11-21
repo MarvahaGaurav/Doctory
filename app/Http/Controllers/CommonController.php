@@ -1013,6 +1013,7 @@ class CommonController extends Controller
    	Log::info('----------------------CommonController--------------------------get_all_event_dates'.print_r($request->all(),True));
 		$accessToken = $request->header('accessToken');
 		$month = $request->month;
+		$year = $request->year;
 		$locale = $request->header('locale');
 		if(empty($locale)){
 			$locale = 'en';
@@ -1020,6 +1021,7 @@ class CommonController extends Controller
 		if( !empty( $accessToken ) ) {
 			$validations = [
 				'month' => 'required',
+				'year' => 'required',
 	    	];
 	    	$validator = Validator::make($request->all(),$validations);
 	    	if($validator->fails()){
@@ -1030,7 +1032,8 @@ class CommonController extends Controller
 	    	}else{
 	    		$UserDetail = User::where(['remember_token' => $accessToken])->first();
 	    		if(count($UserDetail)){
-	    			$List = Appointment::whereMonth('appointment_date',$month)->select('appointment_date')->get();
+	    			$List = Appointment::whereMonth('appointment_date',$month)
+	    			->whereYear('appointment_date',$year)->select('appointment_date')->get();
 	    			$result = [];
 	    			foreach ($List as $key => $value) {
 	    				if(!in_array($value->appointment_date, $result)){	    					$result[] = $value->appointment_date;

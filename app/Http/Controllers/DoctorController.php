@@ -210,6 +210,7 @@ class DoctorController extends Controller
     }
 
     public function get_doctor_availability(Request $request){
+        Log::info('------------------DoctorController------------get_doctor_availability');
         $accessToken = $request->header('accessToken');
         if( !empty( $accessToken ) ) {
             $UserDetail = User::where(['remember_token'=>$accessToken])->first();
@@ -360,6 +361,7 @@ class DoctorController extends Controller
     }*/
 
     public function get_all_appointment_of_doctor_by_date(Request $request){
+        Log::info('------------------DoctorController------------get_all_appointment_of_doctor_by_date');
         $accessToken = $request->header('accessToken');
         $date = date('Y-m-d',strtotime($request->date));
         $page_number = $request->page_number;
@@ -412,6 +414,7 @@ class DoctorController extends Controller
     }
 
     public function get_all_appointment_of_doctor(Request $request){
+        Log::info('------------------DoctorController------------get_all_appointment_of_doctor');
         $accessToken = $request->header('accessToken');
         $date = date('Y-m-d');
         $page_number = $request->page_number;
@@ -474,6 +477,7 @@ class DoctorController extends Controller
     }
 
     public function accept_or_reject_appointment(Request $request){
+        Log::info('------------------DoctorController------------accept_or_reject_appointment');
         $accessToken =  $request->header('accessToken');
         $appointment_id = $request->appointment_id;
         $accept_or_reject = $request->accept_or_reject;
@@ -517,6 +521,7 @@ class DoctorController extends Controller
                                             'message'  => trans('messages.success.appointment_accepted'),
                                         ];
                                         //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
+                                        Notification::insert(['doctor_id'=>$DOCTOR_DETAIL->id,'patient_id'=>$patient_id,'type'=>1,'appointment_id' => $appointment_id]);
                                         return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                     }
                                     if($accept_or_reject == 'Rejected'){
@@ -535,9 +540,7 @@ class DoctorController extends Controller
                                     return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
                                 }
                             }else if($appointmentDateInDb > Carbon::now()->format('Y-m-d')){
-                                // dd(Carbon::now()->format('Y-m-d'));
                                 $Time_slot_detail = TimeSlot::find($AppointmentDetail->time_slot_id);
-                                // dd($Time_slot_detail);
                                 $Appointment_TimeSlot_StartTime = $Time_slot_detail->start_time;
                                 $Appointment_TimeSlot_EndTime = $Time_slot_detail->end_time;
                                 
@@ -589,6 +592,7 @@ class DoctorController extends Controller
     }
 
     public  function reschedule_appointment_by_doctor(Request $request){
+        Log::info('------------------DoctorController------------reschedule_appointment_by_doctor');
         $accessToken =  $request->header('accessToken');
         $appointment_id = $request->appointment_id;
         $patient_id = $request->patient_id;
@@ -650,11 +654,14 @@ class DoctorController extends Controller
                                         $AppointmentDetail->rescheduled_by_doctor = 1;
                                         $AppointmentDetail->status_of_appointment = 'Pending';
                                         $AppointmentDetail->save();
+
                                         // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
+                                        Notification::insert(['doctor_id'=>$DOCTOR_DETAIL->id,'patient_id'=>$patient_id,'type'=>1,'appointment_id' => $appointment_id]);
                                         $Response = [
                                             'message'  => trans('messages.success.appointment_rescheduled'),
                                             'response' => Appointment::find($appointment_id)
                                         ];
+                                        Log::info('----------------------DoctorController--------------------------reschedule_appointment_by_doctor---------response'.print_r($Response,True));
                                         return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                     }else{
                                         $Response = [
@@ -681,10 +688,12 @@ class DoctorController extends Controller
 
 
                                         // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
+                                        Notification::insert(['doctor_id'=>$DOCTOR_DETAIL->id,'patient_id'=>$patient_id,'type'=>1,'appointment_id' => $appointment_id]);
                                         $Response = [
                                             'message'  => trans('messages.success.appointment_rescheduled'),
                                             'response' => Appointment::find($appointment_id)
                                         ];
+                                        Log::info('----------------------DoctorController--------------------------reschedule_appointment_by_doctor---------response'.print_r($Response,True));
                                         return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                     }else{
                                         $response = [
@@ -788,6 +797,9 @@ class DoctorController extends Controller
                                         $Response = [
                                             'message'  => trans('messages.success.appointment_accepted'),
                                         ];
+
+                                        Log::info('----------------------DoctorController--------------------------accept_or_reject_appointment_by_doctor_rescheduled_by_patient---------response'.print_r($Response,True));
+
                                         return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                     }
                                     if($accept_or_reject == 'Rejected'){
@@ -795,6 +807,9 @@ class DoctorController extends Controller
                                         $Response = [
                                             'message'  => trans('messages.success.appointment_rejected'),
                                         ];
+
+                                        Log::info('----------------------DoctorController--------------------------accept_or_reject_appointment_by_doctor_rescheduled_by_patient---------response'.print_r($Response,True));
+
                                         return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                     }
                                 }else{
@@ -804,6 +819,7 @@ class DoctorController extends Controller
                                    $response = [
                                        'message' => __('messages.invalid.appointment_expired')
                                    ];
+                                   Log::info('----------------------DoctorController--------------------------accept_or_reject_appointment_by_doctor_rescheduled_by_patient---------response'.print_r($Response,True));
                                    return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
                                 }
                             }else{
@@ -840,8 +856,9 @@ class DoctorController extends Controller
     }
 
     public function get_doctor_available_time_slots(Request $request){
-      $accessToken = $request->header('accessToken');
-      if( !empty( $accessToken ) ) {
+        Log::info('------------------DoctorController------------get_doctor_available_time_slots');
+        $accessToken = $request->header('accessToken');
+        if( !empty( $accessToken ) ) {
          $UserDetail = User::where(['remember_token'=>$accessToken])->first();
          if(count($UserDetail)){
             if($UserDetail->user_type == 1){
@@ -1016,6 +1033,7 @@ class DoctorController extends Controller
                   '6' => $day6,
                   '7' => $day7,
                ];
+               Log::info('----------------------DoctorController--------------------------get_doctor_available_time_slots---------response'.print_r($doctor_availabilities_result,True));
                $Response = [
                      'message'  => trans('messages.success.success'),
                      'response' => $doctor_availabilities_result
@@ -1033,13 +1051,12 @@ class DoctorController extends Controller
             ];
             return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
          }
-      }else {
+        }else {
          $Response = [
              'message'  => trans('messages.required.accessToken'),
          ];
          return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
-      }
-        
+        }
     }
 
     public function get_notification_list(Request $request){
@@ -1056,7 +1073,7 @@ class DoctorController extends Controller
             if(count($UserDetail)){
                 Log::info('UserDetail'.print_r($UserDetail,True));
                 if($UserDetail->user_type == 1){
-                    $Notification = Notification::where(['doctor_id'=>$UserDetail->id])->get();
+                    $Notification = Notification::where(['doctor_id'=>$UserDetail->id,'type'=>2])->get();
                     $result = [];
                     foreach ($Notification as $key => $value) {
                         $drName = User::where(['id'=>$value->doctor_id])->select('name')->first()->name;
@@ -1073,11 +1090,15 @@ class DoctorController extends Controller
                             'time_slot_id' => $Appointment->time_slot_id,
                             'day_id' => $Appointment->day_id,
                             'appointment_date' => $Appointment->appointment_date,
+                            'rescheduled_time_slot_id' => $Appointment->rescheduled_time_slot_id,
+                            'rescheduled_day_id' => $Appointment->rescheduled_day_id,
+                            'rescheduled_date' => $Appointment->rescheduled_date,
                             'type' => $value->type,
                             'created_at' => Carbon::parse($value->created_at)->format('h:i A, d M'),
                             'updated_at' => Carbon::parse($value->updated_at)->format('h:i A, d M'),
                         ];
                     }
+                    Log::info('----------------------DoctorController--------------------------get_notification_list---------response'.print_r($result,True));
                     $response = [
                         'message' => __('messages.success.success'),
                         'response' => $result

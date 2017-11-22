@@ -211,6 +211,7 @@ class PatientController extends Controller
 						    				])->first();
 					    				if(!$already_booked){
 						    				$appontmentId = Appointment::insertGetId($AppointmentData);
+						    				Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$patient_id,'type'=>2,'appointment_id' => $appontmentId]);
 						    				$result = Appointment::find($appontmentId);
 							    			$Response = [
 												'message'  => trans('messages.success.appointment_scheduled'),
@@ -285,7 +286,7 @@ class PatientController extends Controller
  				if($UserDetail->user_type == 2){
 	 				$validations = [
 						'date' => 'required',
-						'page_number' => 'required|numeric'
+						// 'page_number' => 'required|numeric'
 			    	];
 			    	$validator = Validator::make($request->all(),$validations);
 			    	if($validator->fails()){
@@ -294,7 +295,8 @@ class PatientController extends Controller
 						];
 						return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
 		    		}else{
-		    			$result = Appointment::get_all_appointment_of_patient_by_date($date,$UserDetail->id,$page_number);
+		    			// $result = Appointment::get_all_appointment_of_patient_by_date($date,$UserDetail->id,$page_number);
+		    			$result = Appointment::get_all_appointment_of_patient_by_date($date,$UserDetail->id);
 		    			$final_result = [];
 		    			$day1 = []; 
 						$day2 = []; 
@@ -303,6 +305,7 @@ class PatientController extends Controller
 						$day5 = []; 
 						$day6 = []; 
 						$day7 = []; 
+						$qualificationArr = [];
 		    			foreach ($result as $key => $res) {
 		    				$dates = [ 
 								Carbon::now()->addDay(1)->format('Y-m-d'),
@@ -324,10 +327,6 @@ class PatientController extends Controller
 							// dd($days);
 							// dd($res->doctor_availability);
 							foreach ($res->doctor_availability as $key => $value) {
-								/*if($res->doctor_id == 124){
-									dd($value);
-								}*/
-
 								foreach ($days as $key => $value1) {
 									if($value1 == 1 && $value->day_id == 1){
 									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])
@@ -473,6 +472,43 @@ class PatientController extends Controller
 							   '6' => $day6,
 							   '7' => $day7,
 				        	];
+				        	$qualification = DoctorQualification::where(['user_id'=>$res->DoctorDetail->id])->get();
+				        	foreach ($qualification as $key => $value) {
+				   			$QualificationDetail = Qualification::Where(['id' => $value->qualification_id])->first();
+				   			$qualificationArr[]=[
+				   				'id' => $value->id,
+				   				'user_id' => $value->user_id,
+				   				'qualification_id' => $value->qualification_id,
+				   				'qualification_name' => $QualificationDetail['name']
+				   			];
+				   		}
+				        	$DoctorDetail = [
+				        		'id' => $res->DoctorDetail->id,
+				        		'name' => $res->DoctorDetail->name,
+				        		'email' => $res->DoctorDetail->email,
+				        		'country_code' => $res->DoctorDetail->country_code,
+				        		'mobile' => $res->DoctorDetail->mobile,
+				        		'profile_image' => $res->DoctorDetail->profile_image,
+				        		'speciality_id' => $res->DoctorDetail->speciality_id,
+				        		'experience' => $res->DoctorDetail->experience,
+				        		'working_place' => $res->DoctorDetail->working_place,
+				        		'latitude' => $res->DoctorDetail->latitude,
+				        		'about_me' => $res->DoctorDetail->about_me,
+				        		'remember_token' => $res->DoctorDetail->remember_token,
+				        		'device_token' => $res->DoctorDetail->device_token,
+				        		'device_type' => $res->DoctorDetail->device_type,
+				        		'user_type' => $res->DoctorDetail->user_type,
+				        		'medical_licence_number' => $res->DoctorDetail->medical_licence_number,
+				        		'issuing_country' => $res->DoctorDetail->issuing_country,
+				        		'status' => $res->DoctorDetail->status,
+				        		'profile_status' => $res->DoctorDetail->profile_status,
+				        		'notification' => $res->DoctorDetail->notification,
+				        		'language' => $res->DoctorDetail->language,
+				        		'created_at' => $res->DoctorDetail->created_at,
+				        		'updated_at' => $res->DoctorDetail->updated_at,
+				        		'doctor_availabilities' => $doctor_availabilities_result,
+				        		'qualification' => $qualificationArr
+				        	];
 		    				$final_result[] = [
 		    					'id' => $res->id,
 		    					'patient_id' => $res->patient_id,
@@ -491,9 +527,8 @@ class PatientController extends Controller
 		    					'rescheduled_day_id' => $res->rescheduled_day_id,
 		    					'rescheduled_date' => $res->rescheduled_date,
 		    					'rescheduled_by_patient' => $res->rescheduled_by_patient,
-		    					'doctor_detail' => $res->DoctorDetail,
+		    					'doctor_detail' => $DoctorDetail,
 		    					'reffered__to__doctor__detail' => $res->reffered__to__doctor__detail,
-		    					'doctor_availability' => $doctor_availabilities_result,
 		    				];
 		    			}
 		    			$Response = [
@@ -576,12 +611,17 @@ class PatientController extends Controller
 
 
                                     	$AppointmentDetail->save();
+
+                                    	Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>3,'appointment_id' => $appointment_id,'appointment_status'=>'Accepted']);
+
                                         $Response = [
                                             'message'  => trans('messages.success.appointment_accepted'),
                                         ];
                                         return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                     }
                                     if($accept_or_reject == 'Rejected'){
+                                    	Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>3,'appointment_id' => $appointment_id,'appointment_status'=>'Rejected']);
+
                                     	$AppointmentDetail->save();
                                         $Response = [
                                             'message'  => trans('messages.success.appointment_rejected'),
@@ -706,7 +746,7 @@ class PatientController extends Controller
     		if(count($UserDetail)){
 				Log::info('UserDetail'.print_r($UserDetail,True));
     			if($UserDetail->user_type == 2){
-	    			$Notification = Notification::where(['patient_id'=>$UserDetail->id])->get();
+	    			$Notification = Notification::where(['patient_id'=>$UserDetail->id])->where('type','<>',2)->get();
 	    			$result = [];
 	    			foreach ($Notification as $key => $value) {
 	    				$drName = User::where(['id'=>$value->doctor_id])->select('name')->first()->name;
@@ -723,6 +763,9 @@ class PatientController extends Controller
                             'time_slot_id' => $Appointment->time_slot_id,
                             'day_id' => $Appointment->day_id,
                             'appointment_date' => $Appointment->appointment_date,
+                            'rescheduled_time_slot_id' => $Appointment->rescheduled_time_slot_id,
+                            'rescheduled_day_id' => $Appointment->rescheduled_day_id,
+                            'rescheduled_date' => $Appointment->rescheduled_date,
                             'type' => $value->type,
                             'created_at' => Carbon::parse($value->created_at)->format('h:i A, d M'),
                             'updated_at' => Carbon::parse($value->updated_at)->format('h:i A, d M'),
@@ -813,6 +856,10 @@ class PatientController extends Controller
                                         $AppointmentDetail->rescheduled_by_patient = 1;
                                         $AppointmentDetail->status_of_appointment = 'Pending';
                                         $AppointmentDetail->save();
+
+                                        Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$PatientDetail->id,'type'=>1,'appointment_id' => $appointment_id]);
+
+
                                         // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
                                         $Response = [
                                             'message'  => trans('messages.success.appointment_rescheduled'),
@@ -842,7 +889,7 @@ class PatientController extends Controller
                                         $AppointmentDetail->status_of_appointment = 'Pending';
                                         $AppointmentDetail->save();
 
-
+                                        Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$PatientDetail->id,'type'=>1,'appointment_id' => $appointment_id]);
                                         // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
                                         $Response = [
                                             'message'  => trans('messages.success.appointment_rescheduled'),

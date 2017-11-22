@@ -29,17 +29,18 @@ class Appointment extends Model
 		return $this->hasMany('\App\DoctorAvailability','doctor_id','doctor_id');
 	}
 
-	public static function get_all_appointment_of_patient_by_date($date,$UserDetail, $page_number){
-		if($page_number == 0){
+	// public static function get_all_appointment_of_patient_by_date($date,$UserDetail, $page_number){
+	public static function get_all_appointment_of_patient_by_date($date,$UserDetail){
+		/*if($page_number == 0){
 			$skip = 0;
 		}else{
 			$skip = $page_number * 10;
-		}
+		}*/
 		$data = Self::Where(['patient_id' => $UserDetail])
 			->whereDate('appointment_date',$date)
 			->with('DoctorDetail','Reffered_To_Doctor_Detail','Reffered_By_Doctor_Detail','Doctor_availability')
-			->skip($skip)
-			->take(10)
+			// ->skip($skip)
+			// ->take(10)
 			->get();
 		return $data;
 	}

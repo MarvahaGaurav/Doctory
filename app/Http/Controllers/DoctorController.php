@@ -516,7 +516,7 @@ class DoctorController extends Controller
                                 $Appointment_TimeSlot_StartTime = $Time_slot_detail->start_time;
                                 $Appointment_TimeSlot_EndTime = $Time_slot_detail->end_time;
 
-                                if( date('g:i A',strtotime($Appointment_TimeSlot_StartTime )) > Carbon::now()->format('g:i A') ){
+                                if( Carbon::parse($Appointment_TimeSlot_StartTime ) > Carbon::now() ) {
                                     $AppointmentDetail->status_of_appointment = $accept_or_reject;
                                     $AppointmentDetail->save();
                                     if($accept_or_reject == 'Accepted'){

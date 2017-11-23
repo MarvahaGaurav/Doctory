@@ -29,10 +29,10 @@ class DoctorController extends Controller
     public function getList(Request $request){
         Log::info('----------------------DoctorController--------------------------getList'.print_r($request->all(),True));
         $query = [
-    		'status' => 1,
-    		'user_type' => 1
-    	];
-    	$list = User::getUserList($query);
+            'status' => 1,
+            'user_type' => 1
+        ];
+        $list = User::getUserList($query);
         $result = [];
         $doctor_availabilities = [];
         // dd(count($list));
@@ -61,11 +61,11 @@ class DoctorController extends Controller
                 'doctor_availabilities' => $doctor_availabilities
             ];
         }
-    	$response = [
-    		'message' => __('messages.success.success'),
-    		'response' => $result
-    	];
-    	return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+        $response = [
+            'message' => __('messages.success.success'),
+            'response' => $result
+        ];
+        return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
     }
 
     // at search by category this api will hit only every time
@@ -430,26 +430,29 @@ class DoctorController extends Controller
                 if($UserDetail->user_type == 1){
                     $result = Appointment::get_all_appointment_of_doctor($date,$UserDetail->id, $page_number);
                     $final_result = [];
+                    // dd($result);
                     foreach ($result as $key => $value) {
                         // dd($value);
                         // dd(Carbon::now()->format('Y-m-d'));
                         $TimeSlotDetail = TimeSlot::find($value->time_slot_id);
                         // dd($TimeSlotDetail);
-                        $start_time = date('g:i A',strtotime($TimeSlotDetail->start_time));
-                        // dd($start_time);
+                        // $start_time = date('g:i A',strtotime($TimeSlotDetail->start_time));
+                        $start_time = Carbon::parse($TimeSlotDetail->start_time);
+                        // dd(Carbon::now()->format('g:i A'));
+                        // dd(Carbon::now()->format('g:i A'));
+                        // dd($start_time > Carbon::now());
+
                         // dd($value->appointment_date);
                         if($value->appointment_date == Carbon::now()->format('Y-m-d')  ){
                             // dd($start_time);
                             // dd($start_time > Carbon::now()->format('g:i A'));
-                            if($start_time >= Carbon::now()->format('g:i A')){
+                            if($start_time >= Carbon::now()){
                                 $final_result[] = $value;
                             }
                         }
                         if($value->appointment_date > Carbon::now()->format('Y-m-d')){
-                            // dd('else if');
                             $final_result[] = $value;
                         }
-                       // dd($value->time_slot_id);
                     }
                     $Response = [
                         'message'  => trans('messages.success.success'),
@@ -521,7 +524,7 @@ class DoctorController extends Controller
                                             'message'  => trans('messages.success.appointment_accepted'),
                                         ];
                                         //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
-                                        Notification::insert(['doctor_id'=>$DOCTOR_DETAIL->id,'patient_id'=>$patient_id,'type'=>1,'appointment_id' => $appointment_id]);
+                                        Notification::insert(['doctor_id'=>$DOCTOR_DETAIL->id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>1,'appointment_id' => $appointment_id]);
                                         return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                     }
                                     if($accept_or_reject == 'Rejected'){

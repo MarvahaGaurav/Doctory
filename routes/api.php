@@ -79,6 +79,28 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::post('test',function(Request $request){
+
+	$test=2;
+	if ($test>=1) {
+	  trigger_error("Value must be 1 or below");
+	}
+
+	/*$favcolor = "red";
+
+	switch ($favcolor) {
+	    case "red":
+	        echo "Your favorite color is red!";
+	        break;
+	    case "blue":
+	        echo "Your favorite color is blue!";
+	        break;
+	    case "green":
+	        echo "Your favorite color is green!";
+	        break;
+	    default:
+	        echo "Your favorite color is neither red, blue, nor green!";
+	}*/
+	dd();
 	$password = $request->password;
  	// dd(Hash::make($password));
 	$db = '$2y$10$Rs7AaHoYaL5sAIsXSXEZOuhVXuqLzrra2WboYZdHPTRbdjla13r/6'; 

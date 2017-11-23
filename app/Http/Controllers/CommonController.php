@@ -1032,8 +1032,17 @@ class CommonController extends Controller
 	    	}else{
 	    		$UserDetail = User::where(['remember_token' => $accessToken])->first();
 	    		if(count($UserDetail)){
+	    			// dd($UserDetail->user_type);
 	    			$List = Appointment::whereMonth('appointment_date',$month)
-	    			->whereYear('appointment_date',$year)->select('appointment_date')->get();
+		    			->whereYear('appointment_date',$year)
+		    			->select('appointment_date');
+		    			if($UserDetail->user_type == 1){
+		    				$List = $List->where(['doctor_id'=>$UserDetail->id]); 
+		    			}
+		    			if($UserDetail->user_type == 2){
+		    				$List = $List->where(['patient_id'=>$UserDetail->id]);
+		    			}
+		    		$List = $List->get();
 	    			$result = [];
 	    			foreach ($List as $key => $value) {
 	    				if(!in_array($value->appointment_date, $result)){	    					$result[] = $value->appointment_date;

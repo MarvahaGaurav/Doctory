@@ -1094,8 +1094,10 @@ class DoctorController extends Controller
                             'rescheduled_day_id' => $Appointment->rescheduled_day_id,
                             'rescheduled_date' => $Appointment->rescheduled_date,
                             'type' => $value->type,
-                            'created_at' => Carbon::parse($value->created_at)->format('h:i A, d M'),
-                            'updated_at' => Carbon::parse($value->updated_at)->format('h:i A, d M'),
+                            // 'created_at' => Carbon::parse($value->created_at)->format('h:i A, d M'),
+                            'created_at' => $value->created_at,
+                            'updated_at' => $value->updated_at
+                            // 'updated_at' => Carbon::parse($value->updated_at)->format('h:i A, d M'),
                         ];
                     }
                     Log::info('----------------------DoctorController--------------------------get_notification_list---------response'.print_r($result,True));

@@ -182,7 +182,7 @@ class PatientController extends Controller
 		    		}else{
 		    			if($UserDetail->id == $patient_id){
 			    			$appointment_date_from_user = Carbon::parse($appointment_date);
-			    			if(!$appointment_date_from_user->isYesterday()){
+			    			if($appointment_date_from_user >= Carbon::now()->format('Y-m-d')){
 				    			$AppointmentData =[
 				    				'patient_id' => $patient_id,
 				    				'patient_age' => $patient_age,
@@ -208,16 +208,37 @@ class PatientController extends Controller
 						    				'time_slot_id' => $time_slot_id,
 						    				'day_id' => $day_id,
 						    				'appointment_date' => $appointment_date_from_user
-						    				])->first();
+						    				])
+					    				->where('status_of_appointment','<>','Rejected')
+					    				->first();
 					    				if(!$already_booked){
-						    				$appontmentId = Appointment::insertGetId($AppointmentData);
-						    				Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$patient_id,'type'=>2,'appointment_id' => $appontmentId]);
-						    				$result = Appointment::find($appontmentId);
-							    			$Response = [
-												'message'  => trans('messages.success.appointment_scheduled'),
-												'response' => $result
-											];
-									      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+					    					if(!Carbon::parse($appointment_date)->isToday())
+					    					{
+							    				$appontmentId = Appointment::insertGetId($AppointmentData);
+							    				Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$patient_id,'type'=>2,'appointment_id' => $appontmentId]);
+							    				$result = Appointment::find($appontmentId);
+								    			$Response = [
+													'message'  => trans('messages.success.appointment_scheduled'),
+													'response' => $result
+												];
+										      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+										   }else{
+										   	if(TimeSlot::find($time_slot_id)->start_time > Carbon::now()->format('h:i:s')){
+										   		$appontmentId = Appointment::insertGetId($AppointmentData);
+								    				Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$patient_id,'type'=>2,'appointment_id' => $appontmentId]);
+								    				$result = Appointment::find($appontmentId);
+									    			$Response = [
+														'message'  => trans('messages.success.appointment_scheduled'),
+														'response' => $result
+													];
+											      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+										   	}else{
+										   		$Response = [
+														'message'  => trans('messages.invalid.request'),
+													];
+											      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+										   	}
+										   }
 						    			}else{
 						    				$Response = [
 												'message'  => trans('messages.Patient_Already_Booked_appointment'),
@@ -600,9 +621,10 @@ class PatientController extends Controller
 								$Appointment_TimeSlot_EndTime = $Time_slot_detail->end_time;
 								if( Carbon::parse(strtoupper(($Appointment_TimeSlot_StartTime)))->format('g:i A') > Carbon::now()->format('g:i A') )
 								{
-                                    $AppointmentDetail->status_of_appointment = $accept_or_reject;
+                                    
                                     
                                     if($accept_or_reject == 'Accepted'){
+                                    	$AppointmentDetail->status_of_appointment = $accept_or_reject;
                                     	$AppointmentDetail->time_slot_id = $AppointmentDetail->rescheduled_time_slot_id;
 
                                     	$AppointmentDetail->day_id = $AppointmentDetail->rescheduled_day_id;
@@ -620,6 +642,7 @@ class PatientController extends Controller
                                         return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                     }
                                     if($accept_or_reject == 'Rejected'){
+                                    	$AppointmentDetail->status_of_appointment = 'Rejected by patient';
                                     	Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>3,'appointment_id' => $appointment_id,'appointment_status'=>'Rejected']);
 
                                     	$AppointmentDetail->save();
@@ -767,8 +790,10 @@ class PatientController extends Controller
                             'rescheduled_day_id' => $Appointment->rescheduled_day_id,
                             'rescheduled_date' => $Appointment->rescheduled_date,
                             'type' => $value->type,
-                            'created_at' => Carbon::parse($value->created_at)->format('h:i A, d M'),
-                            'updated_at' => Carbon::parse($value->updated_at)->format('h:i A, d M'),
+                            // 'created_at' => Carbon::parse($value->created_at)->format('h:i A, d M'),
+                            'created_at' => $value->created_at,
+                            'updated_at' => $value->updated_at
+                            // 'updated_at' => Carbon::parse($value->updated_at)->format('h:i A, d M'),
                         ];
 	    			}
 	    			$response = [

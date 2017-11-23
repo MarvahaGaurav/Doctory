@@ -144,7 +144,7 @@ class PatientController extends Controller
  	}
 
  	public function schedule_appointment_with_doctor(Request $request){
-		Log::info('----------------------PatientController--------------------------bookmark_UnBookMark_Doctor'.print_r($request->all(),True));
+		Log::info('----------------------PatientController--------------------------schedule_appointment_with_doctor'.print_r($request->all(),True));
  		$accessToken = $request->header('accessToken');
  		$patient_id = $request->patient_id;
  		$patient_age = $request->patient_age;
@@ -200,6 +200,7 @@ class PatientController extends Controller
 					    			$Already_Busy_Time_Slot_With_Other_Patient = Appointment::where(['doctor_id' => $doctor_id,'time_slot_id' => $time_slot_id,'day_id' => $day_id])
 					    			->where('patient_id','<>',$patient_id)
 					    			->where('appointment_date','=',$appointment_date_from_user)
+					    			->where('status_of_appointment','<>','Rejected')
 					    			->first();
 					    			if(!$Already_Busy_Time_Slot_With_Other_Patient){
 					    				$already_booked = Appointment::where([
@@ -249,7 +250,7 @@ class PatientController extends Controller
 						    				$Response = [
 												'message'  => trans('messages.Already_Busy_Time_Slot_With_Other_Patient')
 											];
-									      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+									      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
 					    			}
 					    		}else{
 					    			$response = [

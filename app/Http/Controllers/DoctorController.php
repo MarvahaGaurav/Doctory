@@ -29,10 +29,10 @@ class DoctorController extends Controller
     public function getList(Request $request){
         Log::info('----------------------DoctorController--------------------------getList'.print_r($request->all(),True));
         $query = [
-            'status' => 1,
-            'user_type' => 1
-        ];
-        $list = User::getUserList($query);
+    		'status' => 1,
+    		'user_type' => 1
+    	];
+    	$list = User::getUserList($query);
         $result = [];
         $doctor_availabilities = [];
         // dd(count($list));
@@ -61,11 +61,11 @@ class DoctorController extends Controller
                 'doctor_availabilities' => $doctor_availabilities
             ];
         }
-        $response = [
-            'message' => __('messages.success.success'),
-            'response' => $result
-        ];
-        return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+    	$response = [
+    		'message' => __('messages.success.success'),
+    		'response' => $result
+    	];
+    	return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
     }
 
     // at search by category this api will hit only every time
@@ -417,7 +417,7 @@ class DoctorController extends Controller
         Log::info('------------------DoctorController------------get_all_appointment_of_doctor');
         $accessToken = $request->header('accessToken');
         $date = date('Y-m-d');
-        $page_number = $request->page_number;
+        // $page_number = $request->page_number;
         $locale = $request->header('locale');
         if(empty($locale)){
             $locale = 'en';
@@ -428,7 +428,8 @@ class DoctorController extends Controller
             $UserDetail = User::where(['remember_token'=>$accessToken])->first();
             if(count($UserDetail)){
                 if($UserDetail->user_type == 1){
-                    $result = Appointment::get_all_appointment_of_doctor($date,$UserDetail->id, $page_number);
+                    // $result = Appointment::get_all_appointment_of_doctor($date,$UserDetail->id, $page_number);
+                    $result = Appointment::get_all_appointment_of_doctor($date,$UserDetail->id);
                     $final_result = [];
                     // dd($result);
                     foreach ($result as $key => $value) {

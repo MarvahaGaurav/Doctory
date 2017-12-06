@@ -100,7 +100,7 @@ class Controller extends BaseController
 				foreach ($days as $key => $value1) {
 					if($value1 == 1 && $value->day_id == 1){
 					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])
-					   	->where('status_of_appointment','<>','rejected')
+					   	->whereNotIn('status_of_appointment',['rejected','cancelled'])
 					   	->where('appointment_date',$dates[$key])
 					   	->first();
 					      if($busyOrFree){
@@ -110,7 +110,7 @@ class Controller extends BaseController
 						   }
 				   }
 				   if($value1 == 2 && $value->day_id == 2){
-					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 					   		->where('appointment_date',$dates[$key])
 					   		->first();
 					   	if($busyOrFree){
@@ -120,7 +120,7 @@ class Controller extends BaseController
 				      	}
 				   }
 				   if($value1 == 3 && $value->day_id == 3){
-					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 						   	->where('appointment_date',$dates[$key])
 						   	->first();
 						   if($busyOrFree){
@@ -130,7 +130,7 @@ class Controller extends BaseController
 						   }
 				   }
 				   if($value1 == 4 && $value->day_id == 4){
-					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 						   	->where('appointment_date',$dates[$key])
 						   	->first();
 						   if($busyOrFree){
@@ -142,7 +142,7 @@ class Controller extends BaseController
 				   if($value1 == 5 && $value->day_id == 5){
 				   	// dd($value);
 				   	// dd(Carbon::now()->addDay(5)->format('Y-m-d'));
-					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 					   		->where('appointment_date',$dates[$key])
 					   		->first();
 					   	if($busyOrFree){
@@ -152,7 +152,7 @@ class Controller extends BaseController
 					   	}
 				   }
 				   if($value1 == 6 && $value->day_id == 6){
-					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 					   		->where('appointment_date',$dates[$key])
 					   		->first();
 					   	if($busyOrFree){
@@ -162,9 +162,10 @@ class Controller extends BaseController
 				      	}
 				   }
 				   if($value1 == 7 && $value->day_id == 7){
-					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->where('status_of_appointment','<>','rejected')
+					   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 					   		->where('appointment_date',$dates[$key])
 					   		->first();
+					   	// dd($busyOrFree);
 					   	if($busyOrFree){
 				      		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 				      	}else{
@@ -176,7 +177,7 @@ class Controller extends BaseController
 			   if($value->day_id == 1){
 			   	if(Carbon::now()->dayOfWeek+1 == 1){
 				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])
-				   	->where('status_of_appointment','<>','rejected')
+				   	->whereNotIn('status_of_appointment',['rejected','cancelled'])
 				   	->where('appointment_date',Carbon::now()->addDay(1)->format('Y-m-d'))
 				   	->first();
 				       array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
@@ -184,7 +185,7 @@ class Controller extends BaseController
 			   }
 			   if($value->day_id == 2){
 			   	if(Carbon::now()->dayOfWeek+1 == 2){
-				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 				   		->where('appointment_date',Date('Y-m-d'))
 				   		->first();
 				      array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
@@ -192,7 +193,7 @@ class Controller extends BaseController
 			   }
 			   if($value->day_id == 3){
 			   	if(Carbon::now()->dayOfWeek+1 == 3){
-				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 					   	->where('appointment_date',Date('Y-m-d'))
 					   	->first();
 			       	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
@@ -200,7 +201,7 @@ class Controller extends BaseController
 			   }
 			   if($value->day_id == 4){
 			   	if(Carbon::now()->dayOfWeek+1 == 4){
-				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 					   	->where('appointment_date',Date('Y-m-d'))
 					   	->first();
 			       	array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
@@ -208,7 +209,7 @@ class Controller extends BaseController
 			   }
 			   if($value->day_id == 5){
 			   	if(Carbon::now()->dayOfWeek+1 == 5){
-				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 				   		->where('appointment_date',Date('Y-m-d'))
 				   		->first();
 				      array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
@@ -216,7 +217,7 @@ class Controller extends BaseController
 			   }
 			   if($value->day_id == 6){
 			   	if(Carbon::now()->dayOfWeek+1 == 6){
-				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 				   		->where('appointment_date',Date('Y-m-d'))
 				   		->first();
 			       	array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
@@ -224,7 +225,7 @@ class Controller extends BaseController
 			   }
 			   if($value->day_id == 7){
 			   	if(Carbon::now()->dayOfWeek+1 == 7){
-				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->where('status_of_appointment','<>','rejected')
+				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['rejected','cancelled'])
 				   		->where('appointment_date',Date('Y-m-d'))
 				   		->first();
 			      	array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);

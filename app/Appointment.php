@@ -45,12 +45,13 @@ class Appointment extends Model
 		return $data;
 	}
 
-	public static function get_all_appointment_of_doctor_by_date($date,$UserDetail,$page_number){
-		if($page_number == 0){
+	// public static function get_all_appointment_of_doctor_by_date($date,$UserDetail,$page_number){
+	public static function get_all_appointment_of_doctor_by_date($date,$UserDetail){
+		/*if($page_number == 0){
 			$skip = 0;
 		}else{
 			$skip = $page_number * 10;
-		}
+		}*/
 		$data = Self::Where(['doctor_id' => $UserDetail])
 			->whereDate('appointment_date',$date)
 			// ->whereDate('appointment_date','>=',$date)
@@ -58,8 +59,8 @@ class Appointment extends Model
 			// ->where('status_of_appointment','<>','Rejected')
 			->with('PatientDetail','Reffered_To_Doctor_Detail','Reffered_By_Doctor_Detail')
 			// ->with('PatientDetail','Reffered_By_Doctor_Detail')
-			->skip($skip)
-			->take(10)
+			/*->skip($skip)
+			->take(10)*/
 			->get();
 		return $data;
 	}

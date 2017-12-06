@@ -38,7 +38,7 @@ return [
 		'speciality_updated' => 'Speciality updated successfully.',
 		'qualificationy_updated' => 'Qualification updated successfully.',
 		'mother_language_updated' => 'Mother language updated successfully',
-		'Admin_profile_updated' => 'Admin profile updated successfully.'
+		'Admin_profile_updated' => 'Admin profile updated successfully.',
 	],
 
 	'error' => [
@@ -59,6 +59,38 @@ return [
 		'SHOW_ERROR_MESSAGE' => '400',
 		'ERROR_IN_EXECUTION' => '404',
 		'BAD_REQUEST' => '500'
+	],
+
+	'appointment_status' => [
+		'PENDING' => 'Pending',
+		'ACCEPTED_BY_DOCTOR' => 'Accepted by doctor',
+		'REJECTED_BY_DOCTOR' => 'Rejected by doctor',
+		'CANCELED_BY_DOCTOR' => 'Canceled by doctor',
+		'CANCELED_BY_PATIENT' => 'Canceled by patient',
+		'RESCHEDULED_BY_PATIENT' => 'Rescheduled by patient',
+		'RESCHEDULED_BY_DOCTOR' => 'Rescheduled by doctor',
+		'RESCHEDULED_ACCEPTED_BY_PATIENT' => 'Rescheduled appointment accepted by patient',
+		'RESCHEDULED_REJECTED_BY_PATIENT' => 'Rescheduled appointment rejected by patient',
+		'RESCHEDULED_ACCEPTED_BY_DOCTOR' => 'Rescheduled appointment accepted by doctor',
+		'RESCHEDULED_REJECTED_BY_DOCTOR' => 'Rescheduled appointment rejected by doctor',
+		'COMPLETED' => 'Completed',
+		'Appointment_Cancelled_By_Patient' => 'Appointment cancelled successfully.',
+		'Appointment_Cancelled_By_Doctor' => 'Appointment cancelled successfully.'
+	],
+
+	'notification_status_codes' => [
+		'Rescheduled_Appointment' => '1',
+		'Scheduled_Appointment' => '2',
+		'Rescheduled_Appointment_Accepted_By_Patient' => '3',
+		'Rescheduled_Appointment_Accepted_By_Doctor' => '4',
+		'Rescheduled_Appointment_Rejected_By_Patient' => '5',
+		'Rescheduled_Appointment_Rejected_By_Doctor' => '6',
+		'Appointment_Rescheduled_By_Patient' => '7',
+		'Appointment_Rescheduled_By_Doctor' => '8',
+		'Appointment_Accepted_By_Doctor' => '9',
+		'Appointment_Rejected_By_Doctor' => '10',
+		'Appointment_Cancelled_By_Patient' => '11',
+		'Appointment_Cancelled_By_Doctor' => '12'
 	],
 
 	'required' => [

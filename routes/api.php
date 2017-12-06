@@ -51,6 +51,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('get_notification_list_for_doctor','DoctorController@get_notification_list');
 
 	Route::post('updateRescheduledAppointmentByDcotor','DoctorController@accept_or_reject_appointment_by_doctor_rescheduled_by_patient');
+	Route::post('cancel_appointment_by_doctor','DoctorController@cancel_appointment_by_doctor');
+
 
 ////////////////////////////////////////////////
 ////// Doctor Api's END
@@ -71,6 +73,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('search_doctor_by_patient','PatientController@search_doctor');
 	Route::post('get_notification_list_for_patient','PatientController@get_notification_list');
 	Route::post('reschedule_appointment_by_patient','PatientController@reschedule_appointment_by_patient');
+	Route::post('cancel_appointment_by_patient','PatientController@cancel_appointment_by_patient');
+
 
 ////////////////////////////////////////////////
 ////// PATIENT's Api's END

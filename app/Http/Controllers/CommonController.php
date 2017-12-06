@@ -117,6 +117,7 @@ class CommonController extends Controller
 		$accessToken  = md5(uniqid(rand(), true));
 		$language = $request->language;
 		$locale = $request->header('locale');
+		$login_type = $request->login_type;
 
 		if(empty($locale)){
 			$locale = 'en';
@@ -129,7 +130,8 @@ class CommonController extends Controller
 				'email' => 'required|email',
 				'password' => 'required|min:8',
 				'device_token' => 'required',
-				'device_type' => 'required|numeric'
+				'device_type' => 'required|numeric',
+				'login_type' => 'required'
 	    	];
 	    	$validator = Validator::make($request->all(),$validations);
 	    	if($validator->fails()){
@@ -140,31 +142,38 @@ class CommonController extends Controller
 	    	}else{
 	    		$userDetail = User::Where(['email' => $email])->first();
 	    		if(!empty($userDetail)){
-	    			if(Hash::check($password,$userDetail->password)){
-	    				$User = new \App\User;
-	    				$UserDetail = $User::find($userDetail->id);
-	    				$UserDetail->device_token = $device_token;
-	    				$UserDetail->device_type = $device_type;
-	    				$UserDetail->remember_token = $accessToken;
-	    				$UserDetail->language = $language;
-	    				$UserDetail->save();
-	    				$result = $this->getUserDetail($User->getUserDetail($userDetail->id)); // $this->getUserDetail available in controlle
-	    				$response = [
-							'message' =>  __('messages.success.login'),
-							'response' => $result
-						];
-						return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
-	    			}else{
-	    				$response = [
+	    			if($userDetail->user_type == $login_type){
+	    				if(Hash::check($password,$userDetail->password)){
+		    				$User = new \App\User;
+		    				$UserDetail = $User::find($userDetail->id);
+		    				$UserDetail->device_token = $device_token;
+		    				$UserDetail->device_type = $device_type;
+		    				$UserDetail->remember_token = $accessToken;
+		    				$UserDetail->language = $language;
+		    				$UserDetail->save();
+		    				$result = $this->getUserDetail($User->getUserDetail($userDetail->id)); // $this->getUserDetail available in controlle
+		    				$response = [
+								'message' =>  __('messages.success.login'),
+								'response' => $result
+							];
+							return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+		    			}else{
+		    				$response = [
+								'message' =>  __('messages.invalid.detail')
+							];
+							return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+		    			}
+		    		}else{
+		    			$response = [
 							'message' =>  __('messages.invalid.detail')
 						];
 						return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
-	    			}
+		    		}
 	    		}else{
 	    			$response = [
 						'message' =>  __('messages.invalid.detail')
 					];
-					return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
+					return response()->json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
 	    		}
 	    	}
 	   }else{
@@ -992,6 +1001,20 @@ class CommonController extends Controller
    	$Day = Day::all();
    	$TimeSlot = TimeSlot::all();
    	$time_slot_result = [];
+
+   	$notification_status_codes =[
+			'Rescheduled_Appointment' => '1',
+			'Scheduled_Appointment' => '2',
+			'Rescheduled_Appointment_Accepted_By_Patient' => '3',
+			'Rescheduled_Appointment_Accepted_By_Doctor' => '4',
+			'Rescheduled_Appointment_Rejected_By_Patient' => '5',
+			'Rescheduled_Appointment_Rejected_By_Doctor' => '6',
+			'Appointment_Rescheduled_By_Patient' => '7',
+			'Appointment_Rescheduled_By_Doctor' => '8',
+			'Appointment_Accepted_By_Doctor' => '9',
+			'Appointment_Rejected_By_Doctor' => '10'
+		];
+
    	foreach ($TimeSlot as $key => $value) {
    		$time_slot_result [] = [
    			'id' => $value->id,
@@ -1005,6 +1028,7 @@ class CommonController extends Controller
    		'MotherLanguage' => $MotherLanguage,
    		'Qualification' => $Qualification,
    		'Speciality' => $Category,
+   		'notification_status_codes' => $notification_status_codes
    	];
 		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
    }

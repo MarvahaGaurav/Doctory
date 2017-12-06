@@ -449,6 +449,7 @@ class AdminController extends Controller
          return redirect('Admin/login');
       }
    }
+   
    public function add_mother_language(Request $request){
          $loggedIn = Session::get('Dr_Admin_loggedIn');
          if($loggedIn){

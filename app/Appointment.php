@@ -73,7 +73,7 @@ class Appointment extends Model
 		}*/
 		$data = Self::Where(['doctor_id' => $user_id])
 			->whereDate('appointment_date','>=',$date)
-			->where('status_of_appointment','<>','Rejected')
+			->whereNotIn('status_of_appointment',['Rejected','Cancelled'])
 			->orderBy('appointment_date','asc')
 			->with('PatientDetail','Reffered_To_Doctor_Detail','Reffered_By_Doctor_Detail')
 			->with('PatientDetail','Reffered_By_Doctor_Detail')

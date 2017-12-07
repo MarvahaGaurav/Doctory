@@ -50,7 +50,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('get_doctor_available_time_slots','DoctorController@get_doctor_available_time_slots');
 	Route::post('get_notification_list_for_doctor','DoctorController@get_notification_list');
 
-	Route::post('updateRescheduledAppointmentByDcotor','DoctorController@accept_or_reject_appointment_by_doctor_rescheduled_by_patient');
+	Route::post('updateRescheduledAppointmentByDoctor','DoctorController@accept_or_reject_appointment_by_doctor_rescheduled_by_patient');
 	Route::post('cancel_appointment_by_doctor','DoctorController@cancel_appointment_by_doctor');
 
 

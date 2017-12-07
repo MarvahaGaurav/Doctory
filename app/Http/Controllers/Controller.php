@@ -96,9 +96,6 @@ class Controller extends BaseController
 
 
 			foreach ($doctor_availabilities as $key => $value) {
-				// dd($value->day_id);
-
-
 				//This Code Run For Comming Days
 				foreach ($days as $key => $value1) {
 					if($value1 == 1 && $value->day_id == 1){
@@ -108,10 +105,15 @@ class Controller extends BaseController
 					   	->first();
 					      if($busyOrFree){
 						      array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+						      if(!empty($busyOrFree->rescheduled_day_id)){
+							   	if($busyOrFree->rescheduled_day_id == 1 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+							   		array_push($day1,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+							   	}else{
+							   		array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+								   }
+					  			}
 						   }else{
-						   	if($busyOrFree->rescheduled_day_id == " ") {
-						   		array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-						   	}
+					   		array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
 						   }
 				   }
 				   if($value1 == 2 && $value->day_id == 2){
@@ -120,10 +122,15 @@ class Controller extends BaseController
 					   		->first();
 					   	if($busyOrFree){
 					     		array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					     		if(!empty($busyOrFree->rescheduled_day_id)){
+							   	if($busyOrFree->rescheduled_day_id == 2 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+							   		array_push($day2,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+							   	}else{
+					      			array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+						      	}
+					  			}
 					     	}else{
-					     		if($busyOrFree->rescheduled_day_id == " "){
-				      			array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-				      		}
+			      			array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
 				      	}
 				   }
 				   if($value1 == 3 && $value->day_id == 3){
@@ -132,10 +139,15 @@ class Controller extends BaseController
 						   	->first();
 						   if($busyOrFree){
 						   	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+						   	if(!empty($busyOrFree->rescheduled_day_id)){
+							   	if($busyOrFree->rescheduled_day_id == 3 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+							   		array_push($day3,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+							   	}else{
+										array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);   		
+								   }
+					  			}
 						   }else{
-						   	if($busyOrFree->rescheduled_day_id == " "){
-									array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);   		
-								}
+								array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);   		
 						   }
 				   }
 				   if($value1 == 4 && $value->day_id == 4){
@@ -145,10 +157,15 @@ class Controller extends BaseController
 						   // dd($busyOrFree);
 						   if($busyOrFree){
 				       		array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+				       		if(!empty($busyOrFree->rescheduled_day_id)){
+							   	if($busyOrFree->rescheduled_day_id == 4 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+							   		array_push($day4,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+							   	}else{
+					       			array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+						       	}
+					  			}
 				       	}else{
-				       		if($busyOrFree->rescheduled_day_id == " "){
-				       			array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-				       		}
+			       			array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
 				       	}
 				   }
 				   if($value1 == 5 && $value->day_id == 5){
@@ -159,10 +176,15 @@ class Controller extends BaseController
 					   		->first();
 					   	if($busyOrFree){
 					     		array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					     		if(!empty($busyOrFree->rescheduled_day_id)){
+							   	if($busyOrFree->rescheduled_day_id == 5 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+							   		array_push($day5,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+							   	}else{
+							      	array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+								   }
+					  			}
 					     	}else{
-					     		if($busyOrFree->rescheduled_day_id == " "){
-					   			array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-					   		}
+				   			array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
 					   	}
 				   }
 				   if($value1 == 6 && $value->day_id == 6){
@@ -171,10 +193,15 @@ class Controller extends BaseController
 					   		->first();
 					   	if($busyOrFree){
 				       		array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
-				       	}else{
-				       		if($busyOrFree->rescheduled_day_id == " "){
+				       		if(!empty($busyOrFree->rescheduled_day_id)){
+							   	if($busyOrFree->rescheduled_day_id == 6 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+							   		array_push($day6,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+							   	}
+					  			}else{
 				      			array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-				      		}
+					      	}
+				       	}else{
+			      			array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
 				      	}
 				   }
 				   if($value1 == 7 && $value->day_id == 7){
@@ -184,14 +211,23 @@ class Controller extends BaseController
 					   	// dd($busyOrFree);
 					   	if($busyOrFree){
 				      		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
-				      	}else{
-				      		if($busyOrFree->rescheduled_day_id == " "){
+				      		if(!empty($busyOrFree->rescheduled_day_id)){
+							   	if($busyOrFree->rescheduled_day_id == 7 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+							   		array_push($day7,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+							   	}
+					  			}else{
 				      			array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-				      		}
+					      	}
+				      	}else{
+			      			array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
 				      	}
 			   	}
 				}
 				// Code Run For Comming Days END
+
+
+
+
 
 			   if($value->day_id == 1){
 			   	if(Carbon::now()->dayOfWeek+1 == 1){
@@ -201,11 +237,14 @@ class Controller extends BaseController
 				   	->first();
 				       array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 				       if(!empty($busyOrFree->rescheduled_day_id)){
-			       		// dd($busyOrFree->rescheduled_time_slot_id);	
 					   	if($busyOrFree->rescheduled_day_id == 1 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
-					   		array_push($day4,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+					   		array_push($day1,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
 					   		// dd($busyOrFree);
-					   	}
+					   	}else{
+					      	array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+						   }
+					   }else{
+				      	array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 					   }
 				   }
 			   }
@@ -216,12 +255,14 @@ class Controller extends BaseController
 				   		->first();
 				      array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 				      if(!empty($busyOrFree->rescheduled_day_id)){
-			       		// dd($busyOrFree->rescheduled_time_slot_id);	
 					   	if($busyOrFree->rescheduled_day_id == 2 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
-					   		array_push($day4,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
-					   		// dd($busyOrFree);
+					   		array_push($day2,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
 					   	}
+					   }else{
+				      	array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 					   }
+				   }else{
+			      	array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 				   }
 			   }
 			   if($value->day_id == 3){
@@ -231,13 +272,15 @@ class Controller extends BaseController
 					   	->first();
 			       	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 			       	if(!empty($busyOrFree->rescheduled_day_id)){
-			       		// dd($busyOrFree->rescheduled_time_slot_id);	
 					   	if($busyOrFree->rescheduled_day_id == 3 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
-					   		array_push($day4,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
-					   		// dd($busyOrFree);
+					   		array_push($day3,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
 					   	}
+					   }else{
+				      	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 					   }
-			      }
+			      }else{
+			      	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+				   }
 			   }
 			   if($value->day_id == 4){
 			   	if(Carbon::now()->dayOfWeek+1 == 4){
@@ -246,11 +289,13 @@ class Controller extends BaseController
 					   	->first();
 			       	array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 			       	if(!empty($busyOrFree->rescheduled_day_id)){
-			       		// dd($busyOrFree->rescheduled_time_slot_id);	
 					   	if($busyOrFree->rescheduled_day_id == 4 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
 					   		array_push($day4,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
-					   		// dd($busyOrFree);
-					   	}
+					   	}else{
+					      	array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+						   }
+					   }else{
+				      	array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 					   }
 			      }
 			   }
@@ -259,13 +304,16 @@ class Controller extends BaseController
 				   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 				   		->where('appointment_date',Date('Y-m-d'))
 				   		->first();
-				      array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
-				      if(!empty($busyOrFree->rescheduled_day_id)){
-			       		// dd($busyOrFree->rescheduled_time_slot_id);	
-					   	if($busyOrFree->rescheduled_day_id == 5 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
-					   		array_push($day4,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
-					   		// dd($busyOrFree);
-					   	}
+				   	if($busyOrFree){
+					      if(!empty($busyOrFree->rescheduled_day_id)){
+						   	if($busyOrFree->rescheduled_day_id == 5 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+						   		array_push($day5,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+						   	}else{
+						      	array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+							   }
+						   }
+						}else{
+				      	array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 					   }
 				   }
 			   }
@@ -276,11 +324,13 @@ class Controller extends BaseController
 				   		->first();
 			       	array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 			       	if(!empty($busyOrFree->rescheduled_day_id)){
-			       		// dd($busyOrFree->rescheduled_time_slot_id);	
 					   	if($busyOrFree->rescheduled_day_id == 6 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
-					   		array_push($day4,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
-					   		// dd($busyOrFree);
-					   	}
+					   		array_push($day6,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+					   	}else{
+					      	array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+						   }
+					   }else{
+				      	array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 					   }
 			      }
 			   }
@@ -291,16 +341,19 @@ class Controller extends BaseController
 				   		->first();
 			      	array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 			      	if(!empty($busyOrFree->rescheduled_day_id)){
-			       		// dd($busyOrFree->rescheduled_time_slot_id);	
 					   	if($busyOrFree->rescheduled_day_id == 7 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
-					   		array_push($day4,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
-					   		// dd($busyOrFree);
-					   	}
+					   		array_push($day7,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+					   	}else{
+					      	array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+						   }
+					   }else{
+				      	array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 					   }
 			      }
 			   }
 			}
 
+			// dd($day5);
 			$doctor_availabilities_result = [
 			   '1' => $day1,
 			   '2' => $day2,
@@ -335,8 +388,6 @@ class Controller extends BaseController
 	   		'profile_status' => $data['profile_status'],
 	   		'notification' => $data['notification'],
 	   		'language' => $data['language'],
-	   		// 'created_at' => $data['created_at'],
-	   		// 'updated_at' => $data['updated_at'],
 	   		'speciality' => $data['speciality'],
 	   		'otp_detail' => $data['Otp_detail'],
 	   		'qualification' => $qualification,
@@ -355,7 +406,6 @@ class Controller extends BaseController
 	   		'country_code' => $data['country_code'],
 	   		'mobile' => $data['mobile'],
 	   		'profile_image' => $data['profile_image'],
-	   		// 'speciality_id' => $data['speciality_id'],
 	   		'remember_token' => $data['remember_token'],
 	   		'device_token' => $data['device_token'],
 	   		'device_type' => $data['device_type'],
@@ -364,9 +414,6 @@ class Controller extends BaseController
 	   		'profile_status' => $data['profile_status'],
 	   		'notification' => $data['notification'],
 	   		'language' => $data['language'],
-	   		// 'created_at' => $data['created_at'],
-	   		// 'updated_at' => $data['updated_at'],
-	   		// 'speciality' => $data['speciality'],
 	   		'otp_detail' => $data['Otp_detail'],
 	   	];
 	   	return $result;

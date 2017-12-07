@@ -65,6 +65,14 @@ class Appointment extends Model
 		return $data;
 	}
 
+
+	/*public function getAppointmentDateAttribute($value){
+		if(Carbon::now() == $value ){
+			return Carbon::now()->format('Y-m-d h:i:sa');
+		}
+		
+	}*/
+
 	public static function get_all_appointment_of_doctor($date,$user_id){ // Home Screen
 		/*if($page_number == 0){
 			$skip = 0;
@@ -73,7 +81,7 @@ class Appointment extends Model
 		}*/
 		$data = Self::Where(['doctor_id' => $user_id])
 			->whereDate('appointment_date','>=',$date)
-			->whereNotIn('status_of_appointment',['Rejected','Cancelled'])
+			->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 			->orderBy('appointment_date','asc')
 			->with('PatientDetail','Reffered_To_Doctor_Detail','Reffered_By_Doctor_Detail')
 			->with('PatientDetail','Reffered_By_Doctor_Detail')

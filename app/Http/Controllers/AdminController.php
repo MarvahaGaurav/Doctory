@@ -300,6 +300,7 @@ class AdminController extends Controller
             $role = Session::get('Dr_Admin_Role');
             $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
             $Pending_doctor_list = User::where(['status'=>0,'user_type'=>1])->get();
+            // dd($Pending_doctor_list);
             return view('Admin/pendingList',compact('AdminDetail','Pending_doctor_list'));
          }else{
             return redirect('Admin/login');
@@ -307,6 +308,20 @@ class AdminController extends Controller
       }  
    }
 
+   /*public function docProfile(Request $request){
+      if($request->method() == "GET"){
+         $loggedIn = Session::get('Dr_Admin_loggedIn');
+         if($loggedIn){
+            $id = Session::get('Dr_Admin_Id');
+            $role = Session::get('Dr_Admin_Role');
+            $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
+            return view('Admin/docProfile',compact('AdminDetail'));
+         }else{
+            return redirect('Admin/login');
+         }
+      }  
+   }
+*/
    public function approve_doctor(Request $request){
       $loggedIn = Session::get('Dr_Admin_loggedIn');
          if($loggedIn){
@@ -363,7 +378,7 @@ class AdminController extends Controller
             $Speciality->description = $desc;
             if($iconImage){
                $name = time()."_".str_replace(' ','_',$iconImage->getClientOriginalName());
-               $iconImage->move(public_path('iconImages'),$name);
+               $iconImage->move(base_path('iconImages'),$name);
                $Speciality->icon_path = $name;
             }
             $Speciality->save();
@@ -606,6 +621,27 @@ class AdminController extends Controller
             $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
             $User = New User;
             $Doctor_detail = $this->getUserDetail($User->getUserDetail($request->doctor_id));
+            if($Doctor_detail){
+               // dd($Doctor_detail);
+               return view('Admin/docProfile',compact('AdminDetail','Doctor_detail'));
+            }else{
+               
+            }
+         }
+      }else{
+         return redirect('Admin/login');
+      }
+   }
+
+   public function pending_doctor_profile(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         if($request->method() == "GET"){
+            $id = Session::get('Dr_Admin_Id');
+            $role = Session::get('Dr_Admin_Role');
+            $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
+            $User = New User;
+            $Doctor_detail = $this->getUserDetail($User->getPendingDoctorDetail($request->doctor_id));
             if($Doctor_detail){
                // dd($Doctor_detail);
                return view('Admin/docProfile',compact('AdminDetail','Doctor_detail'));

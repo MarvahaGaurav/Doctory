@@ -635,6 +635,7 @@ class PatientController extends Controller
 				   		}
 				        	$DoctorDetail = [
 				        		'id' => $res->DoctorDetail->id,
+				        		'firebase_id' => $res->DoctorDetail->firebase_id,
 				        		'name' => $res->DoctorDetail->name,
 				        		'email' => $res->DoctorDetail->email,
 				        		'country_code' => $res->DoctorDetail->country_code,

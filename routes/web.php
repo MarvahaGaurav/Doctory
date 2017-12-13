@@ -19,9 +19,11 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-/*Route::group(['prefix' => 'Admin'],function(){
-	Route::get('doctor_profile/{doctor_id}','AdminController@doctor_profile');
+
+Route::group(['prefix' => 'Admin'],function(){
 	Route::match(['get','post'],'login', 'AdminController@index');
+	/*Route::get('doctor_profile/{doctor_id}','AdminController@doctor_profile');
+	Route::get('pending_doctor_profile/{doctor_id}','AdminController@pending_doctor_profile');
 	Route::match(['get'],'logout', 'AdminController@logout');
 	Route::get('dashboard','AdminController@dashboard');
 	Route::get('profile','AdminController@profile');
@@ -30,6 +32,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 	Route::get('approve_list','AdminController@approved_list');
 	Route::get('pending_list','AdminController@pending_list');
+	Route::get('docProfile','AdminController@docProfile');
 
 	Route::match(['get','post'],'speciality_management','AdminController@speciality_management');
 	Route::get('delete_speciality/{speciality_id}','AdminController@delete_speciality');
@@ -52,7 +55,6 @@ Route::get('/home', 'HomeController@index')->name('home');
 	
 	Route::get('patient_list','AdminController@patient_list');
 	Route::get('approve_doctor/{doctor_id}','AdminController@approve_doctor');
-	Route::get('block_patient/{patient_id}/{status}','AdminController@block_patient');
+	Route::get('block_patient/{patient_id}/{status}','AdminController@block_patient');*/
 
-});*/
-
+});

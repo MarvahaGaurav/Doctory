@@ -1036,6 +1036,7 @@ class CommonController extends Controller
    public function get_all_event_dates(Request $request){
    	Log::info('----------------------CommonController--------------------------get_all_event_dates'.print_r($request->all(),True));
 		$accessToken = $request->header('accessToken');
+		$firebase_id = $request->firebase_id;
 		$month = $request->month;
 		$year = $request->year;
 		$locale = $request->header('locale');
@@ -1046,6 +1047,7 @@ class CommonController extends Controller
 			$validations = [
 				'month' => 'required',
 				'year' => 'required',
+				'firebase_id' => 'required',
 	    	];
 	    	$validator = Validator::make($request->all(),$validations);
 	    	if($validator->fails()){
@@ -1057,6 +1059,8 @@ class CommonController extends Controller
 	    		$UserDetail = User::where(['remember_token' => $accessToken])->first();
 	    		if(count($UserDetail)){
 	    			// dd($UserDetail->user_type);
+	    			$UserDetail->firebase_id = $firebase_id;
+	    			$UserDetail->save();
 	    			$List = Appointment::whereMonth('appointment_date',$month)
 		    			->whereYear('appointment_date',$year)
 		    			->select('appointment_date');

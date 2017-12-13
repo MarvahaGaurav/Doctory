@@ -46,6 +46,17 @@ class User extends Authenticatable
         return $data;
     }
 
+    public function getPendingDoctorDetail($userId){
+        // dd($userId);
+        $data = Self::where(['id' => $userId , 'status' => 0])
+            ->with('speciality')
+            ->with('qualification')
+            ->with('Otp_detail')
+            ->with('mother_language')
+            ->first();
+        return $data;
+    }
+
     public static function getDoctorBySpecialityId($query){
         // dd($query);
         $data = Self::where(['speciality_id' => $query['speciality_id'] , 'status' => $query['status'],'profile_status' => 1])

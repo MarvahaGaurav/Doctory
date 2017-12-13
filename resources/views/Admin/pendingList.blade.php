@@ -40,8 +40,8 @@
                                              <tr>
                                                 <td>{{$PDL->name}}</td>
                                                 <td>{{$PDL->email}}</td>
-                                                <td>{{$PDL->mobile}}</td>
-                                                <td><a href="docProfile.php" class="btn btn-danger btn-sm"> Profile</a></td>
+                                                <td>{{$PDL->country_code}}-{{$PDL->mobile}}</td>
+                                                <td><a href="{{url('Admin/pending_doctor_profile')}}/{{$PDL->id}}" class="btn btn-danger btn-sm"> Profile</a></td>
                                                 <td><label class="label label-rounded label-success">Pending</label></td>
                                                 <td>
                                                    @if($PDL->status == 0)

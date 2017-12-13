@@ -110,12 +110,11 @@ class UsersController extends Controller
 	     			DB::table( 'users' )
 	 					->where( [ 'email'=> $email ] )
 		    			->update( [
-							   'accessToken' => $accessToken ,
-							   'deviceToken' => $deviceToken,
-							   'deviceType'  => $deviceType,
-							   'otp'         => $otp
-						  	] 
-						);
+						   'accessToken' => $accessToken ,
+						   'deviceToken' => $deviceToken,
+						   'deviceType'  => $deviceType,
+						   'otp'         => $otp
+					  	]);
 					$userId = $UserDetailByEmailOrMobileorCountryCode[0]->userId;
 					$command = "/usr/bin/sudo ejabberdctl change_password ".$userId ." loovline.com ".$accessToken;
 					$xmppResponse = shell_exec($command);

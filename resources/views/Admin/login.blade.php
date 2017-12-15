@@ -9,23 +9,23 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{asset('Admin/assets/images/favicon.png')}}">
     <title>Doctory</title>
     <!-- Bootstrap Core CSS -->
-    <link href="assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{asset('Admin/assets/plugins/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
     <!-- chartist CSS -->
-    <link href="assets/plugins/chartist-js/dist/chartist.min.css" rel="stylesheet">
-    <link href="assets/plugins/chartist-js/dist/chartist-init.css" rel="stylesheet">
-    <link href="assets/plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.css" rel="stylesheet">
-    <link href="assets/plugins/css-chart/css-chart.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/plugins/html5-editor/bootstrap-wysihtml5.css" />
+    <link href="{{asset('Admin/assets/plugins/chartist-js/dist/chartist.min.css')}}" rel="stylesheet">
+    <link href="{{asset('Admin/assets/plugins/chartist-js/dist/chartist-init.css')}}" rel="stylesheet">
+    <link href="{{asset('Admin/assets/plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.css')}}" rel="stylesheet">
+    <link href="{{asset('Admin/assets/plugins/css-chart/css-chart.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('Admin/assets/plugins/html5-editor/bootstrap-wysihtml5.css')}}" />
 
     <!-- Vector CSS -->
 
     <!-- Custom CSS -->
-    <link href="css/style.css" rel="stylesheet">
+    <link href="{{asset('Admin/css/style.css')}}" rel="stylesheet">
     <!-- You can change the theme colors from here -->
-    <link href="css/colors/blue.css" id="theme" rel="stylesheet">
+    <link href="{{asset('Admin/css/colors/blue.css')}}" id="theme" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -45,7 +45,7 @@
     <!-- Page wrapper  -->
     <!-- ============================================================== -->
     <section id="wrapper">
-        <div class="login-register" style="background-image:url(assets/images/background/login-register.jpg);">
+        <div class="login-register" style="background-image:url('{{asset('Admin/assets/images/background/login-register.jpg')}}');">
             <div class="login-box card">
                 <div class="card-body">
                     <span class='message' style="color: red">{{Session::get('invalid_credentials')}}</span>
@@ -93,7 +93,7 @@
                         </div>
 
                     </form>
-                    <form class="form-horizontal" id="recoverform" action="https://wrappixel.com/demos/admin-templates/material-pro/material/index.html">
+                    <form class="form-horizontal" id="recoverform" action="">
                         <div class="form-group ">
                             <div class="col-xs-12">
                                 <h3>Recover Password</h3>
@@ -118,33 +118,33 @@
 
     <!-- All Jquery -->
     <!-- ============================================================== -->
-    <script src="assets/plugins/jquery/jquery.min.js"></script>
+    <script src="{{asset('Admin/assets/plugins/jquery/jquery.min.js')}}"></script>
     <!-- Bootstrap tether Core JavaScript -->
-    <script src="assets/plugins/bootstrap/js/popper.min.js"></script>
-    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{{asset('Admin/assets/plugins/bootstrap/js/popper.min.js')}}"></script>
+    <script src="{{asset('Admin/assets/plugins/bootstrap/js/bootstrap.min.js')}}"></script>
     <!-- slimscrollbar scrollbar JavaScript -->
-    <script src="js/jquery.slimscroll.js"></script>
+    <script src="{{asset('Admin/js/jquery.slimscroll')}}"></script>
     <!--Wave Effects -->
-    <script src="js/waves.js"></script>
+    <script src="{{asset('Admin/js/waves')}}"></script>
     <!--Menu sidebar -->
-    <script src="js/sidebarmenu.js"></script>
+    <script src="{{asset('Admin/js/sidebarmenu')}}"></script>
     <!--stickey kit -->
-    <script src="assets/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
-    <script src="assets/plugins/sparkline/jquery.sparkline.min.js"></script>
+    <script src="{{asset('Admin/assets/plugins/sticky-kit-master/dist/sticky-kit.min.js')}}"></script>
+    <script src="{{asset('Admin/assets/plugins/sparkline/jquery.sparkline.min.js')}}"></script>
     <!--stickey kit -->
-    <script src="assets/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
-    <script src="assets/plugins/sparkline/jquery.sparkline.min.js"></script>
-    <script src="assets/plugins/sparkline/jquery.sparkline.min.js"></script>
+    <script src="{{asset('Admin/assets/plugins/sticky-kit-master/dist/sticky-kit.min.js')}}"></script>
+    <script src="{{asset('Admin/assets/plugins/sparkline/jquery.sparkline.min.js')}}"></script>
+    <script src="{{asset('Admin/assets/plugins/sparkline/jquery.sparkline.min.js')}}"></script>
     <!--Custom JavaScript -->
-    <script src="js/custom.min.js"></script>
-    <script src="assets/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="{{asset('Admin/js/custom.min.js')}}"></script>
+    <script src="{{asset('Admin/assets/plugins/datatables/jquery.dataTables.min.js')}}"></script>
     <!-- ============================================================== -->
     <!-- This page plugins -->
     <!-- ============================================================== -->
     <!-- chartist chart -->
-    <script src="assets/plugins/chartist-js/dist/chartist.min.js"></script>
-    <script src="assets/plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min.js"></script>
-    <script src="js/dashboard3.js"></script>
+    <script src="{{asset('Admin/assets/plugins/chartist-js/dist/chartist.min.js')}}"></script>
+    <script src="{{asset('Admin/assets/plugins/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.min.js')}}"></script>
+    <script src="{{asset('Admin/js/dashboard3')}}"></script>
 
 </body>
 

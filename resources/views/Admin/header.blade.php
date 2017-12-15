@@ -134,14 +134,19 @@
                                 <ul class="dropdown-user">
                                     <li>
                                         <div class="dw-user-box">
-                                            <div class="u-img"><img src="{{asset('Admin/assets/images/users/1.jpg')}}" alt="user"></div>
+
+                                            @if(!$AdminDetail->profile_image)
+                                                <div class="u-img"><img src="{{asset('Admin/assets/images/users/1.jpg')}}" alt="user"></div>
+                                            @else
+                                                <div class="u-img"><img src="{{asset('Admin/images')}}/{{$AdminDetail-> profile_image}}" alt="user"></div>
+                                            @endif
                                             <div class="u-text">
                                                 <h4>{{$AdminDetail->name}}</h4>
                                                 <p class="text-muted">{{$AdminDetail->email}}</p><a href="{{url('Admin/profile')}}" class="btn btn-rounded btn-danger btn-sm">View Profile</a></div>
                                         </div>
                                     </li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="#"><i class="ti-user"></i> My Profile</a></li>
+                                    <li><a href="{{url('Admin/profile')}}"><i class="ti-user"></i> My Profile</a></li>
                                     <li role="separator" class="divider"></li>
                                     <li><a href="{{url('Admin/logout')}}"><i class="fa fa-power-off"></i> Logout</a></li>
                                 </ul>

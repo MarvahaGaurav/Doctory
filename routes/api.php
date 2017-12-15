@@ -31,6 +31,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('change_password','CommonController@change_password');
 	Route::post('logout','CommonController@logout');
 	Route::post('get_all_event_dates','CommonController@get_all_event_dates');
+	Route::post('sendFirebaseId','CommonController@sendFirebaseId');
+	Route::post('sendAttachment','CommonController@sendAttachment');
+	
 
 ////////////////////////////////////////////////
 ////// Doctor Api's
@@ -83,12 +86,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::post('test',function(Request $request){
-
 	$test=2;
 	if ($test>=1) {
 	  trigger_error("Value must be 1 or below");
 	}
-
 	/*$favcolor = "red";
 
 	switch ($favcolor) {
@@ -110,3 +111,5 @@ Route::post('test',function(Request $request){
 	$db = '$2y$10$Rs7AaHoYaL5sAIsXSXEZOuhVXuqLzrra2WboYZdHPTRbdjla13r/6'; 
  	dd(Hash::check($password,$db));
 });
+
+Route::post('testCase1','GauravController@testCase1');

@@ -39,6 +39,10 @@ return [
 		'qualificationy_updated' => 'Qualification updated successfully.',
 		'mother_language_updated' => 'Mother language updated successfully',
 		'Admin_profile_updated' => 'Admin profile updated successfully.',
+		'Image_uploaded_success' => 'Image uploaded successfully.',
+		'Video_uploaded_success' => 'Video uploaded successfully.',
+		'Audio_uploaded_success' => 'Audio uploaded successfully.',
+
 	],
 
 	'error' => [

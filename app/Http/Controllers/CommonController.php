@@ -46,9 +46,9 @@ class CommonController extends Controller
 
 		if(empty($locale)){
 			$locale = 'en';
-		}else{
-			\App::setLocale($locale);
 		}
+		\App::setLocale($locale);
+		
 
 		if(!empty($locale)){
 			$validations = [
@@ -136,7 +136,7 @@ class CommonController extends Controller
 	    	$validator = Validator::make($request->all(),$validations);
 	    	if($validator->fails()){
 	    		$response = [
-				'message' => $validator->errors($validator)->first()
+					'message' => $validator->errors($validator)->first()
 				];
 				return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
 	    	}else{
@@ -182,6 +182,50 @@ class CommonController extends Controller
 			];
 			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
 	   }
+	}
+
+	public function sendFirebaseId(Request $request){
+		Log::info('----------------------CommonController--------------------------sendFirebaseId'.print_r($request->all(),True));
+		$accessToken =  $request->header('accessToken');
+		$firebase_id = $request->firebase_id;
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
+
+		$validations = [
+			'firebase_id' => 'required'
+		];
+		$validator = Validator::make($request->all(),$validations);
+		if($validator->fails()){
+    		$response = [
+				'message' => $validator->errors($validator)->first()
+			];
+			return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+    	}
+
+		if( !empty( $accessToken ) ) {
+			$user = new \App\User;
+			$userDetail = User::where(['remember_token' => $accessToken])->first();
+			if(count($userDetail)){
+				$User = User::find($userDetail->id);
+    			$User->firebase_id = $firebase_id;
+    			$User->save();
+    			$Response = [
+    			  'message'  => trans('messages.success.success'),
+    			];
+        		return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );	
+			}else{
+				$response['message'] = trans('messages.invalid.detail');
+				return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+			}
+		} else {
+	    	$Response = [
+			  'message'  => trans('messages.required.accessToken'),
+			];
+	      return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+    	}
 	}
 
 	public function logout( Request $request ) {
@@ -1043,6 +1087,7 @@ class CommonController extends Controller
 		if(empty($locale)){
 			$locale = 'en';
 		}
+		\App::setLocale($locale);
 		if( !empty( $accessToken ) ) {
 			$validations = [
 				'month' => 'required',
@@ -1094,5 +1139,74 @@ class CommonController extends Controller
 			];
 	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
 	   }
+   }
+
+   public function sendAttachment(Request $request){
+   	Log::info('----------------------CommonController--------------------------sendAttachment'.print_r($request->all(),True));
+		$accessToken = $request->header('accessToken');
+		$attachment = $request->file('attachment');
+		$key = $request->key;
+		$thumbnail = $request->thumbnail;
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
+		if( !empty( $accessToken ) ) {
+			$validations = [
+				// 'attachment' => 'required',
+				'key' => 'required',
+				'thumbnail' => 'required_if:key,==,2',
+	    	];
+	    	$validator = Validator::make($request->all(),$validations);
+	    	if($validator->fails()){
+	    		$response = [
+					'message' => $validator->errors($validator)->first()
+				];
+				return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+	    	}else{
+	    		$path = base_path('/Attachments');
+	    		$fileName = time().'_'.$attachment->getClientOriginalName();
+	    		if($key == 2 ){
+	    			$video_thumbnail = time().'_'.$thumbnail->getClientOriginalName();
+	    			$thumbnail->move($path,$video_thumbnail);
+	    		}
+	    		$attachment->move($path,$fileName);
+	    		if($key == 1){
+	    			$response = [
+		    			'messages' => __('messages.success.Image_uploaded_success'),
+		    			'key' => '1',
+		    			'url' => url('/Attachments').'/'.$fileName
+		    		];
+		    		Log::info('----------------------CommonController--------------------------sendAttachment'.print_r($response,True));
+		    		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+	    		}
+	    		if($key == 2){
+	    			$response = [
+		    			'messages' => __('messages.success.Video_uploaded_success'),
+		    			'key' => '2',
+		    			'url' => url('/Attachments').'/'.$fileName,
+		    			'thumbnail' => url('/Attachments').'/'.$video_thumbnail
+		    		];
+		    		Log::info('----------------------CommonController--------------------------sendAttachment'.print_r($response,True));
+		    		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+	    		}
+	    		if($key == 3){
+	    			$response = [
+		    			'messages' => __('messages.success.Audio_uploaded_success'),
+		    			'key' => '3',
+		    			'url' => url('/Attachments').'/'.$fileName
+		    		];
+		    		Log::info('----------------------CommonController--------------------------sendAttachment'.print_r($response,True));
+		    		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+	    		}
+	    	}
+		}else {
+	    	$Response = [
+				'message'  => trans('messages.required.accessToken'),
+			];
+	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+	   }
+
    }
 }

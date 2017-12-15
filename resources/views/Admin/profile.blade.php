@@ -21,13 +21,13 @@
         <!-- Row -->
         <div class="row">
             <!-- Column -->
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-info"><i class="ti-wallet"></i></div>
                             <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-light">3249</h3>
+                                <h3 class="m-b-0 font-light">{{$totalPatient}}</h3>
                                 <h5 class="text-muted m-b-0">Total Patient</h5></div>
                         </div>
                     </div>
@@ -35,13 +35,13 @@
             </div>
             <!-- Column -->
             <!-- Column -->
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-warning"><i class="mdi mdi-cellphone-link"></i></div>
                             <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-lgiht">2376</h3>
+                                <h3 class="m-b-0 font-lgiht">{{$totalDoctor}}</h3>
                                 <h5 class="text-muted m-b-0">Total Doctor</h5></div>
                         </div>
                     </div>
@@ -49,13 +49,13 @@
             </div>
             <!-- Column -->
             <!-- Column -->
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex flex-row">
                             <div class="round round-lg align-self-center round-primary"><i class="mdi mdi-cart-outline"></i></div>
                             <div class="m-l-10 align-self-center">
-                                <h3 class="m-b-0 font-lgiht">20</h3>
+                                <h3 class="m-b-0 font-lgiht">{{$todayRegistered}}</h3>
                                 <h5 class="text-muted m-b-0">Today register</h5></div>
                         </div>
                     </div>
@@ -63,7 +63,7 @@
             </div>
             <!-- Column -->
             <!-- Column -->
-            <div class="col-lg-3 col-md-6">
+            <!-- <div class="col-lg-3 col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex flex-row">
@@ -74,7 +74,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <!-- Column -->
         </div>
         <!-- Row -->
@@ -82,7 +82,7 @@
         <div class="row">
             <div class="col-md-6">
                 <!-- Column -->
-                <div class="card"> <img class="" src="{{asset('Admin/assets/images/background/profile-bg3.jpg')}}" alt="Card image cap">
+                <div class="card"> <img class="" src="{{asset('Admin/images')}}/{{$AdminDetail->profile_image}}" alt="Card image cap" style="height: 163px">
                     <div class="card-body little-profile text-center">
                         <div class="pro-img"><img src="{{asset('Admin/images')}}/{{$AdminDetail->profile_image}}" alt="user" /></div>
                         <h3 class="m-b-0">{{$AdminDetail->name}}</h3>

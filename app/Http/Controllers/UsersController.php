@@ -110,11 +110,12 @@ class UsersController extends Controller
 	     			DB::table( 'users' )
 	 					->where( [ 'email'=> $email ] )
 		    			->update( [
-						   'accessToken' => $accessToken ,
-						   'deviceToken' => $deviceToken,
-						   'deviceType'  => $deviceType,
-						   'otp'         => $otp
-					  	]);
+							   'accessToken' => $accessToken ,
+							   'deviceToken' => $deviceToken,
+							   'deviceType'  => $deviceType,
+							   'otp'         => $otp
+						  	] 
+						);
 					$userId = $UserDetailByEmailOrMobileorCountryCode[0]->userId;
 					$command = "/usr/bin/sudo ejabberdctl change_password ".$userId ." loovline.com ".$accessToken;
 					$xmppResponse = shell_exec($command);
@@ -152,6 +153,7 @@ class UsersController extends Controller
 					];
 	            return Response::json($response,400);
 		      }else {
+
 		      	$countryId = DB::table( 'countries' )->where( [ 'name' => $country ] )->value('id');
 
 	        		$userData = [ 'country_code' => $country_code ,
@@ -173,10 +175,13 @@ class UsersController extends Controller
 		        	$userId = $NewUserData[0]->userId;
 		        	$accessToken = $NewUserData[0]->accessToken;
 		        	// $command = "whoami";
+
+		        	$command1 = "/usr/bin/sudo ejabberdctl unregister ". $userId ." loovline.com ";
+		      	$xmppResponse1 = shell_exec($command1);
+
 		        	$command = "/usr/bin/sudo ejabberdctl register " . $userId . " loovline.com " . $accessToken;
-		        	// dd($command);
 		        	$xmppResponse = shell_exec($command);
-		        	// dd($xmppResponse);
+
 		        	$xmppStatus = "";
 		        	if (strpos($xmppResponse, 'successfully') !== false) {
 		                $xmppStatus = 1;
@@ -186,6 +191,8 @@ class UsersController extends Controller
 		        	$Response = [ 	
 		        		'message'  => trans('messages.success.signup'),
 				  		'status'   => 0,
+				  		'command1' => $command1,
+				  		'xmppResponse1' => $xmppResponse1,
 				  		'command' => $command,
 				  		'xmppStatus' => $xmppStatus,
 				  		'xmppResponse' => $xmppResponse,
@@ -1290,7 +1297,6 @@ class UsersController extends Controller
 
 
 	public function searchPeople( Request $request ){
-
     	$accessToken =  $request->header('accessToken');
 		$countryName =  $request->country; // country name
 		$name =  $request->name;
@@ -1309,37 +1315,20 @@ class UsersController extends Controller
 			$locale = 'en';
 		}
 		\App::setLocale($locale);
-
 		if(!empty($countryName)) {
 			$countryId = DB::table('countries')->where(['countries.name' => $countryName])->value('id');
 		}
-
 		if(!empty($cityName)) {
 			$cityId = DB::table('cities')->where(['cityName' => $cityName])->value('id');
 		}
-
-		// dd($countryId);
 		$UserData = User::getUserDetail( $userId = null , $accessToken , $country_code = null ,$mobile = null , $email = null ); // current user data
-		// dd($UserData);
-		/*$FindDetail = null;
-		if(count($UserData)){
-			$FindDetail = DB::table('whoCanFindDetail')
-			->where(['userId' => $UserData[0]->userId])
-			->first();
-		}*/
 		$userDetail = User::searchPeople( $name , $countryId, $cityId, $gender, $kids, $animal, $smoking, $drinking , $accessToken);
-		// dd($userDetail);
 		$resultArr = [];
-
 		if( !empty( $accessToken ) ){
-			// dd($UserData);
 			if( !empty($UserData)) {
 				$userId = $UserData[0]->userId;
-				// dd($userId);
 				$UserBusyStatus = User::checkBusyStatusOfUser($userId);
-				// dd($UserBusyStatus);
 				foreach ($userDetail as $key => $value) {
-
 					$SP_FindMeDetail = DB::table('whoCanFindDetail')
 					->leftjoin('users','users.id','=','whoCanFindDetail.userId')
 					->where(['whoCanFindDetail.userId' => $value->userId])
@@ -1359,8 +1348,6 @@ class UsersController extends Controller
 						'whoCanFindDetail.relationShipStatus as relationShipStatus',
 						'users.findMe as findMe')
 					->first(); 
-
-					// dd($SP_FindMeDetail);
 					$isBlocked = DB::table('blockList')
 						->where([
 			    			'userId' => $userId,
@@ -1372,185 +1359,133 @@ class UsersController extends Controller
 		    		}else{
 		    			$blocked = "notBlocked";
 		    		}
-
-		    		// dd($this->getAge( $UserData[0]->dob ));
-
-					/*if( !empty( $startAge ) && !empty( $endAge ) ){
-
-						if( $this->getAge($value->dob) >= $startAge && $this->getAge($value->dob) <= $endAge ){
-							$resultArr[] = [
-								'userId' => $value->userId,
-								'userEmail' => $value->userEmail,
-								'country' => $value->country,
-								'countryNameCode' => $value->countryNameCode,
-								'country_code' => $value->country_code,
-								'mobile' => $value->mobile,
-								'accessToken' => $value->accessToken,
-								'deviceToken' => $value->deviceToken,
-								'deviceType' => $value->deviceType,
-								'otp' => $value->otp,
-								'otpVerified' => $value->otpVerified,
-								'status' => $value->status,
-								'photoShowToPublic' => $value->photoShowToPublic,
-								'photo' => $value->photo,
-								'name' => $value->name,
-								'dob' => $value->dob,
-								'age' => $this->getAge( $value->dob ),
-								'gender' => $value->gender,
-								'profession' => $value->profession,
-								'homeTown' => $value->homeTown,
-								'relationShipStatus' => $value->relationShipStatus,
-								'kids' => $value->kids,
-								'sexualOrientation' => $value->sexualOrientation,
-								'height' => $value->height,
-								'eyes' => $value->eyes,
-								'hair' => $value->hair,
-								'smoking' => $value->smoking,
-								'drinking' => $value->drinking,
-								'language' => $value->language,
-								'animal' => $value->animal,
-								'aboutMe' => $value->aboutMe,
-								'favourite' => count(User::checkFavouriteUserUnderUserId($userId,$value->userId)),
-								'busyFreeStatus' => $value->busyFreeStatus,
-								'blocked' =>$blocked
-							];
-						}
-					} else {*/
-						if(!empty($SP_FindMeDetail)){
-							// dd($UserData[0]);
-							// dd($SP_FindMeDetail);
-							$sameCountry = $SP_FindMeDetail->country == $UserData[0]->country;
-
-							$sameHeight = $SP_FindMeDetail->height == $UserData[0]->height;
-							$sameEyes = $SP_FindMeDetail->eyes == $UserData[0]->eyes;
-							$samehair = $SP_FindMeDetail->hair == $UserData[0]->hair;
-							$startAge = $this->getAge( $UserData[0]->dob ) >= $SP_FindMeDetail->startAge;
-							$endAge = $this->getAge( $UserData[0]->dob ) <= $SP_FindMeDetail->endAge ;
-							$kids = $SP_FindMeDetail->kids == $UserData[0]->kids;
-							$smoking = $SP_FindMeDetail->smoking == $UserData[0]->smoking;
-							$drinking = $SP_FindMeDetail->drinking == $UserData[0]->drinking;
-							$relationShipStatus = $SP_FindMeDetail->relationShipStatus == $UserData[0]->relationShipStatus;
-							// dd($startAge);
-
-							if($SP_FindMeDetail->findMe == 'on'){
-								if($sameCountry && $sameHeight && $sameEyes && $samehair && $startAge && $startAge && $endAge && $kids && $smoking && $drinking && $relationShipStatus ){
-									$resultArr[] = [
-										'userId' => $value->userId,
-										'userEmail' => $value->userEmail,
-										'country' => $value->country,
-										'countryNameCode' => $value->countryNameCode,
-										'country_code' => $value->country_code,
-										'mobile' => $value->mobile,
-										'accessToken' => $value->accessToken,
-										'deviceToken' => $value->deviceToken,
-										'deviceType' => $value->deviceType,
-										'otp' => $value->otp,
-										'otpVerified' => $value->otpVerified,
-										'status' => $value->status,
-										'photoShowToPublic' => $value->photoShowToPublic,
-										'photo' => $value->photo,
-										'name' => $value->name,
-										'dob' => $value->dob,
-										'age' => $this->getAge( $value->dob ),
-										'gender' => $value->gender,
-										'profession' => $value->profession,
-										'homeTown' => $value->homeTown,
-										'relationShipStatus' => $value->relationShipStatus,
-										'kids' => $value->kids,
-										'sexualOrientation' => $value->sexualOrientation,
-										'height' => $value->height,
-										'eyes' => $value->eyes,
-										'hair' => $value->hair,
-										'smoking' => $value->smoking,
-										'drinking' => $value->drinking,
-										'language' => $value->language,
-										'animal' => $value->animal,
-										'aboutMe' => $value->aboutMe,
-										'favourite' => count(User::checkFavouriteUserUnderUserId($userId,$value->userId)),
-										'busyFreeStatus' => $value->busyFreeStatus,
-										'blocked' =>$blocked
-									];		
-								}
-							}else{
+					if(!empty($SP_FindMeDetail)){
+						$sameCountry = $SP_FindMeDetail->country == $UserData[0]->country;
+						$sameHeight = $SP_FindMeDetail->height == $UserData[0]->height;
+						$sameEyes = $SP_FindMeDetail->eyes == $UserData[0]->eyes;
+						$samehair = $SP_FindMeDetail->hair == $UserData[0]->hair;
+						$startAge = $this->getAge( $UserData[0]->dob ) >= $SP_FindMeDetail->startAge;
+						$endAge = $this->getAge( $UserData[0]->dob ) <= $SP_FindMeDetail->endAge ;
+						$kids = $SP_FindMeDetail->kids == $UserData[0]->kids;
+						$smoking = $SP_FindMeDetail->smoking == $UserData[0]->smoking;
+						$drinking = $SP_FindMeDetail->drinking == $UserData[0]->drinking;
+						$relationShipStatus = $SP_FindMeDetail->relationShipStatus == $UserData[0]->relationShipStatus;
+						if($SP_FindMeDetail->findMe == 'on'){
+							if($sameCountry && $sameHeight && $sameEyes && $samehair && $startAge && $startAge && $endAge && $kids && $smoking && $drinking && $relationShipStatus ){
 								$resultArr[] = [
-										'userId' => $value->userId,
-										'userEmail' => $value->userEmail,
-										'country' => $value->country,
-										'countryNameCode' => $value->countryNameCode,
-										'country_code' => $value->country_code,
-										'mobile' => $value->mobile,
-										'accessToken' => $value->accessToken,
-										'deviceToken' => $value->deviceToken,
-										'deviceType' => $value->deviceType,
-										'otp' => $value->otp,
-										'otpVerified' => $value->otpVerified,
-										'status' => $value->status,
-										'photoShowToPublic' => $value->photoShowToPublic,
-										'photo' => $value->photo,
-										'name' => $value->name,
-										'dob' => $value->dob,
-										'age' => $this->getAge( $value->dob ),
-										'gender' => $value->gender,
-										'profession' => $value->profession,
-										'homeTown' => $value->homeTown,
-										'relationShipStatus' => $value->relationShipStatus,
-										'kids' => $value->kids,
-										'sexualOrientation' => $value->sexualOrientation,
-										'height' => $value->height,
-										'eyes' => $value->eyes,
-										'hair' => $value->hair,
-										'smoking' => $value->smoking,
-										'drinking' => $value->drinking,
-										'language' => $value->language,
-										'animal' => $value->animal,
-										'aboutMe' => $value->aboutMe,
-										'favourite' => count(User::checkFavouriteUserUnderUserId($userId,$value->userId)),
-										'busyFreeStatus' => $value->busyFreeStatus,
-										'blocked' =>$blocked
-								];
+									'userId' => $value->userId,
+									'userEmail' => $value->userEmail,
+									'country' => $value->country,
+									'countryNameCode' => $value->countryNameCode,
+									'country_code' => $value->country_code,
+									'mobile' => $value->mobile,
+									'accessToken' => $value->accessToken,
+									'deviceToken' => $value->deviceToken,
+									'deviceType' => $value->deviceType,
+									'otp' => $value->otp,
+									'otpVerified' => $value->otpVerified,
+									'status' => $value->status,
+									'photoShowToPublic' => $value->photoShowToPublic,
+									'photo' => $value->photo,
+									'name' => $value->name,
+									'dob' => $value->dob,
+									'age' => $this->getAge( $value->dob ),
+									'gender' => $value->gender,
+									'profession' => $value->profession,
+									'homeTown' => $value->homeTown,
+									'relationShipStatus' => $value->relationShipStatus,
+									'kids' => $value->kids,
+									'sexualOrientation' => $value->sexualOrientation,
+									'height' => $value->height,
+									'eyes' => $value->eyes,
+									'hair' => $value->hair,
+									'smoking' => $value->smoking,
+									'drinking' => $value->drinking,
+									'language' => $value->language,
+									'animal' => $value->animal,
+									'aboutMe' => $value->aboutMe,
+									'favourite' => count(User::checkFavouriteUserUnderUserId($userId,$value->userId)),
+									'busyFreeStatus' => $value->busyFreeStatus,
+									'blocked' =>$blocked
+								];		
 							}
 						}else{
 							$resultArr[] = [
-										'userId' => $value->userId,
-										'userEmail' => $value->userEmail,
-										'country' => $value->country,
-										'countryNameCode' => $value->countryNameCode,
-										'country_code' => $value->country_code,
-										'mobile' => $value->mobile,
-										'accessToken' => $value->accessToken,
-										'deviceToken' => $value->deviceToken,
-										'deviceType' => $value->deviceType,
-										'otp' => $value->otp,
-										'otpVerified' => $value->otpVerified,
-										'status' => $value->status,
-										'photoShowToPublic' => $value->photoShowToPublic,
-										'photo' => $value->photo,
-										'name' => $value->name,
-										'dob' => $value->dob,
-										'age' => $this->getAge( $value->dob ),
-										'gender' => $value->gender,
-										'profession' => $value->profession,
-										'homeTown' => $value->homeTown,
-										'relationShipStatus' => $value->relationShipStatus,
-										'kids' => $value->kids,
-										'sexualOrientation' => $value->sexualOrientation,
-										'height' => $value->height,
-										'eyes' => $value->eyes,
-										'hair' => $value->hair,
-										'smoking' => $value->smoking,
-										'drinking' => $value->drinking,
-										'language' => $value->language,
-										'animal' => $value->animal,
-										'aboutMe' => $value->aboutMe,
-										'favourite' => count(User::checkFavouriteUserUnderUserId($userId,$value->userId)),
-										'busyFreeStatus' => $value->busyFreeStatus,
-										'blocked' =>$blocked
-								];
+									'userId' => $value->userId,
+									'userEmail' => $value->userEmail,
+									'country' => $value->country,
+									'countryNameCode' => $value->countryNameCode,
+									'country_code' => $value->country_code,
+									'mobile' => $value->mobile,
+									'accessToken' => $value->accessToken,
+									'deviceToken' => $value->deviceToken,
+									'deviceType' => $value->deviceType,
+									'otp' => $value->otp,
+									'otpVerified' => $value->otpVerified,
+									'status' => $value->status,
+									'photoShowToPublic' => $value->photoShowToPublic,
+									'photo' => $value->photo,
+									'name' => $value->name,
+									'dob' => $value->dob,
+									'age' => $this->getAge( $value->dob ),
+									'gender' => $value->gender,
+									'profession' => $value->profession,
+									'homeTown' => $value->homeTown,
+									'relationShipStatus' => $value->relationShipStatus,
+									'kids' => $value->kids,
+									'sexualOrientation' => $value->sexualOrientation,
+									'height' => $value->height,
+									'eyes' => $value->eyes,
+									'hair' => $value->hair,
+									'smoking' => $value->smoking,
+									'drinking' => $value->drinking,
+									'language' => $value->language,
+									'animal' => $value->animal,
+									'aboutMe' => $value->aboutMe,
+									'favourite' => count(User::checkFavouriteUserUnderUserId($userId,$value->userId)),
+									'busyFreeStatus' => $value->busyFreeStatus,
+									'blocked' =>$blocked
+							];
 						}
-						
-					/*}*/
+					}else{
+						$resultArr[] = [
+									'userId' => $value->userId,
+									'userEmail' => $value->userEmail,
+									'country' => $value->country,
+									'countryNameCode' => $value->countryNameCode,
+									'country_code' => $value->country_code,
+									'mobile' => $value->mobile,
+									'accessToken' => $value->accessToken,
+									'deviceToken' => $value->deviceToken,
+									'deviceType' => $value->deviceType,
+									'otp' => $value->otp,
+									'otpVerified' => $value->otpVerified,
+									'status' => $value->status,
+									'photoShowToPublic' => $value->photoShowToPublic,
+									'photo' => $value->photo,
+									'name' => $value->name,
+									'dob' => $value->dob,
+									'age' => $this->getAge( $value->dob ),
+									'gender' => $value->gender,
+									'profession' => $value->profession,
+									'homeTown' => $value->homeTown,
+									'relationShipStatus' => $value->relationShipStatus,
+									'kids' => $value->kids,
+									'sexualOrientation' => $value->sexualOrientation,
+									'height' => $value->height,
+									'eyes' => $value->eyes,
+									'hair' => $value->hair,
+									'smoking' => $value->smoking,
+									'drinking' => $value->drinking,
+									'language' => $value->language,
+									'animal' => $value->animal,
+									'aboutMe' => $value->aboutMe,
+									'favourite' => count(User::checkFavouriteUserUnderUserId($userId,$value->userId)),
+									'busyFreeStatus' => $value->busyFreeStatus,
+									'blocked' =>$blocked
+							];
+					}
 				}
-
 				if( count( $resultArr ) ) {
 					$Response = [ 
 					'isUserBusy' => $UserBusyStatus,
@@ -1559,7 +1494,7 @@ class UsersController extends Controller
 					'response' => $resultArr
 					];
 					return Response::json( $Response , 200 );
-				} else {
+				}else {
 					$Response = [ 
 					'message' => trans('messages.noData'),
 					'status' => 0,
@@ -1567,7 +1502,7 @@ class UsersController extends Controller
 					];
 					return Response::json( $Response , 400 );
 				}
-			} else {
+			}else {
 				$Response = [ 
 					'message' => trans('messages.noData'),
 					'status' => 0,
@@ -1581,6 +1516,147 @@ class UsersController extends Controller
   			];
 	      return Response::json( $Response , 400 );
 	   }
+	}
+
+
+	public function get_all_users(Request $request){
+		$locale = $request->header('locale');
+		$accessToken = $request->header('accessToken');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
+		if( !empty( $accessToken ) ){
+			$UserData = User::getUserDetail( $userId = null , $accessToken , $country_code = null ,$mobile = null , $email = null );
+			
+			$blocked_people = json_decode(DB::table('blockList')->where(['userId'=>$UserData[0]->userId])->select('blockedId')->get());
+			$favourite_people = json_decode(DB::table('favouriteList')->where(['favouriteBy'=>$UserData[0]->userId])->select('favouriteTo')->get());
+			$blocked_arr = [];
+			$favourite_arr = [];
+
+			if(count($blocked_people)){
+				foreach ($blocked_people as $key => $value) {
+					$blocked_arr[] = $value->blockedId;
+				}
+			}
+
+			if(count($favourite_people)){
+				foreach ($favourite_people as $key => $value) {
+					$favourite_arr[] = $value->favouriteTo;
+				}
+			}
+
+			if( count($UserData) ) {
+				// dd($UserData[0]->userId);
+				$userList = User::getUsersList();
+				$CurrentUserBusyStatus = User::checkBusyStatusOfUser($UserData[0]->userId);
+				$RESULT = [];
+				// dd($CurrentUserBusyStatus);
+
+				if($CurrentUserBusyStatus == 'true'){
+					$CurrentUserStatus = 'busy';
+				}else{
+					$CurrentUserStatus = 'free';
+				}
+
+
+				foreach ($userList as $key => $value){
+					if($value->userId != $UserData[0]->userId){
+						if(in_array($value->userId, $blocked_arr)){
+							$blockedStatus = 'blocked';
+						}else{
+							$blockedStatus = 'notBlocked';
+						}
+
+						if(in_array($value->userId, $favourite_arr)){
+							$favouriteStatus = 1;
+						}else{
+							$favouriteStatus = 0;
+						}
+
+						$bsyOrFree = User::checkBusyStatusOfUser($value->userId);
+						if($bsyOrFree == 'true'){
+							$busyFreeStatus = 'busy';
+						}else{
+							$busyFreeStatus = 'free';
+						}
+
+						$RESULT[] = [
+							'userId' => $value->userId,
+							'userEmail' => $value->userEmail,
+							'country'=> $value->country,
+							'countryNameCode'=> $value->countryNameCode,
+							'country_code' => $value->country_code,
+							'mobile' => $value->mobile,
+							// 'is_premium' => $value->is_premium,
+							'accessToken' => $value->accessToken,
+							'deviceToken' => $value->deviceToken,
+							'deviceType' => $value->deviceType,
+							'otp' => $value->otp,
+							'otpVerified' => $value->otpVerified,
+							'status' => $value->status,
+							'photoShowToPublic' => $value->photoShowToPublic,
+							// 'sound' => $value->sound,
+							// 'notification' => $value->notification,
+							// 'findMe' => $value->findMe,
+							'photo' => $value->photo,
+							'name' => $value->name,
+							'dob' => $value->dob,
+							'age' => $this->getAge( $value->dob ),
+							'gender' => $value->gender,
+							'profession' => $value->profession,
+							'homeTown'  => $value->homeTown,
+							'relationShipStatus' => $value->relationShipStatus,
+							'kids' => $value->kids,
+							'sexualOrientation' => $value->sexualOrientation,
+							'height' => $value->height,
+							'eyes' => $value->eyes,
+							'hair' => $value->hair,
+							'smoking' => $value->smoking,
+							'drinking' => $value->drinking,
+							'language' => $value->language,
+							'animal' => $value->animal,
+							'aboutMe' => $value->aboutMe,
+							'favourite' => $favouriteStatus,
+							'busyFreeStatus' => $busyFreeStatus,
+							'blocked' => $blockedStatus,
+							'profileStatus' => $value->profileStatus,
+							'locale' => $value->locale,
+							
+						];
+					}
+				}
+
+				if( count( $RESULT ) ) {
+					$Response = [ 
+					'isUserBusy' => $CurrentUserStatus,
+					'message' => trans('messages.success.success'),
+					'status' => 1,
+					'response' => $RESULT
+					];
+					return Response::json( $Response , 200 );
+				}else {
+					$Response = [ 
+					'message' => trans('messages.noData'),
+					'status' => 0,
+					'response' => $RESULT
+					];
+					return Response::json( $Response , 400 );
+				}
+			}else{
+				$Response = [ 
+				'message' => trans('messages.noData'),
+				'method' => 'POST',
+				'status' => 0,
+				];
+				return Response::json($Response,401);
+			}
+		}else {
+	    	$Response = [
+  			  'message'  => trans('messages.required.accessToken'),
+  			];
+	      return Response::json( $Response , 400 );
+    	}
 	}
 
 	public function whoCanFindMe( Request $request ){
@@ -2708,49 +2784,61 @@ class UsersController extends Controller
 
 	public function ejabberedMessage(Request $request){
 		Log::info($request);
-		/*exit();
-		dd($request);*/
-		$from = $request->from;
-		$to = $request->to;
-		$body = $request->body;
-		$message_id = $request->message_id;
+		$FromUserDetail = DB::table('userDetail')->where(['userId'=>$request->from])->first();
 
-		Log::info($to);
+		Log::info($request->to);
+		$userId = (int)$request->to;
+		$userOther = (int)$request->from;
+ 		$data = DB::table('userDetail')
+	  			->where('userId',$userOther)
+	  			->first();
 
-		$data = DB::table('userDetail')->where('userId',$to)->first();
-		Log::info(print_r($data,True));
-		$notifyType = 1; // FOR SILENT NOTIFICATION
+
+		$notifyType = 2; // WITH SOUND
 		$bodyText = [
-			'type'=>'unbusy request',
-			'status' => 2,
-			'userId' => $to,
+			'type'=>'offline chat notification',
+			'status' => 0,
+			'userId' => $userOther,
 			'userName' => $data->name,
 			'photo' => $data->photo,
-			'notifyType' => 1
+			'notifyType' => 2,
+			'message' => json_decode($request->body)->msg
 		];
-		$this->notification($to,$bodyText,$notifyType);
+
+		Log::info(print_r($bodyText,True));
+		$this->notification($userId,$bodyText,$notifyType);
 	}
 
 
 	public function notification($userId , $body_text, $notifyType){
 		
-	  $data = DB::table('users')
+	  	$data = DB::table('users')
 	  			->where('id',$userId)
 	  			->get();
+	  	Log::info(print_r($data,True));		
 	  // dd($data);
 	  if(count($data)){
 	      $notification_type = $notifyType;
 	      $id = $data[0]->id;
 	      $notificationobject = new NotificationController();
 	      $tokens[] = $data[0]->deviceToken;
-	      if($data[0]->deviceType == "android"){
-	      	
-	          $status = $notificationobject->androidPushNotification($body_text,$notification_type,$tokens,$id);
-	          return $status;
 
-	      } else if($data[0]->deviceType == "ios"){
+
+	      Log::info(print_r('notification_type '.$notification_type,True));
+	      Log::info(print_r('id '.$id,True));
+	      Log::info(print_r('deviceToken '.$data[0]->deviceToken,True));
+	      Log::info(print_r('deviceType '.$data[0]->deviceType,True));
+	      // Log::info(print_r('tokens'.$tokens[],True));
+
+	      if($data[0]->deviceType == "android"){
+				$status = $notificationobject->androidPushNotification($body_text,$notification_type,$tokens,$id);
+				Log::info(print_r('status '.$status,True));
+				return $status;
+
+	      }else if($data[0]->deviceType == "ios"){
 	          
 	          $status = $notificationobject->iosPushNotification($body_text,$notification_type,$tokens,$id);
+	          Log::info(print_r('status '.$status,True));
 	          return $status;
 	      }
 	  }

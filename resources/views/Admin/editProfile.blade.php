@@ -13,8 +13,8 @@
             <div class="col-md-12 col-12 align-self-center">
                 <h3 class="text-themecolor">Edit admin profile</h3>
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php">Home</a></li>
-                    <li class="breadcrumb-item"><a href="profile.php">Admin profile</a></li>
+                    <li class="breadcrumb-item"><a href="{{url('Admin/dashboard')}}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{url('Admin/profile')}}">Admin profile</a></li>
                     <li class="breadcrumb-item active">Edit profile</li>
                 </ol>
             </div>

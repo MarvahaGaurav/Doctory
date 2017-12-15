@@ -14,6 +14,7 @@ use Auth;
 use Hash;
 use Session;
 use Url;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Input;
 class AdminController extends Controller
 {
@@ -86,9 +87,28 @@ class AdminController extends Controller
          if($request->method() == "GET"){
             $id = Session::get('Dr_Admin_Id');
             $role = Session::get('Dr_Admin_Role');
+            $totalPatient = 0;
+            $totalDoctor = 0;
+            $todayRegistered = 0;
+            $userData = User::all();
+
+            foreach ($userData as $key => $value) {
+               /*dd(Carbon::now()->format('Y-m-d'));
+               dd(Carbon::parse($value->created_at)->format('Y-m-d'));*/
+               if($value->user_type == 1 ){
+                  $totalDoctor++;
+               }
+               if($value->user_type == 2 ){
+                  $totalPatient++;
+               }
+
+               if(Carbon::now()->format('Y-m-d') == Carbon::parse($value->created_at)->format('Y-m-d')){
+                  $todayRegistered++;
+               }
+            }
             $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
             // dd($AdminDetail);
-            return view('Admin/profile',compact('AdminDetail'));
+            return view('Admin/profile',compact('AdminDetail','totalPatient','totalDoctor','todayRegistered'));
          }
       }else{
          return redirect('Admin/login');
@@ -120,8 +140,9 @@ class AdminController extends Controller
                   $adminDetail->location = $request->location;
                   $adminDetail->linkedin = $request->linkedin;
                   $adminDetail->twitter = $request->twitter;
+                  // dd($profile_image);
                   if($profile_image){
-                     $destinationPath = public_path('Admin/images');
+                     $destinationPath = base_path('Admin/images');
                      $getClientOriginalName = $profile_image->getClientOriginalName();
                      $Name = time()."_".str_replace(' ','_',$getClientOriginalName);
                      $profile_image->move($destinationPath,$Name);
@@ -308,20 +329,6 @@ class AdminController extends Controller
       }  
    }
 
-   /*public function docProfile(Request $request){
-      if($request->method() == "GET"){
-         $loggedIn = Session::get('Dr_Admin_loggedIn');
-         if($loggedIn){
-            $id = Session::get('Dr_Admin_Id');
-            $role = Session::get('Dr_Admin_Role');
-            $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
-            return view('Admin/docProfile',compact('AdminDetail'));
-         }else{
-            return redirect('Admin/login');
-         }
-      }  
-   }
-*/
    public function approve_doctor(Request $request){
       $loggedIn = Session::get('Dr_Admin_loggedIn');
          if($loggedIn){
@@ -420,7 +427,7 @@ class AdminController extends Controller
                   $SP = new Category;
                   if(isset($iconImage)){
                      $imageName = time()."_".$iconImage->getClientOriginalName();
-                     $destinationPath = base_path('public/iconImages');
+                     $destinationPath = base_path('/iconImages');
                      $iconImage->move($destinationPath,$imageName);
                      $SP->icon_path = $imageName;
                   }

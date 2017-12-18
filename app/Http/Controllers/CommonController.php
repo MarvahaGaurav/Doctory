@@ -29,6 +29,70 @@ use Twilio\Rest\Client;
 class CommonController extends Controller
 {
 
+	public function getSettingsData(Request $request){
+		Log::info('------------------CommonController------------getSettingsData');
+
+		$accessToken = $request->header('accessToken');
+		$locale = $request->header('locale');
+		$key = $request->key;
+		$is_notification_on = $request->is_notification_on;
+		$selected_language = $request->selected_language;
+
+		if(empty($locale)){
+		$locale = 'en';
+		}
+		\App::setLocale($locale);
+		$validations = [
+			'key' => 'required',
+			'is_notification_on' => 'required_if:key,==,2',
+			'selected_language' => 'required_if:key,==,2',
+		];
+		$validator = Validator::make($request->all(),$validations);
+		if($validator->fails()){
+    		$response = [
+				'message' => $validator->errors($validator)->first()
+			];
+			return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+    	}
+
+		if( !empty( $accessToken ) ) {
+         $UserDetail = User::where(['remember_token'=>$accessToken])->first();
+         if(count($UserDetail)){
+         	if($key == 1){
+	         	$Response = [
+	         		'is_notification_on' => $UserDetail->notification,
+	         		'selected_language' => $UserDetail->language,
+	         	];
+	         	return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );	
+	         }else if($key == 2){
+	         	$UserDetail->language = $selected_language;
+	         	$UserDetail->notification = $is_notification_on;
+	         	$UserDetail->save();
+	         	$UserDetail = User::where(['remember_token'=>$accessToken])->first();
+	         	$Response = [
+	         		'is_notification_on' => $UserDetail->notification,
+	         		'selected_language' => $UserDetail->language,
+	         	];
+	         	return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );	
+	         }else{
+	         	$Response = [
+	         		'message' => trans('messages.invalid.request'),
+	         	];
+	         	return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );	
+	         }
+         }else{
+				$response['message'] = trans('messages.invalid.detail');
+				return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+			}
+      }else {
+			$Response = [
+				'message'  => trans('messages.required.accessToken'),
+			];
+			return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+		}
+	}
+
+
 	public function signUp(Request $request){
 		Log::info('----------------------CommonController--------------------------signUp'.print_r($request->all(),True));
 		$fullName = $request->fullName;
@@ -1118,7 +1182,8 @@ class CommonController extends Controller
 		    		$List = $List->get();
 	    			$result = [];
 	    			foreach ($List as $key => $value) {
-	    				if(!in_array($value->appointment_date, $result)){	    					$result[] = $value->appointment_date;
+	    				if(!in_array($value->appointment_date, $result)){	 
+	    					$result[] = $value->appointment_date;
 	    				}
 	    			}
 	    			$response = [
@@ -1207,6 +1272,5 @@ class CommonController extends Controller
 			];
 	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
 	   }
-
    }
 }

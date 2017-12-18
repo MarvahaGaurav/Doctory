@@ -33,6 +33,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('get_all_event_dates','CommonController@get_all_event_dates');
 	Route::post('sendFirebaseId','CommonController@sendFirebaseId');
 	Route::post('sendAttachment','CommonController@sendAttachment');
+	Route::post('getSettingsData','CommonController@getSettingsData');
+	
 	
 
 ////////////////////////////////////////////////

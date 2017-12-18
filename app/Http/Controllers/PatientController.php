@@ -329,6 +329,15 @@ class PatientController extends Controller
 						$day5 = []; 
 						$day6 = []; 
 						$day7 = []; 
+
+						$day1_arr = []; 
+						$day2_arr = []; 
+						$day3_arr = []; 
+						$day4_arr = []; 
+						$day5_arr = []; 
+						$day6_arr = []; 
+              		$day7_arr = []; 
+
 						$qualificationArr = [];
 		    			foreach ($result as $key => $res) {
 		    				$dates = [ 
@@ -357,62 +366,150 @@ class PatientController extends Controller
 									   	->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 									   	->where('appointment_date',$dates[$key])
 									   	->first();
-									      if($busyOrFree){
-										      array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
-										      if(!empty($busyOrFree->rescheduled_day_id)){
-											   	if($busyOrFree->rescheduled_day_id == 1 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
-											   		array_push($day1,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
-											   	}else{
-											   		array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-												   }
-									  			}
-										   }else{
-										   	array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-										   }
+
+								   	if(!empty($busyOrFree->rescheduled_day_id)){
+			                        if($busyOrFree->rescheduled_day_id == 1 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+			                           // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day1_arr)){
+			                              array_push($day1_arr,$busyOrFree->rescheduled_time_slot_id);
+			                              array_push($day1,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+			                           // }
+			                           if(!in_array($busyOrFree->time_slot_id, $day1_arr)){
+			                              array_push($day1_arr,$busyOrFree->time_slot_id);
+			                              array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }else{
+			                           if(!in_array($busyOrFree->time_slot_id, $day1_arr)){
+			                              array_push($day1_arr,$busyOrFree->time_slot_id);
+			                              array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }
+			                     }else{
+			                        if(!in_array($value->time_slot_id, $day1_arr)){
+			                           array_push($day1_arr,$value->time_slot_id);
+			                           array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                        }
+			                     }
+
+								      /*if($busyOrFree){
+									      array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+									      if(!empty($busyOrFree->rescheduled_day_id)){
+										   	if($busyOrFree->rescheduled_day_id == 1 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+										   		array_push($day1,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+										   	}else{
+										   		array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+											   }
+								  			}
+									   }else{
+									   	array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+									   }*/
 								   }
 								   if($value1 == 2 && $value->day_id == 2){
 								   	// dd($value->doctor_id);
-									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
-									   		->where('appointment_date',$dates[$key])
-									   		->first();
-									   	// dd($busyOrFree);
-									   	if($busyOrFree){
-									     		array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
-									     		if(!empty($busyOrFree->rescheduled_day_id)){
-											   	if($busyOrFree->rescheduled_day_id == 2 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
-											   		array_push($day2,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
-											   	}else{
-											   		array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-												   }
-									  			}
-									     	}else{
-								      		array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-								      	}
+								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+								   		->where('appointment_date',$dates[$key])
+								   		->first();
+								   	if(!empty($busyOrFree->rescheduled_day_id)){
+			                        if($busyOrFree->rescheduled_day_id == 2 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+			                           // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day2_arr)){
+			                              array_push($day2_arr,$busyOrFree->rescheduled_time_slot_id);
+			                              array_push($day2,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+			                           // }
+			                           if(!in_array($busyOrFree->time_slot_id, $day2_arr)){
+			                              array_push($day2_arr,$busyOrFree->time_slot_id);
+			                              array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }else{
+			                           if(!in_array($busyOrFree->time_slot_id, $day2_arr)){
+			                              array_push($day2_arr,$busyOrFree->time_slot_id);
+			                              array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }
+			                     }else{
+			                        if(!in_array($value->time_slot_id, $day2_arr)){
+			                           array_push($day2_arr,$value->time_slot_id);
+			                           array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                        }
+			                     }
+								   	/*if($busyOrFree){
+								     		array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+								     		if(!empty($busyOrFree->rescheduled_day_id)){
+										   	if($busyOrFree->rescheduled_day_id == 2 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+										   		array_push($day2,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+										   	}else{
+										   		array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+											   }
+								  			}
+								     	}else{
+							      		array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+							      	}*/
 								   }
 								   if($value1 == 3 && $value->day_id == 3){
-
-									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
-										   	->where('appointment_date',$dates[$key])
-										   	->first();
-										   if($busyOrFree){
-										   	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
-										   	if(!empty($busyOrFree->rescheduled_day_id)){
-											   	if($busyOrFree->rescheduled_day_id == 3 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
-											   		array_push($day3,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
-											   	}else{
-											   		array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-												   }
-									  			}
-										   }else{
-												array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);   		
-										   }
+								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+									   	->where('appointment_date',$dates[$key])
+									   	->first();
+									   if(!empty($busyOrFree->rescheduled_day_id)){
+		                           if($busyOrFree->rescheduled_day_id == 3 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+		                              // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day3_arr)){
+		                                 array_push($day3_arr,$busyOrFree->rescheduled_time_slot_id);
+		                                 array_push($day3,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+		                              // }
+		                              if(!in_array($busyOrFree->time_slot_id, $day3_arr)){
+		                                 array_push($day3_arr,$busyOrFree->time_slot_id);
+		                                 array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+		                              }
+		                           }else{
+		                              if(!in_array($busyOrFree->time_slot_id, $day3_arr)){
+		                                 array_push($day3_arr,$busyOrFree->time_slot_id);
+		                                 array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+		                              }
+		                           }
+		                        }else{
+		                           if(!in_array($value->time_slot_id, $day3_arr)){
+		                              array_push($day3_arr,$value->time_slot_id);
+		                              array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+		                           }
+		                        }
+									   /*if($busyOrFree){
+									   	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+									   	if(!empty($busyOrFree->rescheduled_day_id)){
+										   	if($busyOrFree->rescheduled_day_id == 3 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+										   		array_push($day3,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+										   	}else{
+										   		array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+											   }
+								  			}
+									   }else{
+											array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);   		
+									   }*/
 								   }
 								   if($value1 == 4 && $value->day_id == 4){
 
 									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 										   	->where('appointment_date',$dates[$key])
 										   	->first();
-										   if($busyOrFree){
+										   if(!empty($busyOrFree->rescheduled_day_id)){
+					                     if($busyOrFree->rescheduled_day_id == 4 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+					                        // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day4_arr)){
+					                           array_push($day4_arr,$busyOrFree->rescheduled_time_slot_id);
+					                           array_push($day4,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+					                        // }
+					                        if(!in_array($busyOrFree->time_slot_id, $day4_arr)){
+					                           array_push($day4_arr,$busyOrFree->time_slot_id);
+					                           array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                        }
+					                     }else{
+					                        if(!in_array($busyOrFree->time_slot_id, $day4_arr)){
+					                           array_push($day4_arr,$busyOrFree->time_slot_id);
+					                           array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                        }
+					                     }
+					                  }else{
+					                     if(!in_array($value->time_slot_id, $day4_arr)){
+					                        array_push($day4_arr,$value->time_slot_id);
+					                        array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                     }
+					                  }
+										   /*if($busyOrFree){
 								       		array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 								       		if(!empty($busyOrFree->rescheduled_day_id)){
 											   	if($busyOrFree->rescheduled_day_id == 4 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
@@ -423,13 +520,36 @@ class PatientController extends Controller
 									  			}
 								       	}else{
 								       		array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-								       	}
+								       	}*/
 								   }
+
 								   if($value1 == 5 && $value->day_id == 5){
 									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 									   		->where('appointment_date',$dates[$key])
 									   		->first();
-									   	if($busyOrFree){
+									   	if(!empty($busyOrFree->rescheduled_day_id)){
+					                     if($busyOrFree->rescheduled_day_id == 5 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+					                        // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day5_arr)){
+					                           array_push($day5_arr,$busyOrFree->rescheduled_time_slot_id);
+					                           array_push($day5,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+					                        // }
+					                        if(!in_array($busyOrFree->time_slot_id, $day5_arr)){
+					                           array_push($day5_arr,$busyOrFree->time_slot_id);
+					                           array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                        }
+					                     }else{
+					                        if(!in_array($busyOrFree->time_slot_id, $day5_arr)){
+					                           array_push($day5_arr,$busyOrFree->time_slot_id);
+					                           array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                        }
+					                     }
+					                  }else{
+					                     if(!in_array($value->time_slot_id, $day5_arr)){
+					                        array_push($day5_arr,$value->time_slot_id);
+					                        array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                     }
+					                  }
+									   	/*if($busyOrFree){
 									     		array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 									     		if(!empty($busyOrFree->rescheduled_day_id)){
 											   	if($busyOrFree->rescheduled_day_id == 5 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
@@ -440,13 +560,37 @@ class PatientController extends Controller
 									  			}
 									     	}else{
 									   		array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-									   	}
+									   	}*/
 								   }
+
+
 								   if($value1 == 6 && $value->day_id == 6){
 									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 									   		->where('appointment_date',$dates[$key])
 									   		->first();
-									   	if($busyOrFree){
+									   	if(!empty($busyOrFree->rescheduled_day_id)){
+					                     if($busyOrFree->rescheduled_day_id == 6 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+					                        // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day6_arr)){
+					                           array_push($day6_arr,$busyOrFree->rescheduled_time_slot_id);
+					                           array_push($day6,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+					                        // }
+					                        if(!in_array($busyOrFree->time_slot_id, $day6_arr)){
+					                           array_push($day6_arr,$busyOrFree->time_slot_id);
+					                           array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                        }
+					                     }else{
+					                        if(!in_array($busyOrFree->time_slot_id, $day6_arr)){
+					                           array_push($day6_arr,$busyOrFree->time_slot_id);
+					                           array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                        }
+					                     }
+					                  }else{
+					                     if(!in_array($value->time_slot_id, $day6_arr)){
+					                        array_push($day6_arr,$value->time_slot_id);
+					                        array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                     }
+					                  }
+									   	/*if($busyOrFree){
 								       		array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 								       		if(!empty($busyOrFree->rescheduled_day_id)){
 											   	if($busyOrFree->rescheduled_day_id == 6 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
@@ -457,28 +601,50 @@ class PatientController extends Controller
 									  			}
 								       	}else{
 								      		array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-								      	}
+								      	}*/
 								   }
 								   if($value1 == 7 && $value->day_id == 7){
-									   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
-									   		->where('appointment_date',$dates[$key])
-									   		->first();
-									   	if($busyOrFree){
-								      		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
-								      		if(!empty($busyOrFree->rescheduled_day_id)){
-											   	if($busyOrFree->rescheduled_day_id == 7 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
-											   		array_push($day7,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
-											   	}
-									  			}else{
-										   		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-											   }
-								      	}else{
-								      		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
-								      	}
+								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+								   		->where('appointment_date',$dates[$key])
+								   		->first();
+								   	if(!empty($busyOrFree->rescheduled_day_id)){
+				                     if($busyOrFree->rescheduled_day_id == 7 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+				                        // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day7_arr)){
+				                           array_push($day7_arr,$busyOrFree->rescheduled_time_slot_id);
+				                           array_push($day7,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+				                        // }
+				                        if(!in_array($busyOrFree->time_slot_id, $day7_arr)){
+				                           array_push($day7_arr,$busyOrFree->time_slot_id);
+				                           array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+				                        }
+				                     }else{
+				                        if(!in_array($busyOrFree->time_slot_id, $day7_arr)){
+				                           array_push($day7_arr,$busyOrFree->time_slot_id);
+				                           array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+				                        }
+				                     }
+				                  }else{
+				                     if(!in_array($value->time_slot_id, $day7_arr)){
+				                        array_push($day7_arr,$value->time_slot_id);
+				                        array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+				                     }
+				                  }
+								   	/*if($busyOrFree){
+							      		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+							      		if(!empty($busyOrFree->rescheduled_day_id)){
+										   	if($busyOrFree->rescheduled_day_id == 7 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+										   		array_push($day7,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
+										   	}
+								  			}else{
+									   		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+										   }
+							      	}else{
+							      		array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>0]);
+							      	}*/
 							   	}
 								}
 
-							   if($value->day_id == 1){
+							   /*if($value->day_id == 1){
 							   	if(Carbon::now()->dayOfWeek+1 == 1){
 								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])
 								   	->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
@@ -497,15 +663,46 @@ class PatientController extends Controller
 									      	array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 										   }
 								   }
-							   }
-							   if($value->day_id == 2){
+							   }*/
+							   if($value->day_id == 1){
+			                  if(Carbon::now()->dayOfWeek+1 == 1){
+			                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])
+			                    ->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			                    ->where('appointment_date',Date('Y-m-d'))
+			                    ->first();
+			                     if(!empty($busyOrFree->rescheduled_day_id)){
+			                        if($busyOrFree->rescheduled_day_id == 1 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+			                           // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day1_arr)){
+			                              array_push($day1_arr,$busyOrFree->rescheduled_time_slot_id);
+			                              array_push($day1,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+			                           // }
+			                           if(!in_array($busyOrFree->time_slot_id, $day1_arr)){
+			                              array_push($day1_arr,$busyOrFree->time_slot_id);
+			                              array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }else{
+			                           if(!in_array($busyOrFree->time_slot_id, $day1_arr)){
+			                              array_push($day1_arr,$busyOrFree->time_slot_id);
+			                              array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }
+			                     }else{
+			                        if(!in_array($value->time_slot_id, $day1_arr)){
+			                           array_push($day1_arr,$value->time_slot_id);
+			                           array_push($day1,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                        }
+			                     }
+			                  }
+			               }
+
+							   /*if($value->day_id == 2){
 							   	if(Carbon::now()->dayOfWeek+1 == 2){
 								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 								   		->where('appointment_date',Date('Y-m-d'))
 								   		->first();
-								      // array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+								      
 								      if(!empty($busyOrFree->rescheduled_day_id)){
-							       		// dd($busyOrFree->rescheduled_time_slot_id);	
+							       		
 									   	if($busyOrFree->rescheduled_day_id == 2 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
 									   		array_push($day2,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>'1']);
 									   		// dd($busyOrFree);
@@ -516,8 +713,40 @@ class PatientController extends Controller
 									      	array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 										   }
 								   }
-							   }
-							   if($value->day_id == 3){
+							   }*/
+							   if($value->day_id == 2){
+					            if(Carbon::now()->dayOfWeek+1 == 2){
+					              $busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+					              ->where('appointment_date',Date('Y-m-d'))
+					              ->first();
+					              // dd($busyOrFree);
+					               if(!empty($busyOrFree->rescheduled_day_id)){
+					                  if($busyOrFree->rescheduled_day_id == 2 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+					                     // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day2_arr)){
+					                        array_push($day2_arr,$busyOrFree->rescheduled_time_slot_id);
+					                        array_push($day2,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+					                     // }
+					                     if(!in_array($busyOrFree->time_slot_id, $day2_arr)){
+					                        array_push($day2_arr,$busyOrFree->time_slot_id);
+					                        array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                     }
+					                  }else{
+					                     if(!in_array($busyOrFree->time_slot_id, $day2_arr)){
+					                        array_push($day2_arr,$busyOrFree->time_slot_id);
+					                        array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                     }
+					                  }
+					               }else{
+					                  if(!in_array($value->time_slot_id, $day2_arr)){
+					                     array_push($day2_arr,$value->time_slot_id);
+					                     array_push($day2,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+					                  }
+					               }
+					            }
+					         }
+
+
+							   /*if($value->day_id == 3){
 							   	if(Carbon::now()->dayOfWeek+1 == 3){
 								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 									   	->where('appointment_date',Date('Y-m-d'))
@@ -535,8 +764,38 @@ class PatientController extends Controller
 									      	array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 										   }
 							      }
-							   }
-							   if($value->day_id == 4){
+							   }*/
+							   if($value->day_id == 3){
+			                  if(Carbon::now()->dayOfWeek+1 == 3){
+			                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			                        ->where('appointment_date',Date('Y-m-d'))
+			                        ->first();
+			                     if(!empty($busyOrFree->rescheduled_day_id)){
+			                        if($busyOrFree->rescheduled_day_id == 3 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+			                           // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day3_arr)){
+			                              array_push($day3_arr,$busyOrFree->rescheduled_time_slot_id);
+			                              array_push($day3,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+			                           // }
+			                           if(!in_array($busyOrFree->time_slot_id, $day3_arr)){
+			                              array_push($day3_arr,$busyOrFree->time_slot_id);
+			                              array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }else{
+			                           if(!in_array($busyOrFree->time_slot_id, $day3_arr)){
+			                              array_push($day3_arr,$busyOrFree->time_slot_id);
+			                              array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }
+			                     }else{
+			                        if(!in_array($value->time_slot_id, $day3_arr)){
+			                           array_push($day3_arr,$value->time_slot_id);
+			                           array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                        }
+			                     }
+			                  }
+			               }
+
+							   /*if($value->day_id == 4){
 							   	if(Carbon::now()->dayOfWeek+1 == 4){
 								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 									   	->where('appointment_date',Date('Y-m-d'))
@@ -554,8 +813,38 @@ class PatientController extends Controller
 									      	array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 										   }
 							      }
-							   }
-							   if($value->day_id == 5){
+							   }*/
+							   if($value->day_id == 4){
+			                  if(Carbon::now()->dayOfWeek+1 == 4){
+			                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			                     ->where('appointment_date',Date('Y-m-d'))
+			                     ->first();
+			                     if(!empty($busyOrFree->rescheduled_day_id)){
+			                        if($busyOrFree->rescheduled_day_id == 4 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+			                           // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day4_arr)){
+			                              array_push($day4_arr,$busyOrFree->rescheduled_time_slot_id);
+			                              array_push($day4,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+			                           // }
+			                           if(!in_array($busyOrFree->time_slot_id, $day4_arr)){
+			                              array_push($day4_arr,$busyOrFree->time_slot_id);
+			                              array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }else{
+			                           if(!in_array($busyOrFree->time_slot_id, $day4_arr)){
+			                              array_push($day4_arr,$busyOrFree->time_slot_id);
+			                              array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }
+			                     }else{
+			                        if(!in_array($value->time_slot_id, $day4_arr)){
+			                           array_push($day4_arr,$value->time_slot_id);
+			                           array_push($day4,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                        }
+			                     }
+			                  }
+               			}
+
+							  	/* if($value->day_id == 5){
 							   	if(Carbon::now()->dayOfWeek+1 == 5){
 								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 								   		->where('appointment_date',Date('Y-m-d'))
@@ -573,8 +862,39 @@ class PatientController extends Controller
 									      	array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 										   }
 								   }
-							   }
-							   if($value->day_id == 6){
+							   }*/
+							   if($value->day_id == 5){
+			                  if(Carbon::now()->dayOfWeek+1 == 5){
+			                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			                        ->where('appointment_date',Carbon::now()->format('Y-m-d'))
+			                        ->first();
+			                     if(!empty($busyOrFree->rescheduled_day_id)){
+			                        if($busyOrFree->rescheduled_day_id == 5 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+			                           // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day5_arr)){
+			                              array_push($day5_arr,$busyOrFree->rescheduled_time_slot_id);
+			                              array_push($day5,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+			                           // }
+			                           if(!in_array($busyOrFree->time_slot_id, $day5_arr)){
+			                              array_push($day5_arr,$busyOrFree->time_slot_id);
+			                              array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }else{
+			                           if(!in_array($busyOrFree->time_slot_id, $day5_arr)){
+			                              array_push($day5_arr,$busyOrFree->time_slot_id);
+			                              array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }
+			                     }else{
+			                        if(!in_array($value->time_slot_id, $day5_arr)){
+			                           array_push($day5_arr,$value->time_slot_id);
+			                           array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                        }
+			                     }
+			                  }
+			               }
+
+
+							  	/* if($value->day_id == 6){
 							   	if(Carbon::now()->dayOfWeek+1 == 6){
 								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 								   		->where('appointment_date',Date('Y-m-d'))
@@ -592,8 +912,38 @@ class PatientController extends Controller
 									      	array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 										   }
 							      }
-							   }
-							   if($value->day_id == 7){
+							   }*/
+							   if($value->day_id == 6){
+			                  if(Carbon::now()->dayOfWeek+1 == 6){
+			                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			                        ->where('appointment_date',Date('Y-m-d'))
+			                        ->first();
+			                    if(!empty($busyOrFree->rescheduled_day_id)){
+			                        if($busyOrFree->rescheduled_day_id == 6 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+			                           // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day6_arr)){
+			                              array_push($day6_arr,$busyOrFree->rescheduled_time_slot_id);
+			                              array_push($day6,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+			                           // }
+			                           if(!in_array($busyOrFree->time_slot_id, $day6_arr)){
+			                              array_push($day6_arr,$busyOrFree->time_slot_id);
+			                              array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }else{
+			                           if(!in_array($busyOrFree->time_slot_id, $day6_arr)){
+			                              array_push($day6_arr,$busyOrFree->time_slot_id);
+			                              array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }
+			                     }else{
+			                        if(!in_array($value->time_slot_id, $day6_arr)){
+			                           array_push($day6_arr,$value->time_slot_id);
+			                           array_push($day6,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                        }
+			                     }
+			                  }
+			               }
+
+							  	/* if($value->day_id == 7){
 							   	if(Carbon::now()->dayOfWeek+1 == 7){
 								   	$busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 								   		->where('appointment_date',Date('Y-m-d'))
@@ -611,7 +961,36 @@ class PatientController extends Controller
 									      	array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 										   }
 							      }
-							   }
+							   }*/
+							   if($value->day_id == 7){
+			                  if(Carbon::now()->dayOfWeek+1 == 7){
+			                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			                        ->where('appointment_date',Date('Y-m-d'))
+			                        ->first();
+			                     if(!empty($busyOrFree->rescheduled_day_id)){
+			                        if($busyOrFree->rescheduled_day_id == 7 && $busyOrFree->status_of_appointment!= 'Cancelled' && $busyOrFree->status_of_appointment != 'Expired' && $busyOrFree->status_of_appointment != 'Rejected') {
+			                           // if(!in_array($busyOrFree->rescheduled_time_slot_id, $day7_arr)){
+			                              array_push($day7_arr,$busyOrFree->rescheduled_time_slot_id);
+			                              array_push($day7,['time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'busyOrFree'=>1]);
+			                           // }
+			                           if(!in_array($busyOrFree->time_slot_id, $day7_arr)){
+			                              array_push($day7_arr,$busyOrFree->time_slot_id);
+			                              array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }else{
+			                           if(!in_array($busyOrFree->time_slot_id, $day7_arr)){
+			                              array_push($day7_arr,$busyOrFree->time_slot_id);
+			                              array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                           }
+			                        }
+			                     }else{
+			                        if(!in_array($value->time_slot_id, $day7_arr)){
+			                           array_push($day7_arr,$value->time_slot_id);
+			                           array_push($day7,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
+			                        }
+			                     }
+			                  }
+			               }
 							}
 							$doctor_availabilities_result = [
 							   '1' => $day1,

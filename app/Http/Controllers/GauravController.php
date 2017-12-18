@@ -48,12 +48,7 @@ class GauravController extends Controller
    	///// firstOrCreate End
    	///////////////////////////////////////////////////////////////
 
-
-
-
-   	$response = [
-   		'response' => $data
-   	];
-	  	return Response::json( $response , 200 );
+         
+   	
    }
 }

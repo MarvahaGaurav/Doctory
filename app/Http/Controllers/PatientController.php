@@ -114,13 +114,48 @@ class PatientController extends Controller
     			if($UserDetail->user_type == 2){
     				$PatientBookmark = PatientBookmark::where(['patient_id' => $UserDetail->id])->get();
     				$User = new User;
+    				$final_result = [];
     				foreach ($PatientBookmark as $key => $value) {
     					// dd($value->doctor_id);
 				    	$result[] = $this->getUserDetail($User->getUserDetail($value->doctor_id));
     				}
+    				foreach ($result as $key => $value) {
+    					$final_result[] = [
+    						'UserIdentificationType' => $value['UserIdentificationType'],
+				   		'id' => $value['id'],
+				   		'firebase_id' => $value['firebase_id'],
+				   		'name' => $value['name'],
+				   		'email' => $value['email'],
+				   		'country_code' => $value['country_code'],
+				   		'mobile' => $value['mobile'],
+				   		'profile_image' => $value['profile_image'],
+				   		'speciality_id' => $value['speciality_id'],
+				   		'experience' => $value['experience'],
+				   		'working_place' => $value['working_place'],
+				   		'latitude' => $value['latitude'],
+				   		'longitude' => $value['longitude'],
+				   		'about_me' => $value['about_me'],
+				   		'remember_token' => $value['remember_token'],
+				   		'device_token' => $value['device_token'],
+				   		'device_type' => $value['device_type'],
+				   		'user_type' => $value['user_type'],
+				   		'medical_licence_number' => $value['medical_licence_number'],
+				   		'issuing_country' => $value['issuing_country'],
+				   		'status' => $value['status'],
+				   		'profile_status' => $value['profile_status'],
+				   		'notification' => $value['notification'],
+				   		'language' => $value['language'],
+				   		'speciality' => $value['speciality'],
+				   		'otp_detail' => $value['otp_detail'],
+				   		'qualification' => $value['qualification'],
+				   		'mother_language' => $value['mother_language'],
+				   		'doctor_availabilities' => $value['doctor_availabilities'],
+				   		'bookmark' => '1'
+    					];
+    				}
     				$Response = [
 						'message'  => trans('messages.success.success'),
-						'response' => $result
+						'response' => $final_result
 					];
 			      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
     			}else{
@@ -666,7 +701,7 @@ class PatientController extends Controller
 							   }*/
 							   if($value->day_id == 1){
 			                  if(Carbon::now()->dayOfWeek+1 == 1){
-			                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])
+			                    $busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])
 			                    ->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 			                    ->where('appointment_date',Date('Y-m-d'))
 			                    ->first();
@@ -767,7 +802,7 @@ class PatientController extends Controller
 							   }*/
 							   if($value->day_id == 3){
 			                  if(Carbon::now()->dayOfWeek+1 == 3){
-			                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			                    $busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 			                        ->where('appointment_date',Date('Y-m-d'))
 			                        ->first();
 			                     if(!empty($busyOrFree->rescheduled_day_id)){
@@ -816,7 +851,7 @@ class PatientController extends Controller
 							   }*/
 							   if($value->day_id == 4){
 			                  if(Carbon::now()->dayOfWeek+1 == 4){
-			                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			                     $busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 			                     ->where('appointment_date',Date('Y-m-d'))
 			                     ->first();
 			                     if(!empty($busyOrFree->rescheduled_day_id)){
@@ -865,7 +900,7 @@ class PatientController extends Controller
 							   }*/
 							   if($value->day_id == 5){
 			                  if(Carbon::now()->dayOfWeek+1 == 5){
-			                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			                     $busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 			                        ->where('appointment_date',Carbon::now()->format('Y-m-d'))
 			                        ->first();
 			                     if(!empty($busyOrFree->rescheduled_day_id)){
@@ -915,7 +950,7 @@ class PatientController extends Controller
 							   }*/
 							   if($value->day_id == 6){
 			                  if(Carbon::now()->dayOfWeek+1 == 6){
-			                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			                    $busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 			                        ->where('appointment_date',Date('Y-m-d'))
 			                        ->first();
 			                    if(!empty($busyOrFree->rescheduled_day_id)){
@@ -964,7 +999,7 @@ class PatientController extends Controller
 							   }*/
 							   if($value->day_id == 7){
 			                  if(Carbon::now()->dayOfWeek+1 == 7){
-			                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			                    $busyOrFree = Appointment::where(['doctor_id'=>$value->doctor_id,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 			                        ->where('appointment_date',Date('Y-m-d'))
 			                        ->first();
 			                     if(!empty($busyOrFree->rescheduled_day_id)){

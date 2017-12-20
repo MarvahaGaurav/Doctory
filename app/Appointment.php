@@ -74,19 +74,11 @@ class Appointment extends Model
 	}*/
 
 	public static function get_all_appointment_of_doctor($date,$user_id){ // Home Screen
-		/*if($page_number == 0){
-			$skip = 0;
-		}else{
-			$skip = $page_number * 10;
-		}*/
 		$data = Self::Where(['doctor_id' => $user_id])
 			->whereDate('appointment_date','>=',$date)
-			->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+			->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed'])
 			->orderBy('appointment_date','asc')
 			->with('PatientDetail','Reffered_To_Doctor_Detail','Reffered_By_Doctor_Detail')
-			// ->with('PatientDetail','Reffered_By_Doctor_Detail')
-			// ->skip($skip)
-			// ->take(10)
 			->orderBy('id','desc')
 			->get();
 		return $data;

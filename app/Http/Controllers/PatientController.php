@@ -23,6 +23,7 @@ use App\Qualification;
 use App\DoctorQualification;
 use App\Appointment;
 use App\Notification;
+use App\Review;
 use Hash;
 use Auth;
 use Exception;
@@ -120,6 +121,7 @@ class PatientController extends Controller
 				    	$result[] = $this->getUserDetail($User->getUserDetail($value->doctor_id));
     				}
     				foreach ($result as $key => $value) {
+    					$Review = Review::where(['doctor_id' => $value['id'] , 'status_by_doctor' => 1])->get();
     					$final_result[] = [
     						'UserIdentificationType' => $value['UserIdentificationType'],
 				   		'id' => $value['id'],
@@ -150,7 +152,8 @@ class PatientController extends Controller
 				   		'qualification' => $value['qualification'],
 				   		'mother_language' => $value['mother_language'],
 				   		'doctor_availabilities' => $value['doctor_availabilities'],
-				   		'bookmark' => '1'
+				   		'bookmark' => '1',
+				   		'reviews' => $Review
     					];
     				}
     				$Response = [
@@ -1113,6 +1116,7 @@ class PatientController extends Controller
                      // dd($today_day_id == $value['day_id']);
                      // dd(Carbon::parse($TimeSlotDetail_startTime) < Carbon::now());
 
+                     // dd($value);
 		    				if($Aptment_date == $today_date && $today_day_id == $value['day_id'] && Carbon::parse($TimeSlotDetail_startTime) < Carbon::now() && $value['status_of_appointment'] == 'Pending')
                      {
                      	$Appointment = Appointment::find($value['id']);
@@ -1138,7 +1142,8 @@ class PatientController extends Controller
 			    					'rescheduled_date' => $value['rescheduled_date'],
 			    					'rescheduled_by_patient' => $value['rescheduled_by_patient'],
 			    					'doctor_detail' => $DoctorDetail,
-			    					'reffered__to__doctor__detail' => $value['reffered__to__doctor__detail']
+			    					'reffered__to__doctor__detail' => $value['reffered__to__doctor__detail'],
+			    					'is_rated' => Review::where(['appointment_id' => $value['id']])->count()
 		    					];
 		    				}else{
 		    					$Rsult[] = [
@@ -1160,7 +1165,8 @@ class PatientController extends Controller
 			    					'rescheduled_date' => $value['rescheduled_date'],
 			    					'rescheduled_by_patient' => $value['rescheduled_by_patient'],
 			    					'doctor_detail' => $DoctorDetail,
-			    					'reffered__to__doctor__detail' => $value['reffered__to__doctor__detail']
+			    					'reffered__to__doctor__detail' => $value['reffered__to__doctor__detail'],
+			    					'is_rated' => Review::where(['appointment_id' => $value['id']])->count()
 		    					];
 		    				}
 		    			}
@@ -1674,4 +1680,70 @@ class PatientController extends Controller
         }
    }
 
+   public function giveReviewToDoctor(Request $request){
+   	Log::info('------------------PatientController------------get_notification_list');
+ 		$accessToken = $request->header('accessToken');
+ 		$rating = $request->rating;
+ 		$review = $request->review;
+ 		$doctor_id = $request->doctor_id;
+ 		$appointment_id = $request->appointment_id;
+ 		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
+		if( !empty( $accessToken ) ) {
+
+			$UserDetail = User::where(['remember_token'=>$accessToken])->first();
+			// dd($UserDetail);
+    		if(count($UserDetail)){
+    			$validations = [
+					'rating' => 'required',
+					'doctor_id' => 'required',
+					'appointment_id' => 'required',
+				];
+				$Validator = Validator::make($request->all(),$validations);
+				if($Validator->fails()){
+					$Response = [
+						'messages' => $Validator->errors($Validator)->first()
+					];
+	        		return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+				}
+    			switch ($UserDetail->user_type) {
+    				case 1:
+    					$Response = [
+		    			  'message'  => trans('messages.invalid.credentials'),
+		    			];
+		        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+    					break;
+    				case 2:
+    					$review_data = Review::firstOrNew(['patient_id' => $UserDetail->id, 'appointment_id' => $appointment_id , 'doctor_id' => $doctor_id]);
+    					$review_data->rating = $rating;
+    					$review_data->review_text = $review;
+    					$review_data->save();
+    					$Response = [
+							'messages' => __('messages.success.success')
+						];
+		        		return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
+    					break;	
+    				default:
+    					$Response = [
+							'messages' => __('messages.invalid.request')
+						];
+		        		return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+    					break;
+    			}
+    		}else{
+    			$Response = [
+    			  'message'  => trans('messages.invalid.credentials'),
+    			];
+        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+    		}
+		}else {
+	    	$Response = [
+				'message'  => trans('messages.required.accessToken')
+			];
+	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+		}		
+   }
 }

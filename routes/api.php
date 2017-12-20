@@ -42,8 +42,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 ////////////////////////////////////////////////
 	Route::get('doctorList','DoctorController@getList');
 	Route::post('save_doctor_timing_for_availability','DoctorController@save_doctor_timing_for_availability');
-	Route::post('get_review_rating_at_doctor_app','DoctorController@get_review_rating_at_doctor_app');
-	Route::post('change_status_of_reviews_from_doctor_app','DoctorController@change_status_of_reviews_from_doctor_app');
+	Route::post('getReviewList','DoctorController@getReviewList');
+	Route::post('acceptReview','DoctorController@acceptReview');
 	Route::post('getDoctorBySpecialityId','DoctorController@getDoctorBySpecialityId_FOR_PATIENT_SEARCH');
 
 	Route::post('get_all_appointment_of_doctor','DoctorController@get_all_appointment_of_doctor');
@@ -57,6 +57,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 	Route::post('updateRescheduledAppointmentByDoctor','DoctorController@accept_or_reject_appointment_by_doctor_rescheduled_by_patient');
 	Route::post('cancel_appointment_by_doctor','DoctorController@cancel_appointment_by_doctor');
+	Route::post('completeAppointmentByDoctor','DoctorController@completeAppointmentByDoctor');
+	Route::post('transferAppointmentByDoctor','DoctorController@transferAppointmentByDoctor');
+	
+	
 
 
 ////////////////////////////////////////////////
@@ -79,6 +83,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('get_notification_list_for_patient','PatientController@get_notification_list');
 	Route::post('reschedule_appointment_by_patient','PatientController@reschedule_appointment_by_patient');
 	Route::post('cancel_appointment_by_patient','PatientController@cancel_appointment_by_patient');
+	Route::post('giveReviewToDoctor','PatientController@giveReviewToDoctor');
 
 
 ////////////////////////////////////////////////

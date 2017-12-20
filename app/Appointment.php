@@ -31,16 +31,9 @@ class Appointment extends Model
 
 	// public static function get_all_appointment_of_patient_by_date($date,$UserDetail, $page_number){
 	public static function get_all_appointment_of_patient_by_date($date,$UserDetail){
-		/*if($page_number == 0){
-			$skip = 0;
-		}else{
-			$skip = $page_number * 10;
-		}*/
 		$data = Self::Where(['patient_id' => $UserDetail])
 			->whereDate('appointment_date',$date)
 			->with('DoctorDetail','Reffered_To_Doctor_Detail','Reffered_By_Doctor_Detail','Doctor_availability')
-			// ->skip($skip)
-			// ->take(10)
 			->get();
 		return $data;
 	}
@@ -54,9 +47,6 @@ class Appointment extends Model
 		}*/
 		$data = Self::Where(['doctor_id' => $UserDetail])
 			->whereDate('appointment_date',$date)
-			// ->whereDate('appointment_date','>=',$date)
-			// ->where('status_of_appointment','<>','Accepted')
-			// ->where('status_of_appointment','<>','Rejected')
 			->with('PatientDetail','Reffered_To_Doctor_Detail','Reffered_By_Doctor_Detail')
 			// ->with('PatientDetail','Reffered_By_Doctor_Detail')
 			/*->skip($skip)
@@ -76,7 +66,7 @@ class Appointment extends Model
 	public static function get_all_appointment_of_doctor($date,$user_id){ // Home Screen
 		$data = Self::Where(['doctor_id' => $user_id])
 			->whereDate('appointment_date','>=',$date)
-			->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed'])
+			->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
 			->orderBy('appointment_date','asc')
 			->with('PatientDetail','Reffered_To_Doctor_Detail','Reffered_By_Doctor_Detail')
 			->orderBy('id','desc')

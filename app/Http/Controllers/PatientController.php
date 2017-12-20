@@ -396,7 +396,9 @@ class PatientController extends Controller
 							];
 							// dd($dates);
 							// dd($days);
-							// dd($res->doctor_availability);
+							/*if($res->reffered_to_doctor_id){
+								dd($res->Reffered_To_Doctor_Detail);
+							}*/
 							foreach ($res->doctor_availability as $key => $value) {
 								foreach ($days as $key => $value1) {
 									if($value1 == 1 && $value->day_id == 1){
@@ -1097,14 +1099,14 @@ class PatientController extends Controller
 		    					'rescheduled_date' => $res->rescheduled_date,
 		    					'rescheduled_by_patient' => $res->rescheduled_by_patient,
 		    					'doctor_detail' => $DoctorDetail,
-		    					'reffered__to__doctor__detail' => $res->reffered__to__doctor__detail,
+		    					'reffered__to__doctor__detail' => $res->Reffered_To_Doctor_Detail,
 		    				];
 		    			}
 
 		    			$Rsult = [];
 		    			// dd($final_result);
 		    			foreach ($final_result as $key => $value) {
-		    				// dd($value);	
+		    				// dd($value);
 		    				$Aptment_date = Carbon::parse($value['appointment_date'])->format('Y-m-d');
 		    				$today_date = Carbon::now()->format('Y-m-d');
 		    				$today_day_id = Carbon::parse($value['appointment_date'])->dayOfWeek+1;
@@ -1112,11 +1114,6 @@ class PatientController extends Controller
                      $TimeSlotDetail_startTime = $TimeSlotDetail->start_time;
                      $TimeSlotDetail_endTime = $TimeSlotDetail->end_time;
 
-                     // dd($Aptment_date== $today_date);
-                     // dd($today_day_id == $value['day_id']);
-                     // dd(Carbon::parse($TimeSlotDetail_startTime) < Carbon::now());
-
-                     // dd($value);
 		    				if($Aptment_date == $today_date && $today_day_id == $value['day_id'] && Carbon::parse($TimeSlotDetail_startTime) < Carbon::now() && $value['status_of_appointment'] == 'Pending')
                      {
                      	$Appointment = Appointment::find($value['id']);

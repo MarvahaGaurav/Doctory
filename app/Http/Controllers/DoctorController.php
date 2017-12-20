@@ -450,14 +450,16 @@ class DoctorController extends Controller
 					return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
        		}else{
        			$appointment_detail = Appointment::where(['id'=>$appointment_id,'doctor_id'=>$UserDetail->id])->whereNotIn('status_of_appointment',['Expired','Cancelled','Completed','Transfered'])->first();
+                // dd($appointment_detail);
        			if(count($appointment_detail)){
        				$appointment_detail->reffered_to_doctor_id = $transfer_to_doctor_id;
        				$appointment_detail->status_of_appointment = 'Transfered';
        				$appointment_detail->save();
+                    Notification::insert([ 'doctor_id'=> $UserDetail->id ,'reffered_to_doctor_id' => $transfer_to_doctor_id,'patient_id' => $appointment_detail->patient_id,'appointment_id' => $appointment_detail->id , 'type' => __('messages.notification_status_codes.Appointment_Transfered_By_Doctor')]);
        				$Response = [
-                     'message'  => trans('messages.success.success'),
-						];
-						return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                        'message'  => trans('messages.success.success'),
+					];
+					return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
        			}else{
        				$Response = [
                      'message'  => trans('messages.success.NO_DATA_FOUND'),

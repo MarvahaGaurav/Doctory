@@ -93,7 +93,8 @@ return [
 		'Appointment_Accepted_By_Doctor' => '9',
 		'Appointment_Rejected_By_Doctor' => '10',
 		'Appointment_Cancelled_By_Patient' => '11',
-		'Appointment_Cancelled_By_Doctor' => '12'
+		'Appointment_Cancelled_By_Doctor' => '12',
+		'Appointment_Transfered_By_Doctor' => '13'
 	],
 
 	'required' => [

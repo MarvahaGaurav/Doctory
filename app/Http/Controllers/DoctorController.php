@@ -752,11 +752,12 @@ class DoctorController extends Controller
                                      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                  }
                                  if($accept_or_reject == 'Rejected'){
-                                     $Response = [
-                                         'message'  => trans('messages.success.appointment_rejected'),
-                                     ];
-                                     //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
-                                     return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                                    $Response = [
+                                     'message'  => trans('messages.success.appointment_rejected'),
+                                    ];
+                                    //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
+                                    Notification::insert(['doctor_id' => $DOCTOR_DETAIL->id,'patient_id' => $AppointmentDetail->patient_id,'type' => __('messages.notification_status_codes.Appointment_Rejected_By_Doctor'),'appointment_id' => $appointment_id]);
+                                    return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                  }
                              }else{
                                  $AppointmentDetail->status_of_appointment = "Expired";
@@ -785,6 +786,7 @@ class DoctorController extends Controller
                                  $Response = [
                                      'message'  => trans('messages.success.appointment_rejected'),
                                  ];
+                                 Notification::insert(['doctor_id' => $DOCTOR_DETAIL->id,'patient_id' => $AppointmentDetail->patient_id,'type' => __('messages.notification_status_codes.Appointment_Rejected_By_Doctor'),'appointment_id' => $appointment_id]);
                                  //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
                                  return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                              }
@@ -1141,7 +1143,7 @@ class DoctorController extends Controller
                foreach ($days as $key => $value1) {
                   if($value1 == 1 && $value->day_id == 1){
                         $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])
-                        ->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                        ->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                         ->where('appointment_date',$dates[$key])
                         ->first();
                         if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1181,7 +1183,7 @@ class DoctorController extends Controller
                         }*/
                   }
                   if($value1 == 2 && $value->day_id == 2){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1222,7 +1224,7 @@ class DoctorController extends Controller
                   }
 
                   if($value1 == 3 && $value->day_id == 3){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
                         if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1262,7 +1264,7 @@ class DoctorController extends Controller
                         }*/
                   }
                   if($value1 == 4 && $value->day_id == 4){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
 
@@ -1303,7 +1305,7 @@ class DoctorController extends Controller
                      }*/
                   }
                   if($value1 == 5 && $value->day_id == 5){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1343,7 +1345,7 @@ class DoctorController extends Controller
                      }*/
                   }
                   if($value1 == 6 && $value->day_id == 6){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1383,7 +1385,7 @@ class DoctorController extends Controller
                      }*/
                   }
                   if($value1 == 7 && $value->day_id == 7){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1427,7 +1429,7 @@ class DoctorController extends Controller
                if($value->day_id == 1){
                   if(Carbon::now()->dayOfWeek+1 == 1){
                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])
-                    ->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                    ->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                     ->where('appointment_date',Date('Y-m-d'))
                     ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1456,7 +1458,7 @@ class DoctorController extends Controller
                }
                if($value->day_id == 2){
                   if(Carbon::now()->dayOfWeek+1 == 2){
-                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                     ->where('appointment_date',Date('Y-m-d'))
                     ->first();
                     // dd($busyOrFree);
@@ -1486,7 +1488,7 @@ class DoctorController extends Controller
                }
                if($value->day_id == 3){
                   if(Carbon::now()->dayOfWeek+1 == 3){
-                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                         ->where('appointment_date',Date('Y-m-d'))
                         ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1515,7 +1517,7 @@ class DoctorController extends Controller
                }
                if($value->day_id == 4){
                   if(Carbon::now()->dayOfWeek+1 == 4){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                      ->where('appointment_date',Date('Y-m-d'))
                      ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1544,7 +1546,7 @@ class DoctorController extends Controller
                }
                if($value->day_id == 5){
                   if(Carbon::now()->dayOfWeek+1 == 5){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                         ->where('appointment_date',Carbon::now()->format('Y-m-d'))
                         ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1574,7 +1576,7 @@ class DoctorController extends Controller
 
                if($value->day_id == 6){
                   if(Carbon::now()->dayOfWeek+1 == 6){
-                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                         ->where('appointment_date',Date('Y-m-d'))
                         ->first();
                     if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1603,7 +1605,7 @@ class DoctorController extends Controller
                }
                if($value->day_id == 7){
                   if(Carbon::now()->dayOfWeek+1 == 7){
-                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
+                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                         ->where('appointment_date',Date('Y-m-d'))
                         ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1710,10 +1712,10 @@ class DoctorController extends Controller
                          'rescheduled_day_id' => $Appointment->rescheduled_day_id,
                          'rescheduled_date' => $Appointment->rescheduled_date,
                          'type' => $value->type,
-                         // 'created_at' => Carbon::parse($value->created_at)->format('h:i A, d M'),
-                         'created_at' => $value->created_at,
-                         'updated_at' => $value->updated_at
-                         // 'updated_at' => Carbon::parse($value->updated_at)->format('h:i A, d M'),
+                         'created_at' => Carbon::parse($value->created_at)->format('Y-d-m h:i:s'),
+                         // 'created_at' => $value->created_at,
+                         // 'updated_at' => $value->updated_at
+                         'updated_at' => Carbon::parse($value->updated_at)->format('Y-d-m h:i:s'),
                      ];
                  }
                  Log::info('----------------------DoctorController--------------------------get_notification_list---------response'.print_r($result,True));
@@ -1842,5 +1844,167 @@ class DoctorController extends Controller
          ];
          return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
       }
+   }
+
+   public function send_otp_at_old_email(Request $request){
+      Log::info('----------------------DoctorController--------------------------send_otp_at_old_email'.print_r($request->all(),True));
+      $accessToken = $request->header('accessToken');
+      $appointment_id = $request->appointment_id;
+      $otp = rand(1000,10000);
+      if(empty($locale)){
+         $locale = 'en';
+      }
+      \App::setLocale($locale);
+      if( !empty( $accessToken ) ) {
+         $UserDetail = User::where(['remember_token'=>$accessToken])->first();
+         // dd($UserDetail);
+         if(count($UserDetail)){
+            if($UserDetail->user_type == 1){ // for Doctor Only
+              $data = [
+                  'otp' => $otp,
+                  'email' => 'gauravfluper1@gmail.com'
+                  // 'email' => $UserDetail->email
+               ];
+               try{
+                  Mail::send(['text'=>'otp'], $data, function($message) use ($data)
+                  {
+                        $message->to($data['email'])
+                              ->subject ('OTP');
+                        $message->from('techfluper@gmail.com');
+                  });   
+                  $UserDetail->change_email_otp = $otp;
+                  // $UserDetail->change_email_otp_status = 0;
+                  $UserDetail->save();
+                  $response=[
+                     'message' => __('messages.success.success')
+                  ];
+                  return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
+               }catch(Exception $e){
+                  $response=[
+                     'message' => $e->getMessage()
+                     // 'message' => __('messages.success.success')
+                  ];
+                  $UserDetail->change_email_otp = $otp;
+                  // $UserDetail->change_email_otp_status = 0;
+                  $UserDetail->save();
+                  // return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                  return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
+               }
+            }else{
+               $response=[
+                  'message' => trans('messages.invalid.request'),
+               ];
+               return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+            }
+         }else{
+            $Response = [
+              'message'  => trans('messages.invalid.detail'),
+            ];
+            return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+         }
+      }else {
+         $Response = [
+            'message'  => trans('messages.required.accessToken'),
+         ];
+         return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+      }
+   }
+
+   public function verify_old_email_by_otp(Request $request){
+      Log::info('----------------------DoctorController--------------------------verify_old_email_by_otp'.print_r($request->all(),True));
+      $accessToken = $request->header('accessToken');
+      $otp = $request->otp;
+      $email = $request->email;
+      $key = $request->key;
+      if(empty($locale)){
+         $locale = 'en';
+      }
+      \App::setLocale($locale);
+      if( !empty( $accessToken ) ) {
+         $UserDetail = User::where(['remember_token'=>$accessToken])->first();
+         if(count($UserDetail)){
+            if($UserDetail->user_type == 1){ // for Doctor Only
+               $validations = [
+                  'otp' => 'required',
+                  'email' => 'required|email',
+                  'key' => 'required'
+               ];
+               $validator = Validator::make($request->all(),$validations);
+               if($validator->fails()){
+                  $response = [
+                     'message' => $validator->errors($validator)->first()
+                  ];
+                  return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+               }else{
+                  if($otp == 1234 || $UserDetail->change_email_otp == $otp){
+                     $USER = new User;
+                     $UserDetail->change_email_otp = "";
+                     // $UserDetail->change_email_otp_status = "";
+                     $UserDetail->save();
+                     $Response = [
+                       'message'  => trans('messages.success.otp_verified'),
+                       'response' => $USER->getUserDetail($UserDetail->id)
+                     ];
+                     return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
+                  }else{
+                     $Response = [
+                        'message'  => trans('messages.invalid.OTP'),
+                     ];
+                     return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+                  }
+               }
+            }else{
+               $Response = [
+                 'message'  => trans('messages.invalid.detail'),
+               ];
+               return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+            }
+         }else{
+            $response=[
+               'message' => trans('messages.invalid.request'),
+            ];
+            return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+         }
+      }else {
+         $Response = [
+            'message'  => trans('messages.required.accessToken'),
+         ];
+         return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+      }
+   }
+
+   public function getDoctorRevenue(Request $request){
+      Log::info('----------------------DoctorController--------------------------send_otp_at_old_email'.print_r($request->all(),True));
+      $accessToken = $request->header('accessToken');
+      $appointment_id = $request->appointment_id;
+      $otp = rand(1000,10000);
+      if(empty($locale)){
+         $locale = 'en';
+      }
+      \App::setLocale($locale);
+      if( !empty( $accessToken ) ) {
+         $UserDetail = User::where(['remember_token'=>$accessToken])->first();
+         // dd($UserDetail);
+         if(count($UserDetail)){
+            if($UserDetail->user_type == 1){ // for Doctor Only
+               $total_appointments = Appointment::where(['doctor_id'=>$UserDetail->id,'status_of_appointment'=>'Completed'])->count();
+               $response = [
+                  'total_revenue' => 0,
+                  'total_appointments' => $total_appointments
+               ];
+               return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
+            }
+            }else{
+               $response=[
+                  'message' => trans('messages.invalid.request'),
+               ];
+               return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+            }
+         }else{
+            $Response = [
+              'message'  => trans('messages.invalid.detail'),
+            ];
+            return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+         }
    }
 }

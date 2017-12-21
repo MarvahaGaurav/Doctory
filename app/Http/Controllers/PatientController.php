@@ -1484,31 +1484,30 @@ class PatientController extends Controller
     			if($UserDetail->user_type == 2){
 	    			$Notification = Notification::where(['patient_id'=>$UserDetail->id])->where('type','<>',2)->get();
 	    			$result = [];
+	    			$USER = new User;
 	    			// dd($Notification);
 	    			foreach ($Notification as $key => $value) {
 	    				$drName = User::where(['id'=>$value->doctor_id])->select('name')->first()->name;
 	    				$patient_Name = User::where(['id'=>$value->patient_id])->select('name')->first()->name;
 	    				$Appointment = Appointment::find($value->appointment_id);
-                        // dd($Appointment);
-                        $result[] = [
-                            'notification_id' => $value->id,
-                            'doctor_id' => $value->doctor_id,
-                            'doctor_name' => $drName,
-                            'patient_id' => $value->patient_id,
-                            'patient_name' => $patient_Name,
-                            'appointment_id' => $value->appointment_id,
-                            'time_slot_id' => $Appointment->time_slot_id,
-                            'day_id' => $Appointment->day_id,
-                            'appointment_date' => $Appointment->appointment_date,
-                            'rescheduled_time_slot_id' => $Appointment->rescheduled_time_slot_id,
-                            'rescheduled_day_id' => $Appointment->rescheduled_day_id,
-                            'rescheduled_date' => $Appointment->rescheduled_date,
-                            'type' => $value->type,
-                            'created_at' => Carbon::parse($value->created_at)->format('Y-d-m h:i:s'),
-                            // 'created_at' => $value->created_at,
-                            // 'updated_at' => $value->updated_at
-                            'updated_at' => Carbon::parse($value->updated_at)->format('Y-d-m h:i:s'),
-                        ];
+                  $result[] = [
+                      'notification_id' => $value->id,
+                      'doctor_id' => $value->doctor_id,
+                      'doctor_name' => $drName,
+                      'patient_id' => $value->patient_id,
+                      'patient_name' => $patient_Name,
+                      'appointment_id' => $value->appointment_id,
+                      'time_slot_id' => $Appointment->time_slot_id,
+                      'day_id' => $Appointment->day_id,
+                      'appointment_date' => $Appointment->appointment_date,
+                      'rescheduled_time_slot_id' => $Appointment->rescheduled_time_slot_id,
+                      'rescheduled_day_id' => $Appointment->rescheduled_day_id,
+                      'rescheduled_date' => $Appointment->rescheduled_date,
+                      'type' => $value->type,
+                      'created_at' => Carbon::parse($value->created_at)->format('Y-d-m h:i:s'),
+                      'updated_at' => Carbon::parse($value->updated_at)->format('Y-d-m h:i:s'),
+                      'doctor_detail' => $this->getUserDetail($USER->getUserDetail($value->doctor_id))
+                  ];
 	    			}
 	    			$response = [
 						'message' => __('messages.success.success'),

@@ -115,7 +115,7 @@ return [
 		'OTP' => 'Invalid OTP.',
 		'appointment_date' => 'You can not book appointment for previous days',
 		'doctor_not_available_at_this_time_slot' => 'Doctor not available at this time slot',
-		'appointment_expired' => 'Appointment Experied.'
+		'appointment_expired' => 'Appointment Experied.',
 	],
 
 	'same' => [

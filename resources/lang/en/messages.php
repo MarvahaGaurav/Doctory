@@ -116,6 +116,7 @@ return [
 		'appointment_date' => 'You can not book appointment for previous days',
 		'doctor_not_available_at_this_time_slot' => 'Doctor not available at this time slot',
 		'appointment_expired' => 'Appointment Experied.',
+		'invalid_email_match' => "Your entered email dosen't match with your email.",
 	],
 
 	'same' => [

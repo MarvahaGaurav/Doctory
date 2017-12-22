@@ -112,7 +112,8 @@ return [
 		'OTP' => 'مكتب المدعي العام غير صالح',
 		'appointment_date' => 'لا يمكنك حجز موعد للأيام السابقة',
 		'doctor_not_available_at_this_time_slot' => 'الطبيب غير متوفر في هذه الفتحة الزمنية',
-		'appointment_expired' => 'انتهت صلاحية التعيين'
+		'appointment_expired' => 'انتهت صلاحية التعيين',
+		'invalid_email_match' => "Your entered email dosen't match with your email."
 	],
 
 	'same' => [

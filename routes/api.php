@@ -35,7 +35,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('sendAttachment','CommonController@sendAttachment');
 	Route::post('getSettingsData','CommonController@getSettingsData');
 	
-	
+	Route::post('sendOtp','CommonController@sendOtp');
 
 ////////////////////////////////////////////////
 ////// Doctor Api's
@@ -59,8 +59,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('cancel_appointment_by_doctor','DoctorController@cancel_appointment_by_doctor');
 	Route::post('completeAppointmentByDoctor','DoctorController@completeAppointmentByDoctor');
 	Route::post('transferAppointmentByDoctor','DoctorController@transferAppointmentByDoctor');
-	Route::post('send_otp_at_old_email','DoctorController@send_otp_at_old_email');
-	Route::post('verify_old_email_by_otp','DoctorController@verify_old_email_by_otp');
+	Route::post('send_otp_at_email','DoctorController@send_otp_at_email');
+	Route::post('verify_email_by_otp','DoctorController@verify_email_by_otp');
 	Route::post('getDoctorRevenue','DoctorController@getDoctorRevenue');
 	
 	

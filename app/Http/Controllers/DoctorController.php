@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use DB;
 use Mail;
 use Log;
@@ -666,7 +667,7 @@ class DoctorController extends Controller
                          if(Carbon::parse($start_time) > Carbon::now()){
                              $final_result[] = $value;
                          }else{
-                           if($value->appointment_date != 'Accepted' ){
+                           if($value->status_of_appointment != 'Accepted' ){
                               $Appointment = Appointment::find($value->id);
                               $Appointment->status_of_appointment = 'Expired';
                               $Appointment->save();
@@ -1846,11 +1847,13 @@ class DoctorController extends Controller
       }
    }
 
-   public function send_otp_at_old_email(Request $request){
-      Log::info('----------------------DoctorController--------------------------send_otp_at_old_email'.print_r($request->all(),True));
+   public function send_otp_at_email(Request $request){
+      Log::info('----------------------DoctorController--------------------------send_otp_at_email'.print_r($request->all(),True));
       $accessToken = $request->header('accessToken');
       $appointment_id = $request->appointment_id;
       $otp = rand(1000,10000);
+      $email = $request->email;
+      $key = $request->key;
       if(empty($locale)){
          $locale = 'en';
       }
@@ -1860,35 +1863,95 @@ class DoctorController extends Controller
          // dd($UserDetail);
          if(count($UserDetail)){
             if($UserDetail->user_type == 1){ // for Doctor Only
-              $data = [
-                  'otp' => $otp,
-                  'email' => 'gauravfluper1@gmail.com'
-                  // 'email' => $UserDetail->email
+               // dd($UserDetail);
+               $validations = [
+                  'key' => 'required',
+                  'email' => 'required|email',
                ];
-               try{
-                  Mail::send(['text'=>'otp'], $data, function($message) use ($data)
-                  {
-                        $message->to($data['email'])
-                              ->subject ('OTP');
-                        $message->from('techfluper@gmail.com');
-                  });   
-                  $UserDetail->change_email_otp = $otp;
-                  // $UserDetail->change_email_otp_status = 0;
-                  $UserDetail->save();
-                  $response=[
-                     'message' => __('messages.success.success')
+               $validator = Validator::make($request->all(),$validations);
+               if($validator->fails()){
+                  $response = [
+                     'message' => $validator->errors($validator)->first()
                   ];
-                  return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
-               }catch(Exception $e){
-                  $response=[
-                     'message' => $e->getMessage()
-                     // 'message' => __('messages.success.success')
-                  ];
-                  $UserDetail->change_email_otp = $otp;
-                  // $UserDetail->change_email_otp_status = 0;
-                  $UserDetail->save();
-                  // return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
-                  return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
+                  return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+               }else{
+                  if($key == 2){
+                     $validations = [
+                     'email' => ['required',Rule::unique('users')->ignore($UserDetail->id, 'id')],
+                     ];
+                     $validator = Validator::make($request->all(),$validations);
+                     if($validator->fails()){
+                        $response = [
+                           'message' => $validator->errors($validator)->first()
+                        ];
+                        return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                     }
+                  }
+                  switch ($key) {
+                     case 1:
+                        if($UserDetail->email == $email){ 
+                           $data = [
+                              'otp' => $otp,
+                              'email' => $UserDetail->email
+                           ];
+                           try{
+                              Mail::send(['text'=>'otp'], $data, function($message) use ($data)
+                              {
+                                    $message->to($data['email'])
+                                          ->subject ('OTP');
+                                    $message->from('techfluper@gmail.com');
+                              });   
+                              $UserDetail->change_email_otp = $otp;
+                              $UserDetail->save();
+                              $response=[
+                                 'message' => __('messages.success.success')
+                              ];
+                              return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
+                           }catch(Exception $e){
+                              $response=[
+                                 'message' => $e->getMessage()
+                              ];
+                              $UserDetail->change_email_otp = $otp;
+                              $UserDetail->save();
+                              // return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                              return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
+                           }
+                        }else{
+                           $response = [
+                              'messages' => __('messages.invalid.invalid_email_match')
+                           ];
+                           return response()->json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                        }
+                        break;
+                     case 2:
+                        $data = [
+                           'otp' => $otp,
+                           'email' => $UserDetail->email
+                        ];
+                        try{
+                           Mail::send(['text'=>'otp'], $data, function($message) use ($data)
+                           {
+                                 $message->to($data['email'])
+                                       ->subject ('OTP');
+                                 $message->from('techfluper@gmail.com');
+                           });   
+                           $UserDetail->change_email_otp = $otp;
+                           $UserDetail->save();
+                           $response=[
+                              'message' => __('messages.success.success')
+                           ];
+                           return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
+                        }catch(Exception $e){
+                           $response=[
+                              'message' => $e->getMessage()
+                           ];
+                           $UserDetail->change_email_otp = $otp;
+                           $UserDetail->save();
+                           // return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                           return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
+                        }
+                        break;
+                  }
                }
             }else{
                $response=[
@@ -1910,8 +1973,8 @@ class DoctorController extends Controller
       }
    }
 
-   public function verify_old_email_by_otp(Request $request){
-      Log::info('----------------------DoctorController--------------------------verify_old_email_by_otp'.print_r($request->all(),True));
+   public function verify_email_by_otp(Request $request){
+      Log::info('----------------------DoctorController--------------------------verify_email_by_otp'.print_r($request->all(),True));
       $accessToken = $request->header('accessToken');
       $otp = $request->otp;
       $email = $request->email;
@@ -1937,15 +2000,36 @@ class DoctorController extends Controller
                   return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
                }else{
                   if($otp == 1234 || $UserDetail->change_email_otp == $otp){
-                     $USER = new User;
-                     $UserDetail->change_email_otp = "";
-                     // $UserDetail->change_email_otp_status = "";
-                     $UserDetail->save();
-                     $Response = [
-                       'message'  => trans('messages.success.otp_verified'),
-                       'response' => $USER->getUserDetail($UserDetail->id)
-                     ];
-                     return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
+                     switch ($key) {
+                        case 1:
+                           if($UserDetail->email == $email){
+                              $USER = new User;
+                              $UserDetail->change_email_otp = "";
+                              $UserDetail->save();
+                              $Response = [
+                                'message'  => trans('messages.success.otp_verified'),
+                                'response' => $USER->getUserDetail($UserDetail->id)
+                              ];
+                              return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
+                              break;
+                           }else{
+                              $response = [
+                                 'messages' => __('messages.invalid.invalid_email_match')
+                              ];
+                              return response()->json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                           }
+                        case 2:
+                           $USER = new User;
+                           $UserDetail->change_email_otp = "";
+                           $UserDetail->email = $email;
+                           $UserDetail->save();
+                           $Response = [
+                             'message'  => trans('messages.success.otp_verified'),
+                             'response' => $USER->getUserDetail($UserDetail->id)
+                           ];
+                           return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
+                           break;
+                     }
                   }else{
                      $Response = [
                         'message'  => trans('messages.invalid.OTP'),
@@ -1954,10 +2038,10 @@ class DoctorController extends Controller
                   }
                }
             }else{
-               $Response = [
-                 'message'  => trans('messages.invalid.detail'),
+               $response=[
+                  'message' => trans('messages.invalid.request'),
                ];
-               return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+               return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
             }
          }else{
             $response=[
@@ -1974,7 +2058,7 @@ class DoctorController extends Controller
    }
 
    public function getDoctorRevenue(Request $request){
-      Log::info('----------------------DoctorController--------------------------send_otp_at_old_email'.print_r($request->all(),True));
+      Log::info('----------------------DoctorController--------------------------getDoctorRevenue'.print_r($request->all(),True));
       $accessToken = $request->header('accessToken');
       $appointment_id = $request->appointment_id;
       $otp = rand(1000,10000);

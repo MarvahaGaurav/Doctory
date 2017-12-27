@@ -51,4 +51,8 @@ class GauravController extends Controller
          
    	
    }
+
+   public function checkBeforeFunction(Request $request){
+      dd($request->all());
+   }
 }

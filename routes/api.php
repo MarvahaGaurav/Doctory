@@ -123,3 +123,10 @@ Route::post('test',function(Request $request){
 });
 
 Route::post('testCase1','GauravController@testCase1');
+
+Route::get('getEnvData',function(){
+	// dd(app());
+	echo url('')."<br>";
+	print_r(Config::get('database'));
+	print_r(Config::get('mail'));
+});

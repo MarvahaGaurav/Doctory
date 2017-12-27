@@ -745,6 +745,8 @@ class Controller extends BaseController
 	   		'language' => $data['language'],
 	   		'speciality' => $data['speciality'],
 	   		'otp_detail' => $data['Otp_detail'],
+	   		'change_email_otp' => $data['change_email_otp'],
+	   		// 'change_email_otp_status' => $data['change_email_otp_status'],
 	   		'qualification' => $qualification,
 	   		'mother_language' => $DoctorMotherlanguage,
 	   		'doctor_availabilities' => $doctor_availabilities_result

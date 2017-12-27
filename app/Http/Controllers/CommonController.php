@@ -401,6 +401,8 @@ class CommonController extends Controller
 	}
 
 	public function sendOtp($mobile,$otp) {
+		/*$mobile = '+919258811111';
+		$otp = 'ja raha hai otp';*/
 		try{
 			$sid = 'ACd27821f8121968f9ee06d74075dd5884';
 			$token = '33a3460eb8930f36e87bbb29d1e28751';
@@ -916,7 +918,7 @@ class CommonController extends Controller
 								}
 							}
 							if(isset($_FILES['profileImage']['tmp_name'])){
-								$uploadedfile = $_FILES['profileImage']['tmp_name'];
+								$uploadedfile = str_replace(" ","_",$_FILES['profileImage']['tmp_name']);
 								$fileName1 = substr($this->uploadImage($photo,$uploadedfile,$destinationPathOfProfile),9); 
 								$USER->profile_image = $fileName1;
 							}
@@ -1231,9 +1233,9 @@ class CommonController extends Controller
 				return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
 	    	}else{
 	    		$path = base_path('/Attachments');
-	    		$fileName = time().'_'.$attachment->getClientOriginalName();
+	    		$fileName = str_replace(" ","_",time().'_'.$attachment->getClientOriginalName());
 	    		if($key == 2 ){
-	    			$video_thumbnail = time().'_'.$thumbnail->getClientOriginalName();
+	    			$video_thumbnail = str_replace(" ","_",time().'_'.$thumbnail->getClientOriginalName());
 	    			$thumbnail->move($path,$video_thumbnail);
 	    		}
 	    		$attachment->move($path,$fileName);

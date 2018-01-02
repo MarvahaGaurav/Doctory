@@ -59,7 +59,7 @@ class NotificationController extends Controller
     {
         $url = 'https://fcm.googleapis.com/fcm/send';
         $headers = array (
-                'Authorization: key=' . "AIzaSyBaNAFON6Z7WlrMd4q5sFvhoBYPKtUigeM",
+                'Authorization: key=' . "AAAAkhPTIU8:APA91bFBZlh2VDqNzep5g73aXOWuyV2vP43Rd5xc5FVTpG9gPavRAUhvgqLZncKVEEO9Yo2AZM9RoJfiPCBIE-RiQcs8TLDPk3lsMnQM5swYCm1i17pVzixZxyVBMk-bDi1nk2xHPuFZ",
                 'Content-Type: application/json'
         );
         $ch = curl_init ();
@@ -69,8 +69,9 @@ class NotificationController extends Controller
         curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
         
         $fields = array (
-            'registration_ids' => $tokens,                
-           'data' => array (
+            // 'to' => $tokens, 
+            'to' => 'dwsRUpyO7tQ:APA91bHTUpfIiGk6Kn2OSxmpMpjXcYevwr4vbzACBTJbPQz5DXH66X92uU6mGQ1Ltdn1go_foAzWl0_vlbjXxjvmm4CEHR9iGFCwLGHbqFE2UcgVAa-IdA_InTOrLBOfgQjkve5awWd4',               
+            'data' => array (
                     "message" => $body_text
             )
         );
@@ -83,6 +84,7 @@ class NotificationController extends Controller
             echo 'error:' . curl_error($ch);exit();
         }
         $json = json_decode($result, true);
+        // dd($json);
 
         if($json['success']){
             $status=1;

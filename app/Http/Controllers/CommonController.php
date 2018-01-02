@@ -509,6 +509,32 @@ class CommonController extends Controller
 	   }
 	}
 
+	public function sendMail(Request $resuest){
+		$otp = 123456;
+		$email = 'gauravmrvh1@gmail.com';
+		$data = [
+			'otp' => $otp,
+			'email' => $email
+		];
+		try{
+			Mail::send(['text'=>'otp'], $data, function($message) use ($data)
+			{
+	         $message->to($data['email'])
+	         		->subject ('Forget Password OTP');
+	         $message->from('techfluper@gmail.com');
+		   });
+		   $response=[
+				'message' => 'send'
+      	];
+     		return Response::json($response,200);
+		}catch(Exception $e){
+			$response=[
+				'message' => $e->getMessage()
+      	];
+     		return Response::json($response,400);
+		}
+	}
+
 	public function forgetPassword(Request $request) {
 		Log::info('----------------------CommonController--------------------------resetPassword'.print_r($request->all(),True));
 		/*$country_code = $request->country_code;
@@ -1149,6 +1175,7 @@ class CommonController extends Controller
 		$firebase_id = $request->firebase_id;
 		$month = $request->month;
 		$year = $request->year;
+		$device_token = $request->device_token;
 		$locale = $request->header('locale');
 		if(empty($locale)){
 			$locale = 'en';
@@ -1169,7 +1196,9 @@ class CommonController extends Controller
 	    	}else{
 	    		$UserDetail = User::where(['remember_token' => $accessToken])->first();
 	    		if(count($UserDetail)){
-	    			// dd($UserDetail->user_type);
+	    			if($device_token){
+                  $UserDetail->device_token = $device_token;
+               }
 	    			$UserDetail->firebase_id = $firebase_id;
 	    			$UserDetail->save();
 	    			$List = Appointment::whereMonth('appointment_date',$month)

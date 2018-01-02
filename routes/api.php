@@ -36,6 +36,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('getSettingsData','CommonController@getSettingsData');
 	
 	Route::post('sendOtp','CommonController@sendOtp');
+	Route::post('sendMail','CommonController@sendMail');
+	Route::post('updateDeviceToken','Controller@updateDeviceToken');
 
 ////////////////////////////////////////////////
 ////// Doctor Api's
@@ -62,6 +64,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('send_otp_at_email','DoctorController@send_otp_at_email');
 	Route::post('verify_email_by_otp','DoctorController@verify_email_by_otp');
 	Route::post('getDoctorRevenue','DoctorController@getDoctorRevenue');
+	
 	
 	
 
@@ -125,8 +128,10 @@ Route::post('test',function(Request $request){
 Route::post('testCase1','GauravController@testCase1');
 
 Route::get('getEnvData',function(){
-	// dd(app());
+	dd(app());
 	echo url('')."<br>";
 	print_r(Config::get('database'));
 	print_r(Config::get('mail'));
 });
+
+Route::post('notfication','Controller@send_notification');

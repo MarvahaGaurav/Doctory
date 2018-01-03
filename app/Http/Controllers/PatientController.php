@@ -688,10 +688,10 @@ class PatientController extends Controller
 			                           }
 			                        }
 			                     }else{
-			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
-									   	->where('rescheduled_date',$dates[$key])
-									   	->first();
-				                  	if($checkReschedule){
+			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+				                     ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
+				                     ->first();
+				                     if($checkReschedule){
 				                        if(!in_array($checkReschedule->rescheduled_time_slot_id, $day1_arr)){
 				                           array_push($day1_arr,$checkReschedule->rescheduled_time_slot_id);
 				                           array_push($day1,['time_slot_id'=>$checkReschedule->rescheduled_time_slot_id,'busyOrFree'=> 1]);
@@ -728,10 +728,10 @@ class PatientController extends Controller
 					                     }
 					                  }
 					               }else{
-					               	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
-				                     ->where('rescheduled_date',$dates[$key])
+					               	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+				                     ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
 				                     ->first();
-				                  	if($checkReschedule){
+				                     if($checkReschedule){
 				                        if(!in_array($checkReschedule->rescheduled_time_slot_id, $day2_arr)){
 				                           array_push($day2_arr,$checkReschedule->rescheduled_time_slot_id);
 				                           array_push($day2,['time_slot_id'=>$checkReschedule->rescheduled_time_slot_id,'busyOrFree'=> 1]);
@@ -767,16 +767,16 @@ class PatientController extends Controller
 			                           }
 			                        }
 			                     }else{
-			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
-											->where('rescheduled_date',$dates[$key])
-											->first();
-											if($checkReschedule){
-												if(!in_array($checkReschedule->rescheduled_time_slot_id, $day3_arr)){
-													array_push($day3_arr,$checkReschedule->rescheduled_time_slot_id);
-													array_push($day3,['time_slot_id'=>$checkReschedule->rescheduled_time_slot_id,'busyOrFree'=> 1]);
-												}
-											}
-							                        if(!in_array($value->time_slot_id, $day3_arr)){
+			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+				                     ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
+				                     ->first();
+				                     if($checkReschedule){
+				                        if(!in_array($checkReschedule->rescheduled_time_slot_id, $day3_arr)){
+				                           array_push($day3_arr,$checkReschedule->rescheduled_time_slot_id);
+				                           array_push($day3,['time_slot_id'=>$checkReschedule->rescheduled_time_slot_id,'busyOrFree'=> 1]);
+				                        }
+				                     }
+			                        if(!in_array($value->time_slot_id, $day3_arr)){
 			                           array_push($day3_arr,$value->time_slot_id);
 			                           array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
 			                        }
@@ -806,10 +806,10 @@ class PatientController extends Controller
 			                           }
 			                        }
 			                     }else{
-			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
-                                 ->where('rescheduled_date',$dates[$key])
-                                 ->first();
-				                  	if($checkReschedule){
+			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+			                        ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
+			                        ->first();
+			                        if($checkReschedule){
 			                           if(!in_array($checkReschedule->rescheduled_time_slot_id, $day4_arr)){
 			                              array_push($day4_arr,$checkReschedule->rescheduled_time_slot_id);
 			                              array_push($day4,['time_slot_id'=>$checkReschedule->rescheduled_time_slot_id,'busyOrFree'=> 1]);
@@ -845,15 +845,15 @@ class PatientController extends Controller
 			                           }
 			                        }
 			                     }else{
-			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
-                                 ->where('rescheduled_date',$dates[$key])
-                                 ->first();
-				                  	if($checkReschedule){
-			                           if(!in_array($checkReschedule->rescheduled_time_slot_id, $day5_arr)){
-			                              array_push($day5_arr,$checkReschedule->rescheduled_time_slot_id);
-			                              array_push($day5,['time_slot_id'=>$checkReschedule->rescheduled_time_slot_id,'busyOrFree'=> 1]);
-			                           }
-			                        }
+			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+				                     ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
+				                     ->first();
+				                     if($checkReschedule){
+				                        if(!in_array($checkReschedule->rescheduled_time_slot_id, $day5_arr)){
+				                           array_push($day5_arr,$checkReschedule->rescheduled_time_slot_id);
+				                           array_push($day5,['time_slot_id'=>$checkReschedule->rescheduled_time_slot_id,'busyOrFree'=> 1]);
+				                        }
+				                     }
 			                        if(!in_array($value->time_slot_id, $day5_arr)){
 			                           array_push($day5_arr,$value->time_slot_id);
 			                           array_push($day5,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
@@ -884,10 +884,10 @@ class PatientController extends Controller
 			                           }
 			                        }
 			                     }else{
-			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
-                                 ->where('rescheduled_date',$dates[$key])
-                                 ->first();
-				                  	if($checkReschedule){
+			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+				                     ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
+				                     ->first();
+				                     if($checkReschedule){
 				                        if(!in_array($checkReschedule->rescheduled_time_slot_id, $day6_arr)){
 				                           array_push($day6_arr,$checkReschedule->rescheduled_time_slot_id);
 				                           array_push($day6,['time_slot_id'=>$checkReschedule->rescheduled_time_slot_id,'busyOrFree'=> 1]);
@@ -923,10 +923,10 @@ class PatientController extends Controller
 			                           }
 			                        }
 			                     }else{
-			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
-                                 ->where('rescheduled_date',$dates[$key])
-                                 ->first();
-				                  	if($checkReschedule){
+			                     	$checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+				                     ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
+				                     ->first();
+				                     if($checkReschedule){
 				                        if(!in_array($checkReschedule->rescheduled_time_slot_id, $day7_arr)){
 				                           array_push($day7_arr,$checkReschedule->rescheduled_time_slot_id);
 				                           array_push($day7,['time_slot_id'=>$checkReschedule->rescheduled_time_slot_id,'busyOrFree'=> 1]);

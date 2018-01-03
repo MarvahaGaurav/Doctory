@@ -1039,7 +1039,7 @@ class DoctorController extends Controller
                              {
                                  if($accept_or_reject == 'Accepted'){
                                     $AppointmentDetail->status_of_appointment = $accept_or_reject;
-                                    Notification::where('id',$AppointmentDetail->id)->delete();
+                                    Notification::where('appointment_id',$AppointmentDetail->id)->delete();
                                      $AppointmentDetail->time_slot_id = $AppointmentDetail->rescheduled_time_slot_id;
                                      $AppointmentDetail->day_id = $AppointmentDetail->rescheduled_day_id;
                                      $AppointmentDetail->appointment_date = $AppointmentDetail->rescheduled_date;
@@ -1058,7 +1058,7 @@ class DoctorController extends Controller
                                     $AppointmentDetail->rescheduled_day_id = null;
                                      $AppointmentDetail->rescheduled_date = null;
                                      $AppointmentDetail->save();
-                                    Notification::where('id',$AppointmentDetail->id)->delete();
+                                    Notification::where('appointment_id',$AppointmentDetail->id)->delete();
                                     $AppointmentDetail->save();
                                     $Response = [
                                     'message'  => trans('messages.success.appointment_rejected'),
@@ -1068,7 +1068,7 @@ class DoctorController extends Controller
                                     return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                  }
                              }else{
-                                 Notification::where('id',$AppointmentDetail->id)->delete();
+                                 Notification::where('appointment_id',$AppointmentDetail->id)->delete();
                                  $AppointmentDetail->status_of_appointment = "Expired";
                                  $AppointmentDetail->save();
                                  $response = [

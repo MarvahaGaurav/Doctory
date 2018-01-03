@@ -1155,7 +1155,7 @@ class PatientController extends Controller
 								if(Carbon::parse($Appointment_TimeSlot_StartTime ) > Carbon::now() )
 								{
                            if($accept_or_reject == 'Accepted'){
-                           	Notification::where('id',$AppointmentDetail->id)->delete();
+                           	Notification::where('appointment_id',$AppointmentDetail->id)->delete();
                            	$AppointmentDetail->status_of_appointment = $accept_or_reject;
                            	$AppointmentDetail->time_slot_id = $AppointmentDetail->rescheduled_time_slot_id;
                            	$AppointmentDetail->day_id = $AppointmentDetail->rescheduled_day_id;
@@ -1170,7 +1170,7 @@ class PatientController extends Controller
                                return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                            }
                            if($accept_or_reject == 'Rejected'){
-                           	Notification::where('id',$AppointmentDetail->id)->delete();
+                           	Notification::where('appointment_id',$AppointmentDetail->id)->delete();
                            	// $AppointmentDetail->status_of_appointment = 'Rejected by patient';
                            	$AppointmentDetail->rescheduled_time_slot_id = null;
                            	$AppointmentDetail->rescheduled_day_id = null;
@@ -1186,7 +1186,7 @@ class PatientController extends Controller
 								}else{
 								   $AppointmentDetail->status_of_appointment = "Expired";
 								   $AppointmentDetail->save();
-								   Notification::where('id',$AppointmentDetail->id)->delete();
+								   Notification::where('appointment_id',$AppointmentDetail->id)->delete();
 								   $response = [
 								       'message' => __('messages.invalid.appointment_expired')
 								   ];

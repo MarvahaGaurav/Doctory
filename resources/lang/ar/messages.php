@@ -81,6 +81,27 @@ return [
 		'Appointment_Cancelled_By_Doctor' => 'Appointment cancelled successfully.'
 	],
 
+
+	'notification_messages' => [
+		'PENDING' => 'Pending',
+		'ACCEPTED_BY_DOCTOR' => 'Your appointment has been accepted.',
+		'REJECTED_BY_DOCTOR' => 'Your appointment has been rejected.',
+		'CANCELED_BY_DOCTOR' => 'Your appointment has been cancelled.',
+		'CANCELED_BY_PATIENT' => 'Your appointment has been cancelled.',
+		'RESCHEDULED_BY_PATIENT' => 'You have a new reschedule request for an appointment.',
+		'RESCHEDULED_BY_DOCTOR' => 'You have a new reschedule request for an appointment.',
+		'RESCHEDULED_ACCEPTED_BY_PATIENT' => 'Reschedule request has been accepted.',
+		'RESCHEDULED_REJECTED_BY_PATIENT' => 'Reschedule request has been rejected.',
+		'RESCHEDULED_ACCEPTED_BY_DOCTOR' => 'Reschedule request has been accepted.',
+		'RESCHEDULED_REJECTED_BY_DOCTOR' => 'Reschedule request has been rejected.',
+		'COMPLETED' => 'Completed',
+		'Appointment_Cancelled_By_Patient' => 'Appointment cancelled by patient.',
+		'Appointment_Cancelled_By_Doctor' => 'Appointment cancelled successfully.',
+		'Appointment_Transfered_By_Doctor' => 'Your appointment has been transferred to other doctor.',
+		'Scheduled_Appointment' => 'You have a new appointment request.',
+	],
+	
+
 	'notification_status_codes' => [
 		'Rescheduled_Appointment' => '1',
 		'Scheduled_Appointment' => '2',

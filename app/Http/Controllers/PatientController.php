@@ -257,26 +257,45 @@ class PatientController extends Controller
 						    				])
 					    				->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired'])
 					    				->first();
+					    				// dd($already_booked);
 					    				if(!$already_booked){
 					    					if(!Carbon::parse($appointment_date)->isToday())
 					    					{
 							    				$appontmentId = Appointment::insertGetId($AppointmentData);
+							    				
+							    				$NotificationDataArray = [
+					                        'getter_id' => $doctor_id,
+					                        'message' => __('messages.notification_messages.Scheduled_Appointment')
+					                    	];
+					                    	// $this->send_notification($NotificationDataArray);
+
 							    				Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$patient_id,'type'=>__('messages.notification_status_codes.Scheduled_Appointment'),'appointment_id' => $appontmentId]);
 							    				$result = Appointment::find($appontmentId);
 								    			$Response = [
 													'message'  => trans('messages.success.appointment_scheduled'),
 													'response' => $result
 												];
+
+												Log::info('----------RESPONSE------------PatientController--------------------------schedule_appointment_with_doctor'.print_r($Response,True));
+
 										      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
 										   }else{
 										   	if(TimeSlot::find($time_slot_id)->start_time > Carbon::now()->format('h:i:s')){
 										   		$appontmentId = Appointment::insertGetId($AppointmentData);
+
+										   		$NotificationDataArray = [
+						                        'getter_id' => $doctor_id,
+						                        'message' => __('messages.notification_messages.Scheduled_Appointment')
+						                    	];
+						                    	// $this->send_notification($NotificationDataArray);
+
 								    				Notification::insert(['doctor_id' => $doctor_id,'patient_id'=>$patient_id,'type' => __('messages.notification_status_codes.Scheduled_Appointment'),'appointment_id' => $appontmentId]);
 								    				$result = Appointment::find($appontmentId);
 									    			$Response = [
 														'message'  => trans('messages.success.appointment_scheduled'),
 														'response' => $result
 													];
+													Log::info('-------RESPONSE---------------PatientController--------------------------schedule_appointment_with_doctor'.print_r($Response,True));
 											      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
 										   	}else{
 										   		$Response = [
@@ -1152,6 +1171,7 @@ class PatientController extends Controller
 								$Appointment_TimeSlot_StartTime = $Time_slot_detail->start_time;
 								$Appointment_TimeSlot_EndTime = $Time_slot_detail->end_time;
 								// if( Carbon::parse(strtoupper(($Appointment_TimeSlot_StartTime)))->format('g:i A') > Carbon::now()->format('g:i A') )
+								// dd(Carbon::parse($Appointment_TimeSlot_StartTime ) > Carbon::now());
 								if(Carbon::parse($Appointment_TimeSlot_StartTime ) > Carbon::now() )
 								{
                            if($accept_or_reject == 'Accepted'){
@@ -1161,6 +1181,12 @@ class PatientController extends Controller
                            	$AppointmentDetail->day_id = $AppointmentDetail->rescheduled_day_id;
                            	$AppointmentDetail->appointment_date = $AppointmentDetail->rescheduled_date;
                            	$AppointmentDetail->save();
+
+                           	$NotificationDataArray = [
+			                        'getter_id' => $doctor_id,
+			                        'message' => __('messages.notification_messages.RESCHEDULED_ACCEPTED_BY_PATIENT')
+			                    	];
+			                    	// $this->send_notification($NotificationDataArray);
 
                            	Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Rescheduled_Appointment_Accepted_By_Patient'),'appointment_id' => $appointment_id,'appointment_status'=>'Accepted']);
 
@@ -1175,6 +1201,13 @@ class PatientController extends Controller
                            	$AppointmentDetail->rescheduled_time_slot_id = null;
                            	$AppointmentDetail->rescheduled_day_id = null;
                            	$AppointmentDetail->rescheduled_date = null;
+
+                           	$NotificationDataArray = [
+			                        'getter_id' => $doctor_id,
+			                        'message' => __('messages.notification_messages.RESCHEDULED_REJECTED_BY_PATIENT')
+			                    	];
+			                    	// $this->send_notification($NotificationDataArray);
+
                            	Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Rescheduled_Appointment_Rejected_By_Patient'),'appointment_id' => $appointment_id,'appointment_status'=>'Rejected']);
 
                            	$AppointmentDetail->save();
@@ -1271,6 +1304,12 @@ class PatientController extends Controller
 	                        	$AppointmentDetail->status_of_appointment = 'Cancelled';
 	                        	$AppointmentDetail->save();
 
+	                        	$NotificationDataArray = [
+			                        'getter_id' => $AppointmentDetail->doctor_id,
+			                        'message' => __('messages.notification_messages.Appointment_Cancelled_By_Patient')
+			                    	];
+			                    	// $this->send_notification($NotificationDataArray);
+
 	                        	Notification::insert(['doctor_id'=>$AppointmentDetail->doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Appointment_Cancelled_By_Patient'),'appointment_id' => $appointment_id]);
 
 	                            $Response = [
@@ -1288,6 +1327,13 @@ class PatientController extends Controller
 								}else{
 									$AppointmentDetail->status_of_appointment = 'Cancelled';
                         	$AppointmentDetail->save();
+
+                        	$NotificationDataArray = [
+		                        'getter_id' => $AppointmentDetail->doctor_id,
+		                        'message' => __('messages.notification_messages.Appointment_Cancelled_By_Patient')
+		                    	];
+		                    	// $this->send_notification($NotificationDataArray);
+
                         	Notification::insert(['doctor_id'=>$AppointmentDetail->doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Appointment_Cancelled_By_Patient'),'appointment_id' => $appointment_id]);
 									$Response = [
 									'message'  => trans('messages.appointment_status.Appointment_Cancelled_By_Patient'),
@@ -1524,6 +1570,14 @@ class PatientController extends Controller
 													$AppointmentDetail->save();
 
 													Notification::where(['appointment_id' => $appointment_id])->delete();
+
+													$NotificationDataArray = [
+						                        'getter_id' => $doctor_id,
+						                        'message' => __('messages.notification_messages.RESCHEDULED_BY_PATIENT')
+
+						                    	];
+						                    	// $this->send_notification($NotificationDataArray);
+
 													Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$PatientDetail->id,'type' => __('messages.notification_status_codes.Appointment_Rescheduled_By_Patient'),'appointment_id' => $appointment_id]);
 
 
@@ -1553,9 +1607,17 @@ class PatientController extends Controller
 
 
                                         $AppointmentDetail->rescheduled_by_patient = 1;
-                                        $AppointmentDetail->status_of_appointment = 'Pending';
+                                        // $AppointmentDetail->status_of_appointment = 'Pending';
                                         $AppointmentDetail->save();
                                         Notification::where(['appointment_id' => $appointment_id])->delete();
+                                       
+                                       $NotificationDataArray = [
+						                        'getter_id' => $doctor_id,
+						                        'message' => __('messages.notification_messages.RESCHEDULED_BY_PATIENT')
+						                        
+						                    	];
+						                    	// $this->send_notification($NotificationDataArray);
+
                                         Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$PatientDetail->id,'type' => __('messages.notification_status_codes.Appointment_Rescheduled_By_Patient'),'appointment_id' => $appointment_id]);
                                         // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
                                         $Response = [

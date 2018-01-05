@@ -456,7 +456,14 @@ class DoctorController extends Controller
        				$appointment_detail->reffered_to_doctor_id = $transfer_to_doctor_id;
        				$appointment_detail->status_of_appointment = 'Transfered';
        				$appointment_detail->save();
-                    Notification::insert([ 'doctor_id'=> $UserDetail->id ,'reffered_to_doctor_id' => $transfer_to_doctor_id,'patient_id' => $appointment_detail->patient_id,'appointment_id' => $appointment_detail->id , 'type' => __('messages.notification_status_codes.Appointment_Transfered_By_Doctor')]);
+
+                  $NotificationDataArray = [
+                     'getter_id' => $appointment_detail->patient_id,
+                     'message' => __('messages.notification_messages.Appointment_Transfered_By_Doctor')
+                  ];
+                  // $this->send_notification($NotificationDataArray);
+
+                  Notification::insert([ 'doctor_id'=> $UserDetail->id ,'reffered_to_doctor_id' => $transfer_to_doctor_id,'patient_id' => $appointment_detail->patient_id,'appointment_id' => $appointment_detail->id , 'type' => __('messages.notification_status_codes.Appointment_Transfered_By_Doctor')]);
        				$Response = [
                         'message'  => trans('messages.success.success'),
 					];
@@ -514,6 +521,7 @@ class DoctorController extends Controller
                         $UserDetail->save();
                      }
                      $result = Appointment::get_all_appointment_of_doctor_by_date($date,$UserDetail->id);
+                     // return $result;
                      $final_result = [];
                      foreach ($result as $key => $value) {
                         // dd($value->id);
@@ -530,7 +538,14 @@ class DoctorController extends Controller
                               $Appointment = Appointment::find($value->id);
                               $Appointment->status_of_appointment = 'Expired';
                               $Appointment->save();
-
+                              if($value->reffered_to_doctor_id){
+                                $Reffered_To_Doctor_Detail = $value->Reffered_To_Doctor_Detail;
+                                $Reffered_By_Doctor_Detail = $value->Reffered_By_Doctor_Detail;
+                              }else{
+                                $Reffered_To_Doctor_Detail = null;
+                                $Reffered_By_Doctor_Detail = null;
+                              }
+                              
                               $final_result[]= [
                                  'id' => $value->id,
                                  'patient_id' => $value->patient_id,
@@ -552,10 +567,17 @@ class DoctorController extends Controller
                                  'created_at' => Carbon::parse($value->created_at)->format('Y-m-d H:i:s'),
                                  'updated_at' => Carbon::parse($value->updated_at)->format('Y-m-d H:i:s'),
                                  'patient_detail' => $value->patientDetail,
-                                 'reffered__to__doctor__detail' => $value->Reffered_To_Doctor_Detail,
-                                 'reffered__by__doctor__detail' => $value->Reffered_By_Doctor_Detail
+                                 'reffered__to__doctor__detail' => $Reffered_To_Doctor_Detail,
+                                 'reffered__by__doctor__detail' => $Reffered_By_Doctor_Detail
                               ];
                            }else{
+                              if($value->reffered_to_doctor_id){
+                                $Reffered_To_Doctor_Detail = $value->Reffered_To_Doctor_Detail;
+                                $Reffered_By_Doctor_Detail = $value->Reffered_By_Doctor_Detail;
+                              }else{
+                                $Reffered_To_Doctor_Detail = null;
+                                $Reffered_By_Doctor_Detail = null;
+                              }
                               $final_result[]= [
                                  'id' => $value->id,
                                  'patient_id' => $value->patient_id,
@@ -577,8 +599,8 @@ class DoctorController extends Controller
                                  'created_at' => Carbon::parse($value->created_at)->format('Y-m-d H:i:s'),
                                  'updated_at' => Carbon::parse($value->updated_at)->format('Y-m-d H:i:s'),
                                  'patient_detail' => $value->patientDetail,
-                                 'reffered__to__doctor__detail' => $value->Reffered_To_Doctor_Detail,
-                                 'reffered__by__doctor__detail' => $value->Reffered_By_Doctor_Detail
+                                 'reffered__to__doctor__detail' => $Reffered_To_Doctor_Detail,
+                                 'reffered__by__doctor__detail' => $Reffered_By_Doctor_Detail
                               ];
                            }
                         }else{
@@ -586,6 +608,14 @@ class DoctorController extends Controller
                               $status_of_appointment = 'Completed';
                            }else{
                               $status_of_appointment = $value->status_of_appointment;
+                           }
+
+                           if($value->reffered_to_doctor_id){
+                             $Reffered_To_Doctor_Detail = $value->Reffered_To_Doctor_Detail;
+                             $Reffered_By_Doctor_Detail = $value->Reffered_By_Doctor_Detail;
+                           }else{
+                             $Reffered_To_Doctor_Detail = null;
+                             $Reffered_By_Doctor_Detail = null;
                            }
 
                            $final_result[]= [
@@ -609,8 +639,8 @@ class DoctorController extends Controller
                               'created_at' => Carbon::parse($value->created_at)->format('Y-m-d H:i:s'),
                               'updated_at' => Carbon::parse($value->updated_at)->format('Y-m-d H:i:s'),
                               'patient_detail' => $value->patientDetail,
-                              'reffered__to__doctor__detail' => $value->Reffered_To_Doctor_Detail,
-                              'reffered__by__doctor__detail' => $value->Reffered_By_Doctor_Detail
+                              'reffered__to__doctor__detail' => $Reffered_To_Doctor_Detail,
+                              'reffered__by__doctor__detail' => $Reffered_By_Doctor_Detail
                            ];
                         }
                      }
@@ -767,7 +797,14 @@ class DoctorController extends Controller
                                      $Response = [
                                          'message'  => trans('messages.success.appointment_accepted'),
                                      ];
-                                     //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
+
+                                    //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
+                                    $NotificationDataArray = [
+                                       'getter_id' => $AppointmentDetail->patient_id,
+                                       'message' => __('messages.notification_messages.ACCEPTED_BY_DOCTOR')
+                                    ];
+                                    // $this->send_notification($NotificationDataArray);
+
                                      Notification::insert(['doctor_id' => $DOCTOR_DETAIL->id,'patient_id' => $AppointmentDetail->patient_id,'type' => __('messages.notification_status_codes.Appointment_Accepted_By_Doctor'),'appointment_id' => $appointment_id]);
                                      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                  }
@@ -775,7 +812,14 @@ class DoctorController extends Controller
                                     $Response = [
                                      'message'  => trans('messages.success.appointment_rejected'),
                                     ];
+
                                     //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
+                                    $NotificationDataArray = [
+                                       'getter_id' => $AppointmentDetail->patient_id,
+                                       'message' => __('messages.notification_messages.REJECTED_BY_DOCTOR')
+                                    ];
+                                    // $this->send_notification($NotificationDataArray);
+
                                     Notification::insert(['doctor_id' => $DOCTOR_DETAIL->id,'patient_id' => $AppointmentDetail->patient_id,'type' => __('messages.notification_status_codes.Appointment_Rejected_By_Doctor'),'appointment_id' => $appointment_id]);
                                     return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                  }
@@ -798,7 +842,14 @@ class DoctorController extends Controller
                                  $Response = [
                                      'message'  => trans('messages.success.appointment_accepted'),
                                  ];
+
                                  //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
+                                 $NotificationDataArray = [
+                                    'getter_id' => $AppointmentDetail->patient_id,
+                                    'message' => __('messages.notification_messages.ACCEPTED_BY_DOCTOR')
+                                 ];
+                                 // $this->send_notification($NotificationDataArray);
+
                                  Notification::insert(['doctor_id' => $DOCTOR_DETAIL->id,'patient_id' => $AppointmentDetail->patient_id,'type' => __('messages.notification_status_codes.Appointment_Accepted_By_Doctor'),'appointment_id' => $appointment_id]);
                                  return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                              }
@@ -806,6 +857,13 @@ class DoctorController extends Controller
                                  $Response = [
                                      'message'  => trans('messages.success.appointment_rejected'),
                                  ];
+
+                                 $NotificationDataArray = [
+                                    'getter_id' => $AppointmentDetail->patient_id,
+                                    'message' => __('messages.notification_messages.REJECTED_BY_DOCTOR')
+                                 ];
+                                 // $this->send_notification($NotificationDataArray);
+
                                  Notification::insert(['doctor_id' => $DOCTOR_DETAIL->id,'patient_id' => $AppointmentDetail->patient_id,'type' => __('messages.notification_status_codes.Appointment_Rejected_By_Doctor'),'appointment_id' => $appointment_id]);
                                  //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
                                  return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
@@ -904,16 +962,23 @@ class DoctorController extends Controller
 
 
                                      $AppointmentDetail->rescheduled_by_doctor = 1;
-                                     $AppointmentDetail->status_of_appointment = 'Pending';
+                                     // $AppointmentDetail->status_of_appointment = 'Pending';
                                      $AppointmentDetail->save();
 
                                      // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
-                                     Notification::where(['appointment_id' => $appointment_id])->delete();
-                                     Notification::insert(['doctor_id'=>$DOCTOR_DETAIL->id,'patient_id'=>$patient_id,'type' =>__('messages.notification_status_codes.Appointment_Rescheduled_By_Doctor'),'appointment_id' => $appointment_id]);
-                                     $Response = [
-                                         'message'  => trans('messages.success.appointment_rescheduled'),
-                                         'response' => Appointment::find($appointment_id)
-                                     ];
+                                    Notification::where(['appointment_id' => $appointment_id])->delete();
+
+                                    $NotificationDataArray = [
+                                       'getter_id' => $AppointmentDetail->patient_id,
+                                       'message' => __('messages.notification_messages.RESCHEDULED_BY_DOCTOR')
+                                    ];
+                                    // $this->send_notification($NotificationDataArray);
+
+                                    Notification::insert(['doctor_id'=>$DOCTOR_DETAIL->id,'patient_id'=>$patient_id,'type' =>__('messages.notification_status_codes.Appointment_Rescheduled_By_Doctor'),'appointment_id' => $appointment_id]);
+                                    $Response = [
+                                       'message'  => trans('messages.success.appointment_rescheduled'),
+                                       'response' => Appointment::find($appointment_id)
+                                    ];
                                      Log::info('----------------------DoctorController--------------------------reschedule_appointment_by_doctor---------response'.print_r($Response,True));
                                      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
                                  }else{
@@ -924,25 +989,32 @@ class DoctorController extends Controller
                                  }
                              }else{
                                  if($AlreadyBusyTimeSlot[0]->patient_id == $patient_id){
-                                     $AppointmentDetail = Appointment::find($appointment_id);
-                                     // $AppointmentDetail->time_slot_id = $time_slot_id;
-                                     $AppointmentDetail->rescheduled_time_slot_id = $time_slot_id;
+                                    $AppointmentDetail = Appointment::find($appointment_id);
+                                    // $AppointmentDetail->time_slot_id = $time_slot_id;
+                                    $AppointmentDetail->rescheduled_time_slot_id = $time_slot_id;
 
-                                     // $AppointmentDetail->day_id = $day_id;
-                                     $AppointmentDetail->rescheduled_day_id = $day_id;
+                                    // $AppointmentDetail->day_id = $day_id;
+                                    $AppointmentDetail->rescheduled_day_id = $day_id;
 
-                                     // $AppointmentDetail->appointment_date = $appointment_date_from_user;
-                                     $AppointmentDetail->rescheduled_date = $appointment_date_from_user;
+                                    // $AppointmentDetail->appointment_date = $appointment_date_from_user;
+                                    $AppointmentDetail->rescheduled_date = $appointment_date_from_user;
 
 
-                                     $AppointmentDetail->rescheduled_by_doctor = 1;
-                                     $AppointmentDetail->status_of_appointment = 'Pending';
-                                     $AppointmentDetail->save();
+                                    $AppointmentDetail->rescheduled_by_doctor = 1;
+                                    // $AppointmentDetail->status_of_appointment = 'Pending';
+                                    $AppointmentDetail->save();
 
 
                                      // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
-                                     Notification::where(['appointment_id' => $appointment_id])->delete();
-                                     Notification::insert(['doctor_id'=>$DOCTOR_DETAIL->id,'patient_id'=>$patient_id,'type' =>__('messages.notification_status_codes.Appointment_Rescheduled_By_Doctor'),'appointment_id' => $appointment_id]);
+                                    Notification::where(['appointment_id' => $appointment_id])->delete();
+
+                                    $NotificationDataArray = [
+                                       'getter_id' => $AppointmentDetail->patient_id,
+                                       'message' => __('messages.notification_messages.RESCHEDULED_BY_DOCTOR')
+                                    ];
+                                    // $this->send_notification($NotificationDataArray);
+
+                                    Notification::insert(['doctor_id'=>$DOCTOR_DETAIL->id,'patient_id'=>$patient_id,'type' =>__('messages.notification_status_codes.Appointment_Rescheduled_By_Doctor'),'appointment_id' => $appointment_id]);
                                      $Response = [
                                          'message'  => trans('messages.success.appointment_rescheduled'),
                                          'response' => Appointment::find($appointment_id)
@@ -1049,6 +1121,12 @@ class DoctorController extends Controller
                                      ];
                                      Log::info('----------------------DoctorController--------------------------accept_or_reject_appointment_by_doctor_rescheduled_by_patient---------response'.print_r($Response,True));
 
+                                    $NotificationDataArray = [
+                                       'getter_id' => $AppointmentDetail->patient_id,
+                                       'message' => __('messages.notification_messages.RESCHEDULED_ACCEPTED_BY_DOCTOR')
+                                    ];
+                                    // $this->send_notification($NotificationDataArray);
+
                                      Notification::insert(['doctor_id'=>$UserDetail->id,'patient_id'=>$patient_id,'type' =>__('messages.notification_status_codes.Rescheduled_Appointment_Accepted_By_Doctor'),'appointment_id' => $appointment_id]);
 
                                      return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
@@ -1058,6 +1136,13 @@ class DoctorController extends Controller
                                     $AppointmentDetail->rescheduled_day_id = null;
                                      $AppointmentDetail->rescheduled_date = null;
                                      $AppointmentDetail->save();
+
+                                    $NotificationDataArray = [
+                                       'getter_id' => $AppointmentDetail->patient_id,
+                                       'message' => __('messages.notification_messages.RESCHEDULED_REJECTED_BY_DOCTOR')
+                                    ];
+                                    // $this->send_notification($NotificationDataArray);
+
                                     Notification::where('appointment_id',$AppointmentDetail->id)->delete();
                                     $AppointmentDetail->save();
                                     $Response = [
@@ -1829,28 +1914,39 @@ class DoctorController extends Controller
                             // dd(Carbon::parse($appointmentDateInDb)->isToday());
                             // dd($Appointment_TimeSlot_StartTime);
                             if(Carbon::parse($appointmentDateInDb)->isToday()){
-                               if( Carbon::parse(strtoupper(($Appointment_TimeSlot_StartTime)))->format('g:i A') > Carbon::now()->format('g:i A') ){
+                              if( Carbon::parse(strtoupper(($Appointment_TimeSlot_StartTime)))->format('g:i A') > Carbon::now()->format('g:i A') ){
                                   // dd($AppointmentDetail->doctor_id);
                                   $AppointmentDetail->status_of_appointment = 'Cancelled';
                                   $AppointmentDetail->save();
 
-                                  Notification::insert(['doctor_id'=>$AppointmentDetail->doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Appointment_Cancelled_By_Doctor'),'appointment_id' => $appointment_id,'appointment_status'=>'Cancelled']);
+                                 $NotificationDataArray = [
+                                    'getter_id' => $AppointmentDetail->patient_id,
+                                    'message' => __('messages.notification_messages.CANCELED_BY_DOCTOR')
+                                 ];
+                                 // $this->send_notification($NotificationDataArray);
 
-                                   $Response = [
-                                       'message'  => trans('messages.appointment_status.Appointment_Cancelled_By_Doctor'),
-                                   ];
-                                   return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
-                               }else{
+                                 Notification::insert(['doctor_id'=>$AppointmentDetail->doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Appointment_Cancelled_By_Doctor'),'appointment_id' => $appointment_id,'appointment_status'=>'Cancelled']);
+                                 $Response = [
+                                    'message'  => trans('messages.appointment_status.Appointment_Cancelled_By_Doctor'),
+                                 ];
+                                 return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                              }else{
                                   $AppointmentDetail->status_of_appointment = "Expired";
                                   $AppointmentDetail->save();
                                   $response = [
                                       'message' => __('messages.invalid.appointment_expired')
                                   ];
                                   return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-                               }
+                              }
                             }else{
                                $AppointmentDetail->status_of_appointment = 'Cancelled';
                                $AppointmentDetail->save();
+                               $NotificationDataArray = [
+                                 'getter_id' => $AppointmentDetail->patient_id,
+                                 'message' => __('messages.notification_messages.CANCELED_BY_DOCTOR')
+                              ];
+                              // $this->send_notification($NotificationDataArray);
+
                                Notification::insert(['doctor_id'=>$AppointmentDetail->doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Appointment_Cancelled_By_Doctor'),'appointment_id' => $appointment_id,'appointment_status'=>'Cancelled']);
                                $Response = [
                                'message'  => trans('messages.appointment_status.Appointment_Cancelled_By_Doctor'),

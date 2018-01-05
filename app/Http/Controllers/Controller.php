@@ -739,46 +739,49 @@ class Controller extends BaseController
 		return $result1;
 	}
 
-	public function send_notification(Request $request){
-		$userId = (int) 41;
-		$userName = 'Gaurav';
-		$notifyType = (int) 2;
+	public function send_notification($NotificationDataArray){
+		// dd($NotificationDataArray);
+		$notifyType = 1;
+		$userId = (int) $NotificationDataArray['getter_id'];
 		$bodyText = [
-			'type'=>'unbusy request',
-			'status' => 2,
-			'userId' => $userId,
-			'userName' => $userName,
+			'message'=>$NotificationDataArray['message'],
 		];
-		return $this->notification($userId,$bodyText,$notifyType);
+		$this->notification($userId,$bodyText,$notifyType);
 	}
 
 	public function notification($userId , $body_text, $notifyType){
+
 	  	$data = DB::table('users')
 	  			->where('id',$userId)
 	  			->get();
+	  	// dd($data);
 	  	Log::info(print_r($data,True));		
 	  	// dd($data);
 	  	if(count($data)){
 	      $notification_type = $notifyType;
 	      $id = $data[0]->id;
 	      $notificationobject = new NotificationController();
-	      $tokens[] = $data[0]->device_token;
+	      // $tokens[] = $data[0]->device_token;
+	      $tokens = $data[0]->device_token;
+	      $device_type = $data[0]->device_type;
+	      // dd($body_text);
 
 	      Log::info(print_r('notification_type '.$notification_type,True));
 	      Log::info(print_r('id '.$id,True));
 	      Log::info(print_r('device_token '.$data[0]->device_token,True));
 	      Log::info(print_r('device_type '.$data[0]->device_type,True));
-	      // Log::info(print_r('tokens'.$tokens[],True));
 
-	      if($data[0]->device_type == "0"){
+
+
+	      if($device_type == "0"){
 				$status = $notificationobject->androidPushNotification($body_text,$notification_type,$tokens,$id);
 				Log::info(print_r('status '.$status,True));
-				return $status;
+				// return $status;
 
-	      }else if($data[0]->device_type == "1"){
+	      }else if($device_type == "1"){
 				$status = $notificationobject->iosPushNotification($body_text,$notification_type,$tokens,$id);
 				Log::info(print_r('status '.$status,True));
-				return $status;
+				// return $status;
 	      }
 	  	}
 	}

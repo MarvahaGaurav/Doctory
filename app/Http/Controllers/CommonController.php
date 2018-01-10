@@ -37,6 +37,10 @@ class CommonController extends Controller
 		$key = $request->key;
 		$is_notification_on = $request->is_notification_on;
 		$selected_language = $request->selected_language;
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 
 		if(empty($locale)){
 		$locale = 'en';
@@ -45,7 +49,7 @@ class CommonController extends Controller
 		$validations = [
 			'key' => 'required',
 			'is_notification_on' => 'required_if:key,==,2',
-			'selected_language' => 'required_if:key,==,2',
+			// 'selected_language' => 'required_if:key,==,2',
 		];
 		$validator = Validator::make($request->all(),$validations);
 		if($validator->fails()){
@@ -65,7 +69,9 @@ class CommonController extends Controller
 	         	];
 	         	return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );	
 	         }else if($key == 2){
-	         	$UserDetail->language = $selected_language;
+	         	if($selected_language){
+	         		$UserDetail->language = $selected_language;
+	         	}
 	         	$UserDetail->notification = $is_notification_on;
 	         	$UserDetail->save();
 	         	$UserDetail = User::where(['remember_token'=>$accessToken])->first();
@@ -107,7 +113,10 @@ class CommonController extends Controller
 		$language = $request->language;
 		$accessToken  = md5(uniqid(rand(), true));
 		$locale = $request->header('locale');
-
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -182,11 +191,14 @@ class CommonController extends Controller
 		$language = $request->language;
 		$locale = $request->header('locale');
 		$login_type = $request->login_type;
-
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
-
+		Log::info('Timezone: '.$timezone);
 		if(!empty($locale)){
 			\App::setLocale($locale);
 			$validations = [
@@ -253,6 +265,10 @@ class CommonController extends Controller
 		$accessToken =  $request->header('accessToken');
 		$firebase_id = $request->firebase_id;
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -296,6 +312,14 @@ class CommonController extends Controller
 		Log::info('----------------------CommonController--------------------------logout'.print_r($request->all(),True));
 		$accessToken =  $request->header('accessToken');
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -335,6 +359,10 @@ class CommonController extends Controller
 	   $otp  		 = $request->input('otp');
 	   $user_id  		 = $request->input('user_id');
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 
 		if(empty($locale)){
 			$locale = 'en';
@@ -434,6 +462,10 @@ class CommonController extends Controller
 	   $user_id  		 = $request->input('user_id');
 		$otp = rand(1000,10000);
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 
 		if(empty($locale)){
 			$locale = 'en';
@@ -542,6 +574,10 @@ class CommonController extends Controller
 		$email = $request->email;
 		$otp = rand(1000,10000);
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 
 		if(empty($locale)){
 			$locale = 'en';
@@ -607,6 +643,10 @@ class CommonController extends Controller
 		$password = $request->password;
 
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 
 		if(empty($locale)){
 			$locale = 'en';
@@ -665,6 +705,10 @@ class CommonController extends Controller
 		$old_password = $request->old_password;
 		$new_password = $request->new_password;
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -734,6 +778,10 @@ class CommonController extends Controller
 		$isChangedMobile = $request->isChangedMobile;
 		$userDetail  = [];
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -886,6 +934,10 @@ class CommonController extends Controller
 		$medical_licence_number = $request->medical_licence_number;
 		$issuing_country = $request->issuing_country;
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -1026,6 +1078,10 @@ class CommonController extends Controller
    	$language = $request->input('language');
 		$accessToken = $request->header('accessToken');
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -1177,6 +1233,10 @@ class CommonController extends Controller
 		$year = $request->year;
 		$device_token = $request->device_token;
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -1244,6 +1304,10 @@ class CommonController extends Controller
 		$key = $request->key;
 		$thumbnail = $request->thumbnail;
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}

@@ -43,6 +43,10 @@ class PatientController extends Controller
 		$doctor_id = $request->doctor_id;
 		$key = $request->key; // 1 for bookmark or 0 for un bookmark
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -108,6 +112,10 @@ class PatientController extends Controller
  		$accessToken = $request->header('accessToken');
  		$result = [];
  		$locale = $request->header('locale');
+ 		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -199,6 +207,11 @@ class PatientController extends Controller
 		// $day_id = $request->day_id;
 		$appointment_date = $request->appointment_date;
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+		Log::info('Timezone: '.$timezone);
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -267,7 +280,10 @@ class PatientController extends Controller
 					                        'getter_id' => $doctor_id,
 					                        'message' => __('messages.notification_messages.Scheduled_Appointment')
 					                    	];
-					                    	// $this->send_notification($NotificationDataArray);
+					                    	$NotificationGetterDetail = User::find($doctor_id);
+                                    if($NotificationGetterDetail->notification){
+                                        $this->send_notification($NotificationDataArray);
+                                    }
 
 							    				Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$patient_id,'type'=>__('messages.notification_status_codes.Scheduled_Appointment'),'appointment_id' => $appontmentId]);
 							    				$result = Appointment::find($appontmentId);
@@ -287,7 +303,10 @@ class PatientController extends Controller
 						                        'getter_id' => $doctor_id,
 						                        'message' => __('messages.notification_messages.Scheduled_Appointment')
 						                    	];
-						                    	// $this->send_notification($NotificationDataArray);
+						                    	$NotificationGetterDetail = User::find($doctor_id);
+	                                    if($NotificationGetterDetail->notification){
+	                                        $this->send_notification($NotificationDataArray);
+	                                    }
 
 								    				Notification::insert(['doctor_id' => $doctor_id,'patient_id'=>$patient_id,'type' => __('messages.notification_status_codes.Scheduled_Appointment'),'appointment_id' => $appontmentId]);
 								    				$result = Appointment::find($appontmentId);
@@ -361,6 +380,10 @@ class PatientController extends Controller
  		$date = date('Y-m-d',strtotime($request->date));
 	   $page_number = $request->page_number;
  		$locale = $request->header('locale');
+ 		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -1072,7 +1095,8 @@ class PatientController extends Controller
 		    				}else{
 		    					// dd(Carbon::parse($value['appointment_date']) < Carbon::now());
 		    					if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now() && Carbon::parse($value['appointment_date']) < Carbon::now()){
-                              $status_of_appointment = 'Completed';
+		    						Appointment::where(['id' => $value['id']])->update(['status_of_appointment' => 'Completed']);
+                           $status_of_appointment = 'Completed';
                         }else{
                            $status_of_appointment = $value['status_of_appointment'];
                         }
@@ -1136,6 +1160,10 @@ class PatientController extends Controller
 		$day_id = $request->day_id;
 		$accept_or_reject = $request->accept_or_reject;
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -1186,7 +1214,10 @@ class PatientController extends Controller
 			                        'getter_id' => $doctor_id,
 			                        'message' => __('messages.notification_messages.RESCHEDULED_ACCEPTED_BY_PATIENT')
 			                    	];
-			                    	// $this->send_notification($NotificationDataArray);
+			                    	$NotificationGetterDetail = User::find($doctor_id);
+                              if($NotificationGetterDetail->notification){
+                                  $this->send_notification($NotificationDataArray);
+                              }
 
                            	Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Rescheduled_Appointment_Accepted_By_Patient'),'appointment_id' => $appointment_id,'appointment_status'=>'Accepted']);
 
@@ -1206,7 +1237,10 @@ class PatientController extends Controller
 			                        'getter_id' => $doctor_id,
 			                        'message' => __('messages.notification_messages.RESCHEDULED_REJECTED_BY_PATIENT')
 			                    	];
-			                    	// $this->send_notification($NotificationDataArray);
+			                    	$NotificationGetterDetail = User::find($doctor_id);
+                              if($NotificationGetterDetail->notification){
+                                  $this->send_notification($NotificationDataArray);
+                              }
 
                            	Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Rescheduled_Appointment_Rejected_By_Patient'),'appointment_id' => $appointment_id,'appointment_status'=>'Rejected']);
 
@@ -1308,7 +1342,10 @@ class PatientController extends Controller
 			                        'getter_id' => $AppointmentDetail->doctor_id,
 			                        'message' => __('messages.notification_messages.Appointment_Cancelled_By_Patient')
 			                    	];
-			                    	// $this->send_notification($NotificationDataArray);
+			                    	$NotificationGetterDetail = User::find($AppointmentDetail->doctor_id);
+                              if($NotificationGetterDetail->notification){
+                                  $this->send_notification($NotificationDataArray);
+                              }
 
 	                        	Notification::insert(['doctor_id'=>$AppointmentDetail->doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Appointment_Cancelled_By_Patient'),'appointment_id' => $appointment_id]);
 
@@ -1332,7 +1369,10 @@ class PatientController extends Controller
 		                        'getter_id' => $AppointmentDetail->doctor_id,
 		                        'message' => __('messages.notification_messages.Appointment_Cancelled_By_Patient')
 		                    	];
-		                    	// $this->send_notification($NotificationDataArray);
+		                    	$NotificationGetterDetail = User::find($AppointmentDetail->doctor_id);
+                           if($NotificationGetterDetail->notification){
+                               $this->send_notification($NotificationDataArray);
+                           }
 
                         	Notification::insert(['doctor_id'=>$AppointmentDetail->doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Appointment_Cancelled_By_Patient'),'appointment_id' => $appointment_id]);
 									$Response = [
@@ -1378,6 +1418,10 @@ class PatientController extends Controller
  		$accessToken = $request->header('accessToken');
  		$name = $request->name;
  		$locale = $request->header('locale');
+ 		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -1439,6 +1483,10 @@ class PatientController extends Controller
  		Log::info('------------------PatientController------------get_notification_list');
  		$accessToken = $request->header('accessToken');
  		$locale = $request->header('locale');
+ 		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -1576,7 +1624,10 @@ class PatientController extends Controller
 						                        'message' => __('messages.notification_messages.RESCHEDULED_BY_PATIENT')
 
 						                    	];
-						                    	// $this->send_notification($NotificationDataArray);
+						                    	$NotificationGetterDetail = User::find($doctor_id);
+			                              if($NotificationGetterDetail->notification){
+			                                  $this->send_notification($NotificationDataArray);
+			                              }
 
 													Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$PatientDetail->id,'type' => __('messages.notification_status_codes.Appointment_Rescheduled_By_Patient'),'appointment_id' => $appointment_id]);
 
@@ -1616,7 +1667,10 @@ class PatientController extends Controller
 						                        'message' => __('messages.notification_messages.RESCHEDULED_BY_PATIENT')
 						                        
 						                    	];
-						                    	// $this->send_notification($NotificationDataArray);
+						                    	$NotificationGetterDetail = User::find($doctor_id);
+			                              if($NotificationGetterDetail->notification){
+			                                  $this->send_notification($NotificationDataArray);
+			                              }
 
                                         Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$PatientDetail->id,'type' => __('messages.notification_status_codes.Appointment_Rescheduled_By_Patient'),'appointment_id' => $appointment_id]);
                                         // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
@@ -1671,6 +1725,10 @@ class PatientController extends Controller
  		$doctor_id = $request->doctor_id;
  		$appointment_id = $request->appointment_id;
  		$locale = $request->header('locale');
+ 		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}

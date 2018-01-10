@@ -69,12 +69,13 @@ class NotificationController extends Controller
         $headers[] = 'Authorization: key='. $serverKey;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-
+        curl_setopt ( $ch, CURLOPT_POST, true );
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST,
 
         "POST");
         curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
         curl_setopt($ch, CURLOPT_HTTPHEADER,$headers);
+        curl_setopt ( $ch, CURLOPT_RETURNTRANSFER, true );
         //Send the request
         $response = curl_exec($ch);
         //Close request
@@ -96,7 +97,7 @@ class NotificationController extends Controller
         // dd($tokens);
         $url = 'https://fcm.googleapis.com/fcm/send';
         $headers = array (
-                'Authorization: key=' . "AAAAkhPTIU8:APA91bFBZlh2VDqNzep5g73aXOWuyV2vP43Rd5xc5FVTpG9gPavRAUhvgqLZncKVEEO9Yo2AZM9RoJfiPCBIE-RiQcs8TLDPk3lsMnQM5swYCm1i17pVzixZxyVBMk-bDi1nk2xHPuFZ",
+                'Authorization: key=' . "AAAA7JOUN98:APA91bETfdWp40yElYWFrgf6_3A8ZBv9kaCYvdgT3nJ9my64bIg3QIIHE5NIj6RtvdaNqlYujCYnaeMzHB5Py_KxGqP_3fZWRCTj1M_UX90ktzcx9K6x6bPrL9alHDMIwVXqua3RtKmn",
                 'Content-Type: application/json'
         );
         $ch = curl_init ();

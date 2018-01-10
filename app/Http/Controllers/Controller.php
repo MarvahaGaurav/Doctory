@@ -31,10 +31,16 @@ use App\Appointment;
 use Hash;
 use Auth;
 use Exception;
+use Config;
 
 class Controller extends BaseController
 {
  	use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+ 	public function __construct(){
+		$timezone = Config::get('app.timezone');
+		date_default_timezone_set($timezone);
+	}
 
    public function getUserDetail($data){
    	// dd($data);
@@ -791,6 +797,10 @@ class Controller extends BaseController
 		$accessToken =  $request->header('accessToken');
 		$device_token = $request->device_token;
 		$locale = $request->header('locale');
+		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -829,5 +839,12 @@ class Controller extends BaseController
 			];
 			return response()->json($response,__('messages.statusCode.INVALID_CREDENTIAL'));
 	   }
+	}
+
+	public function setTimeZone($timezone){
+		/*config(['app.timezone' => 'America/Chicago']);
+   	$timezone = Config::get('app.timezone');
+		date_default_timezone_set($timezone);*/
+		date_default_timezone_set($timezone);
 	}
 }

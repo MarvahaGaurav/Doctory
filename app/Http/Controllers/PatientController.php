@@ -1297,7 +1297,10 @@ class PatientController extends Controller
    	Log::info('----------------------PatientController--------------------------cancel_appointment_by_patient'.print_r($request->all(),True));
  		$accessToken = $request->header('accessToken');
  		$appointment_id = $request->appointment_id;
-
+ 		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
  		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -1333,7 +1336,8 @@ class PatientController extends Controller
 								// dd(Carbon::parse($appointmentDateInDb)->isToday());
 								// dd($Appointment_TimeSlot_StartTime);
 								if(Carbon::parse($appointmentDateInDb)->isToday()){
-									if( Carbon::parse(strtoupper(($Appointment_TimeSlot_StartTime)))->format('g:i A') > Carbon::now()->format('g:i A') ){
+									if(Carbon::parse($Appointment_TimeSlot_StartTime ) > Carbon::now()){
+										// if( Carbon::parse(strtoupper(($Appointment_TimeSlot_StartTime)))->format('g:i A') > Carbon::now()->format('g:i A') ){
 										// dd($AppointmentDetail->doctor_id);
 	                        	$AppointmentDetail->status_of_appointment = 'Cancelled';
 	                        	$AppointmentDetail->save();

@@ -1961,6 +1961,10 @@ class DoctorController extends Controller
       if(empty($locale)){
          $locale = 'en';
       }
+      $timezone = $request->header('timezone');
+      if($timezone){
+        $this->setTimeZone($timezone);
+      }
       \App::setLocale($locale);
       if( !empty( $accessToken ) ) {
          $UserDetail = User::where(['remember_token'=>$accessToken])->first();
@@ -1983,6 +1987,7 @@ class DoctorController extends Controller
                       if($AppointmentDetail){
                          // dd($AppointmentDetail->appointment_date);
                          $appointmentDateInDb = Carbon::parse($AppointmentDetail->appointment_date)->format('Y-m-d');
+
                          // dd($appointmentDateInDb>= Carbon::now()->format('Y-m-d'));
                          if($appointmentDateInDb >= Carbon::now()->format('Y-m-d')){
                             // dd($AppointmentDetail);
@@ -1990,9 +1995,12 @@ class DoctorController extends Controller
                             $Appointment_TimeSlot_StartTime = $Time_slot_detail->start_time;
                             $Appointment_TimeSlot_EndTime = $Time_slot_detail->end_time;
                             // dd(Carbon::parse($appointmentDateInDb)->isToday());
-                            // dd($Appointment_TimeSlot_StartTime);
+                           /* dd(Carbon::now());
+                            dd(Carbon::parse($Appointment_TimeSlot_StartTime ));
+                            dd($Appointment_TimeSlot_StartTime);*/
                             if(Carbon::parse($appointmentDateInDb)->isToday()){
-                              if( Carbon::parse(strtoupper(($Appointment_TimeSlot_StartTime)))->format('g:i A') > Carbon::now()->format('g:i A') ){
+                              if(Carbon::parse($Appointment_TimeSlot_StartTime ) > Carbon::now()){
+                                  // if( Carbon::parse(strtoupper(($Appointment_TimeSlot_StartTime)))->format('g:i A') > Carbon::now()->format('g:i A') ){
                                   // dd($AppointmentDetail->doctor_id);
                                   $AppointmentDetail->status_of_appointment = 'Cancelled';
                                   $AppointmentDetail->save();

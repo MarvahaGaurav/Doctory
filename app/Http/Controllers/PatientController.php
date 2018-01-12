@@ -281,7 +281,7 @@ class PatientController extends Controller
 					                        'message' => __('messages.notification_messages.Scheduled_Appointment')
 					                    	];
 					                    	$NotificationGetterDetail = User::find($doctor_id);
-                                    if($NotificationGetterDetail->notification){
+                                    if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
                                         $this->send_notification($NotificationDataArray);
                                     }
 
@@ -304,7 +304,7 @@ class PatientController extends Controller
 						                        'message' => __('messages.notification_messages.Scheduled_Appointment')
 						                    	];
 						                    	$NotificationGetterDetail = User::find($doctor_id);
-	                                    if($NotificationGetterDetail->notification){
+	                                    if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
 	                                        $this->send_notification($NotificationDataArray);
 	                                    }
 
@@ -1215,7 +1215,7 @@ class PatientController extends Controller
 			                        'message' => __('messages.notification_messages.RESCHEDULED_ACCEPTED_BY_PATIENT')
 			                    	];
 			                    	$NotificationGetterDetail = User::find($doctor_id);
-                              if($NotificationGetterDetail->notification){
+                              if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
                                   $this->send_notification($NotificationDataArray);
                               }
 
@@ -1238,7 +1238,7 @@ class PatientController extends Controller
 			                        'message' => __('messages.notification_messages.RESCHEDULED_REJECTED_BY_PATIENT')
 			                    	];
 			                    	$NotificationGetterDetail = User::find($doctor_id);
-                              if($NotificationGetterDetail->notification){
+                              if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
                                   $this->send_notification($NotificationDataArray);
                               }
 
@@ -1347,7 +1347,7 @@ class PatientController extends Controller
 			                        'message' => __('messages.notification_messages.Appointment_Cancelled_By_Patient')
 			                    	];
 			                    	$NotificationGetterDetail = User::find($AppointmentDetail->doctor_id);
-                              if($NotificationGetterDetail->notification){
+                              if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
                                   $this->send_notification($NotificationDataArray);
                               }
 
@@ -1374,7 +1374,7 @@ class PatientController extends Controller
 		                        'message' => __('messages.notification_messages.Appointment_Cancelled_By_Patient')
 		                    	];
 		                    	$NotificationGetterDetail = User::find($AppointmentDetail->doctor_id);
-                           if($NotificationGetterDetail->notification){
+                           if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
                                $this->send_notification($NotificationDataArray);
                            }
 
@@ -1629,7 +1629,7 @@ class PatientController extends Controller
 
 						                    	];
 						                    	$NotificationGetterDetail = User::find($doctor_id);
-			                              if($NotificationGetterDetail->notification){
+			                              if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
 			                                  $this->send_notification($NotificationDataArray);
 			                              }
 
@@ -1672,7 +1672,7 @@ class PatientController extends Controller
 						                        
 						                    	];
 						                    	$NotificationGetterDetail = User::find($doctor_id);
-			                              if($NotificationGetterDetail->notification){
+			                              if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
 			                                  $this->send_notification($NotificationDataArray);
 			                              }
 

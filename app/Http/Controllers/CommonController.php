@@ -152,6 +152,10 @@ class CommonController extends Controller
 	    		$user->device_token = $device_token;
 	    		$user->device_type = $device_type;
 	    		$user->user_type = $user_type;
+	    		if($user_type == 2){
+	    			$user->profile_status = 1;
+	    			$user->status = 1;
+	    		}
 	    		$user->remember_token = $accessToken;
 	    		$user->language = $language;
 	    		if($user->save()){
@@ -227,9 +231,29 @@ class CommonController extends Controller
 		    				$UserDetail->remember_token = $accessToken;
 		    				$UserDetail->language = $language;
 		    				$UserDetail->save();
-		    				$result = $this->getUserDetail($User->getUserDetail($userDetail->id)); // $this->getUserDetail available in controlle
-		    				$response = [
+		    				$result = $this->getUserDetail($User->getUserDetail($userDetail->id)); // $this->getUserDetail available in controller
+
+							if(!empty($result) && $result['status'] == 0 && $result['user_type'] == 2){
+								$response = [
+									'message' =>  __('messages.Account_blocked_Patient'),
+									'status' => $result['status'],
+									'response' => []
+								];
+								return response()->json($response,__('messages.statusCode.INVALID_ACCESS_TOKEN'));
+							}
+
+							if(!empty($result) && $result['status'] == 0 && $result['user_type'] == 1){
+								$response = [
+									'message' =>  __('messages.Wait_For_Approval_From_Admin'),
+									'status' => $result['status'],
+									'response' => []
+								];
+								return response()->json($response,__('messages.statusCode.INVALID_ACCESS_TOKEN'));
+							}
+
+							$response = [
 								'message' =>  __('messages.success.login'),
+								'status' => $result['status'],
 								'response' => $result
 							];
 							return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
@@ -385,9 +409,10 @@ class CommonController extends Controller
 						return Response::json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
 				   } else {
 				    	$Exist =  $user->getUserDetail($userDetail->id);
+				    	// dd($Exist);
 				    	if( count($Exist) ) {
 				    		if( $Exist->Otp_detail->otp == $otp || $otp == 1234 ){
-				    			$OTP = Otp::find($Exist->id);
+				    			$OTP = Otp::where(['user_id' => $Exist->id])->first();
 				    			$OTP->otp = "";
 				    			$OTP->varified = 1;
 				    			$OTP->save();

@@ -5,7 +5,6 @@ use DB;
 use \Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
@@ -38,7 +37,8 @@ class User extends Authenticatable
 
     public function getUserDetail($userId){
         // dd($userId);
-        $data = Self::where(['id' => $userId , 'status' => 1])
+        // $data = Self::where(['id' => $userId , 'status' => 1])
+        $data = Self::where(['id' => $userId])
             ->with('speciality')
             ->with('qualification')
             ->with('Otp_detail')

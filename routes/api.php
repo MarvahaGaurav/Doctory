@@ -78,19 +78,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 ////////////////////////////////////////////////
 ////// PATIENT's Api's
 ////////////////////////////////////////////////
-	Route::post('bookmark_UnBookMark_Doctor','PatientController@bookmark_UnBookMark_Doctor');
-	Route::post('get_patient_bookmarks_doctors','PatientController@get_patient_bookmarks_doctors');
-	Route::post('schedule_appointment_with_doctor','PatientController@schedule_appointment_with_doctor');
-
-	Route::post('get_all_appointment_of_patient_by_date','PatientController@get_all_appointment_of_patient_by_date');
-
-	Route::post('updateRescheduledAppointmentByPatient','PatientController@accept_or_reject_appointment_by_patient_rescheduled_by_doctor');
-	Route::post('search_doctor_by_patient','PatientController@search_doctor');
-	Route::post('get_notification_list_for_patient','PatientController@get_notification_list');
-	Route::post('reschedule_appointment_by_patient','PatientController@reschedule_appointment_by_patient');
-	Route::post('cancel_appointment_by_patient','PatientController@cancel_appointment_by_patient');
-	Route::post('giveReviewToDoctor','PatientController@giveReviewToDoctor');
-
+	Route::group(['prefix' => '/' , 'middleware' => 'PatientStatusAuthentication'],function(){
+		Route::post('bookmark_UnBookMark_Doctor','PatientController@bookmark_UnBookMark_Doctor');
+		Route::post('get_patient_bookmarks_doctors','PatientController@get_patient_bookmarks_doctors');
+		Route::post('schedule_appointment_with_doctor','PatientController@schedule_appointment_with_doctor');
+		Route::post('get_all_appointment_of_patient_by_date','PatientController@get_all_appointment_of_patient_by_date');
+		Route::post('updateRescheduledAppointmentByPatient','PatientController@accept_or_reject_appointment_by_patient_rescheduled_by_doctor');
+		Route::post('search_doctor_by_patient','PatientController@search_doctor');
+		Route::post('get_notification_list_for_patient','PatientController@get_notification_list');
+		Route::post('reschedule_appointment_by_patient','PatientController@reschedule_appointment_by_patient');
+		Route::post('cancel_appointment_by_patient','PatientController@cancel_appointment_by_patient');
+		Route::post('giveReviewToDoctor','PatientController@giveReviewToDoctor');
+	});	
 
 ////////////////////////////////////////////////
 ////// PATIENT's Api's END

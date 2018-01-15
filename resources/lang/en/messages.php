@@ -154,5 +154,8 @@ return [
 	'speciality_already_exist' => 'Speciality already exist',
 	'qualificationy_already_exist' => 'Qualificationy already exist',
 	'mother_language_already_exist' => 'Mother language already exist',
-	'invalid_old_password' => 'Old password is incorrect.'
+	'invalid_old_password' => 'Old password is incorrect.',
+	'Wait_For_Approval_From_Admin' =>'Please Wait for approval from admin',
+
+	'Account_blocked_Patient' => 'Account is blocked by admin',
 ];

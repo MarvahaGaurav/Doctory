@@ -31,27 +31,24 @@
                                                 <th>Doctor name</th>
                                                 <th>Doc. Profile</th>
                                                 <th>Date</th>
+                                                <th>Status</th>
                                                 <th>Time</th>
                                                 <th>View chat</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>Aiger Nixon</td>
-                                                <td>doctor Alex</td>
-                                                <td><a href="docProfile.php" class="btn btn-danger btn-sm"> Profile</a></td>
-                                                <td>24-10-2018</td>
-                                                <td>19:00 AM</td>
-                                                <td><a href="chatView.php" class="btn btn-danger btn-sm"> chat</a></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Aiger Nixon</td>
-                                                <td>doctor Alex</td>
-                                                <td><a href="docProfile.php" class="btn btn-danger btn-sm"> Profile</a></td>
-                                                <td>24-10-2018</td>
-                                                <td>19:00 AM</td>
-                                                <td><a href="chatView.php" class="btn btn-danger btn-sm"> chat</a></td>
-                                            </tr>
+                                            @foreach($final_result as $key => $value)
+                                               <tr>
+                                                   <td>{{$value->PatientDetail->name}}</td>
+                                                   <td>{{$value->DoctorDetailForWeb->name}}</td>
+                                                   <td><a href="{{url('/Admin/doctor_profile/')}}/{{$value->DoctorDetailForWeb->id}}" class="btn btn-danger btn-sm"> Profile</a></td>
+                                                   <td>{{date('d-M-Y',strtotime($value->appointment_date))}}</td>
+                                                   <td><b>{{$value->status_of_appointment}}</b></td>
+                                                   <td>{{date('h:i a',strtotime($value->TimeSlotDetail->start_time))}}</td>
+                                                   <td><a href="chatView.php" class="btn btn-danger btn-sm"> chat</a></td>
+                                               </tr>
+                                             @endforeach
+                                            
                                             </tbody>
                                     </table>
                                 </div>

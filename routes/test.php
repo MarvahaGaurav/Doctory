@@ -56,6 +56,5 @@ Route::group(['prefix' => 'Admin'],function(){
 	Route::get('patient_list','AdminController@patient_list');
 	Route::get('approve_doctor/{doctor_id}','AdminController@approve_doctor');
 	Route::get('block_patient/{patient_id}/{status}','AdminController@block_patient');
-	Route::get('appointment_list/{doctor_id}','AdminController@appointment_list');
 
 });

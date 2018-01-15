@@ -9,7 +9,10 @@ use \App\Qualification;
 use \App\MotherLanguage;
 use \App\DoctorQualification;
 use \App\DoctorMotherlanguage;
+use App\Appointment;
 use \App\User;
+use App\Review;
+use App\TimeSlot;
 use Auth;
 use Hash;
 use Session;
@@ -23,6 +26,8 @@ class AdminController extends Controller
     	if($request->method() == "GET"){
     		$loggedIn = Session::get('Dr_Admin_loggedIn');
     		if($loggedIn){
+            $totalDoctor = User::where(['user_type' => 1])->get();
+            dd($totalDoctor);
     			return redirect('Admin/dashboard');
     		}else{
     			return view('Admin/login');
@@ -70,7 +75,28 @@ class AdminController extends Controller
    	if($loggedIn){
    		$AdminDetail = $this->getAdminDetail($query);
    		// dd($AdminDetail);
-   		return view('Admin/index',compact('AdminDetail'));
+         /*$totalDoctor = User::where(['user_type' => 1])->get();
+         $totalPatient = User::where(['user_type' => 2])->get();*/
+         $totalPatient = 0;
+         $totalDoctor = 0;
+         $todayRegistered = 0;
+         $userData = User::all();
+         foreach ($userData as $key => $value) {
+            /*dd(Carbon::now()->format('Y-m-d'));
+            dd(Carbon::parse($value->created_at)->format('Y-m-d'));*/
+            if($value->user_type == 1 ){
+               $totalDoctor++;
+            }
+            if($value->user_type == 2 ){
+               $totalPatient++;
+            }
+
+            if(Carbon::now()->format('Y-m-d') == Carbon::parse($value->created_at)->format('Y-m-d')){
+               $todayRegistered++;
+            }
+         }
+         // dd($totalDoctor);
+   		return view('Admin/index',compact('AdminDetail','totalDoctor','totalPatient'));
    	}else{
    		return redirect('Admin/login');
    	}
@@ -91,7 +117,6 @@ class AdminController extends Controller
             $totalDoctor = 0;
             $todayRegistered = 0;
             $userData = User::all();
-
             foreach ($userData as $key => $value) {
                /*dd(Carbon::now()->format('Y-m-d'));
                dd(Carbon::parse($value->created_at)->format('Y-m-d'));*/
@@ -655,6 +680,53 @@ class AdminController extends Controller
             }else{
                
             }
+         }
+      }else{
+         return redirect('Admin/login');
+      }
+   }
+
+   public function appointment_list(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         if($request->method() == "GET"){
+            $id = Session::get('Dr_Admin_Id');
+            $role = Session::get('Dr_Admin_Role');
+            $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
+            $final_result = [];
+            $date = date('Y-m-d');
+            $result = Appointment::get_all_appointment_of_doctor($date,$request->doctor_id);
+            // dd($result);
+            // return $result->TimeSlotDetail;
+            foreach ($result as $key => $value) {
+               // dd($value->TimeSlotDetail);
+               $TimeSlotDetail = TimeSlot::find($value->time_slot_id);
+               $start_time = Carbon::parse($TimeSlotDetail->start_time);
+               $end_time = Carbon::parse($TimeSlotDetail->end_time);
+               if($value->appointment_date == Carbon::now()->format('Y-m-d')  ){
+                  $value->DoctorDetailForWeb;
+                   if(Carbon::parse($start_time) > Carbon::now()){
+                       $final_result[] = $value;
+                   }else{
+                     if($value->status_of_appointment != 'Accepted' ){
+                        $Appointment = Appointment::find($value->id);
+                        $Appointment->status_of_appointment = 'Expired';
+                        $Appointment->save();
+                     }else{
+                        if(Carbon::parse($end_time) > Carbon::now()) {
+                           $final_result[] = $value;
+                        }
+                     }
+                   }
+               }
+               if($value->appointment_date > Carbon::now()->format('Y-m-d')){
+                   $final_result[] = $value;
+               }
+            }
+            // return $final_result;
+            // dd($final_result);
+
+            return view('Admin/appointmentView',compact('AdminDetail','final_result'));
          }
       }else{
          return redirect('Admin/login');

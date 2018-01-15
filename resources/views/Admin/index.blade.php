@@ -19,7 +19,7 @@
                     </div>
                     <div class="col-md-7 col-4 align-self-center">
                         <div class="d-flex m-t-10 justify-content-end">
-                            <div class="d-flex m-r-20 m-l-10 hidden-md-down">
+                            <!-- <div class="d-flex m-r-20 m-l-10 hidden-md-down">
                                 <div class="chart-text m-r-10">
                                     <h6 class="m-b-0"><small>THIS MONTH</small></h6>
                                     <h4 class="m-t-0 text-info">$58,356</h4></div>
@@ -34,7 +34,7 @@
                                 <div class="spark-chart">
                                     <div id="lastmonthchart"></div>
                                 </div>
-                            </div>
+                            </div> -->
                             
                         </div>
                     </div>
@@ -54,11 +54,11 @@
                             <div class="row">
                                 <!-- Column -->
                                 <div class="col p-r-0 align-self-center">
-                                    <h2 class="font-light m-b-0">324</h2>
-                                    <h6 class="text-muted">New Clients</h6></div>
+                                    <h2 class="font-light m-b-0">{{$totalDoctor}}</h2>
+                                    <h6 class="text-muted">Total Dr.</h6></div>
                                 <!-- Column -->
                                 <div class="col text-right align-self-center">
-                                    <div data-label="20%" class="css-bar m-b-0 css-bar-info css-bar-20"></div>
+                                    <div data-label="20" class="css-bar m-b-0 css-bar-info css-bar-10"></div>
                                 </div>
                             </div>
                         </div>
@@ -70,8 +70,8 @@
                             <div class="row">
                                 <!-- Column -->
                                 <div class="col p-r-0 align-self-center">
-                                    <h2 class="font-light m-b-0">2376</h2>
-                                    <h6 class="text-muted">Total Visits</h6></div>
+                                    <h2 class="font-light m-b-0">{{$totalPatient}}</h2>
+                                    <h6 class="text-muted">Total Patient</h6></div>
                                 <!-- Column -->
                                 <div class="col text-right align-self-center">
                                     <div data-label="30%" class="css-bar m-b-0 css-bar-success css-bar-20"></div>
@@ -114,8 +114,7 @@
                 </div>
                 <!-- Row -->
                 <!-- Row -->
-                <div class="row">
-                    <!-- Column -->
+                <!-- <div class="row">
                     <div class="col-lg-4 col-md-12">
                         <div class="card">
                             <div class="card-body">
@@ -133,7 +132,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Column -->
                     <div class="col-lg-4 col-md-12">
                         <div class="card">
                             <div class="card-body">
@@ -151,7 +149,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Column -->
                     <div class="col-lg-4 col-md-12">
                         <div class="card">
                             <div class="card-body">
@@ -171,10 +168,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <!-- Row -->
                 <!-- Row -->
-                <div class="row">
+
+                <!-- <div class="row">
                     <div class="col-lg-8">
                         <div class="card">
                             <div class="card-body">
@@ -251,7 +249,6 @@
                         </div>
                     </div>
                     <div class="col-lg-4">
-                        <!-- Column -->
                         <div class="card"> <img class="" src="assets/images/background/profile-bg.jpg" alt="Card image cap">
                             <div class="card-body little-profile text-center">
                                 <div class="pro-img"><img src="assets/images/users/4.jpg" alt="user" /></div>
@@ -269,13 +266,11 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Column -->
                     </div>
-                </div>
-                <!-- Row -->
-                <div class="row">
+                </div> -->
+
+                <!-- <div class="row">
                     <div class="col-lg-4 col-md-12">
-                        <!-- card -->
                         <div class="card card-inverse card-primary">
                             <div class="card-body">
                                 <div class="d-flex">
@@ -294,7 +289,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- card -->
                         <div class="card card-inverse card-success">
                             <div class="card-body">
                                 <div class="d-flex">
@@ -344,25 +338,21 @@
                                 <div class="message-box contact-box">
                                     <h2 class="add-ct-btn"><button type="button" class="btn btn-circle btn-lg btn-success waves-effect waves-dark">+</button></h2>
                                     <div class="message-widget contact-widget">
-                                        <!-- Message -->
                                         <a href="#">
                                             <div class="user-img"> <img src="assets/images/users/1.jpg" alt="user" class="img-circle"> <span class="profile-status online pull-right"></span> </div>
                                             <div class="mail-contnet">
                                                 <h5>Pavan kumar</h5> <span class="mail-desc">info@wrappixel.com</span></div>
                                         </a>
-                                        <!-- Message -->
                                         <a href="#">
                                             <div class="user-img"> <img src="assets/images/users/2.jpg" alt="user" class="img-circle"> <span class="profile-status busy pull-right"></span> </div>
                                             <div class="mail-contnet">
                                                 <h5>Sonu Nigam</h5> <span class="mail-desc">pamela1987@gmail.com</span></div>
                                         </a>
-                                        <!-- Message -->
                                         <a href="#">
                                             <div class="user-img"> <span class="round">A</span> <span class="profile-status away pull-right"></span> </div>
                                             <div class="mail-contnet">
                                                 <h5>Arijit Sinh</h5> <span class="mail-desc">cruise1298.fiplip@gmail.com</span></div>
                                         </a>
-                                        <!-- Message -->
                                         <a href="#">
                                             <div class="user-img"> <img src="assets/images/users/4.jpg" alt="user" class="img-circle"> <span class="profile-status offline pull-right"></span> </div>
                                             <div class="mail-contnet">
@@ -373,7 +363,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 
                 <!-- ============================================================== -->
                 <!-- End PAge Content -->

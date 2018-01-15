@@ -146,7 +146,7 @@ return [
 
 	'Patient_Already_Booked_appointment' => 'لقد حجزت مسبقا موعدك',
 	'Appointment_already_booked_at_this_time_slot_for_this_patient' => 'حجز حجز بالفعل في هذا الوقت فتحة لهذا المريض',
-
-
+	'Wait_For_Approval_From_Admin' =>'يرجى الانتظار للموافقة من المشرف',
+	'Account_blocked_Patient' => 'Account is blocked by admin',
 
 ];

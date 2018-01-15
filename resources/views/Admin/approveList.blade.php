@@ -41,9 +41,9 @@
                                             <tr>
                                                 <td>{{$ADL->name}}</td>
                                                 <td>{{$ADL->email}}</td>
-                                                <td>{{$ADL->mobile}}</td>
+                                                <td>{{$ADL->country_code}}-{{$ADL->mobile}}</td>
                                                 <td><a href="{{url('Admin/doctor_profile')}}/{{$ADL->id}}" class="btn btn-danger btn-sm"> Profile</a></td>
-                                                <td><a href="appointmentView.php" class="btn btn-danger btn-sm"> See list</a></td>
+                                                <td><a href="{{url('Admin/appointment_list')}}/{{$ADL->id}}" class="btn btn-danger btn-sm"> See list</a></td>
                                                 <td><label class="label label-rounded label-success">Approved</label></td>
                                             </tr>
                                           @endforeach

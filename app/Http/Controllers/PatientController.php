@@ -1500,7 +1500,7 @@ class PatientController extends Controller
     		if(count($UserDetail)){
 				Log::info('UserDetail'.print_r($UserDetail,True));
     			if($UserDetail->user_type == 2){
-	    			$Notification = Notification::where(['patient_id'=>$UserDetail->id])->where('type','<>',2)->get();
+	    			$Notification = Notification::where(['patient_id'=>$UserDetail->id])->where('type','<>',2)->orderBy('created_at','DESC')->get();
 	    			$result = [];
 	    			$USER = new User;
 	    			// dd($Notification);

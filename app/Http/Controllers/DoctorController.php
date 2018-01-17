@@ -30,10 +30,10 @@ class DoctorController extends Controller
    public function getList(Request $request){
      	Log::info('----------------------DoctorController--------------------------getList'.print_r($request->all(),True));
      	$query = [
-   		'status' => 1,
-   		'user_type' => 1
-   	];
-   	$list = User::getUserList($query);
+     		'status' => 1,
+     		'user_type' => 1
+     	];
+     	$list = User::getUserList($query);
      	$result = [];
      	$doctor_availabilities = [];
      	// dd(count($list));
@@ -447,7 +447,7 @@ class DoctorController extends Controller
    }
 
    public function transferAppointmentByDoctor(Request $request){
-   	  Log::info('------------------DoctorController------------transferAppointmentByDoctor'.print_r($request->all(),True)); 
+   	Log::info('------------------DoctorController------------transferAppointmentByDoctor'.print_r($request->all(),True)); 
       $accessToken =  $request->header('accessToken');
       $appointment_id = $request->appointment_id;
       $transfer_to_doctor_id = $request->transfer_to_doctor_id;
@@ -746,21 +746,20 @@ class DoctorController extends Controller
                      $start_time = Carbon::parse($TimeSlotDetail->start_time);
                      $end_time = Carbon::parse($TimeSlotDetail->end_time);
                      if($value->appointment_date == Carbon::now()->format('Y-m-d')  ){
-                         if(Carbon::parse($start_time) > Carbon::now()){
+                        if(Carbon::parse($start_time) > Carbon::now()){
+
                              $final_result[] = $value;
-                         }else{
+                        }else{
                            if($value->status_of_appointment != 'Accepted' ){
                               $Appointment = Appointment::find($value->id);
                               $Appointment->status_of_appointment = 'Expired';
                               $Appointment->save();
                            }else{
-                              // dd('else');
-                              // dd(Carbon::parse($end_time) > Carbon::now());
                               if(Carbon::parse($end_time) > Carbon::now()) {
                                  $final_result[] = $value;
                               }
                            }
-                         }
+                        }
                      }
                      if($value->appointment_date > Carbon::now()->format('Y-m-d')){
                          $final_result[] = $value;
@@ -1900,7 +1899,7 @@ class DoctorController extends Controller
          if(count($UserDetail)){
              Log::info('UserDetail'.print_r($UserDetail,True));
              if($UserDetail->user_type == 1){
-                 $Notification = Notification::where(['doctor_id'=>$UserDetail->id])->whereNotIn('type',[3,4,5,6])->get();
+                 $Notification = Notification::where(['doctor_id'=>$UserDetail->id])->whereNotIn('type',[3,4,5,6])->orderBy('created_at','DESC')->get();
                  $result = [];
                  // dd($Notification);
                  foreach ($Notification as $key => $value) {

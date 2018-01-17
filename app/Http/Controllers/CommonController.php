@@ -242,15 +242,15 @@ class CommonController extends Controller
 								return response()->json($response,__('messages.statusCode.INVALID_ACCESS_TOKEN'));
 							}
 
-							if(!empty($result) && $result['status'] == 0 && $result['user_type'] == 1){
+							/*if(!empty($result) && $result['status'] == 0 && $result['user_type'] == 1){
 								$response = [
 									'message' =>  __('messages.Wait_For_Approval_From_Admin'),
 									'status' => $result['status'],
 									'response' => []
 								];
-								return response()->json($response,__('messages.statusCode.INVALID_ACCESS_TOKEN'));
+								return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
 							}
-
+*/
 							$response = [
 								'message' =>  __('messages.success.login'),
 								'status' => $result['status'],
@@ -340,10 +340,6 @@ class CommonController extends Controller
    	if($timezone){
 			$this->setTimeZone($timezone);
     	}
-		$timezone = $request->header('timezone');
-   	if($timezone){
-			$this->setTimeZone($timezone);
-    	}
 		if(empty($locale)){
 			$locale = 'en';
 		}
@@ -359,6 +355,7 @@ class CommonController extends Controller
 	    			$Response = [
 	    			  'message'  => trans('messages.success.logout'),
 	    			];
+	    			Log::info('--------RESPONSE--------------CommonController--------------------------logout'.print_r($Response,True));
 	        		return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );	
 				}else{
 					$response['message'] = trans('messages.invalid.detail');

@@ -250,7 +250,7 @@ class CommonController extends Controller
 								];
 								return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
 							}
-*/
+							*/
 							$response = [
 								'message' =>  __('messages.success.login'),
 								'status' => $result['status'],
@@ -590,7 +590,7 @@ class CommonController extends Controller
 	}
 
 	public function forgetPassword(Request $request) {
-		Log::info('----------------------CommonController--------------------------resetPassword'.print_r($request->all(),True));
+		Log::info('----------------------CommonController--------------------------forgetPassword'.print_r($request->all(),True));
 		/*$country_code = $request->country_code;
 		$mobile = $request->mobile;*/
 		$email = $request->email;
@@ -661,7 +661,8 @@ class CommonController extends Controller
 
 	public function resetPassword(Request $request){
 		Log::info('----------------------CommonController--------------------------resetPassword'.print_r($request->all(),True));
-		$accessToken = $request->header('accessToken');
+		// $accessToken = $request->header('accessToken');
+		$user_id = $request->user_id;
 		$password = $request->password;
 
 		$locale = $request->header('locale');
@@ -677,17 +678,18 @@ class CommonController extends Controller
 		if(!empty($locale)){
 			\App::setLocale($locale);
 			$validations = [
-				'password' => 'required|min:8'
+				'password' => 'required|min:8',
+				'user_id' => 'required'
 	    	];
 	    	$validator = Validator::make($request->all(),$validations);
-	    	if( !empty( $accessToken ) ) {
+	    	/*if( !empty( $accessToken ) ) {*/
 		    	if($validator->fails()){
 		    		$response = [
 						'message' => $validator->errors($validator)->first()
 					];
 					return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
 		    	}else{
-		    		$UserDetail = User::where(['remember_token' => $accessToken])->first();
+		    		$UserDetail = User::where(['id' => $user_id])->first();
 		    		if(count($UserDetail)){
 		    			// dd($UserDetail);
 		    			$User = User::find($UserDetail->id);
@@ -707,12 +709,12 @@ class CommonController extends Controller
 		        		return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
 		    		}
 		    	}
-		   }else {
+		   /*}else {
 		    	$Response = [
 					'message'  => trans('messages.required.accessToken'),
 				];
 		      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
-		   }
+		   }*/
 		}else{
 	   	$response = [
 				'message' =>  __('messages.required.locale')

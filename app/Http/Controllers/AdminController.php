@@ -362,6 +362,13 @@ class AdminController extends Controller
             if($doctor_detail){
                $doctor_detail->status = 1;
                $doctor_detail->save();
+
+               $NotificationDataArray = [
+                  'getter_id' => $doctor_id,
+                  'message' => 'You are approved by Admin.'
+               ];
+               $this->send_notification($NotificationDataArray);
+
                return redirect('Admin/approve_list')->with('docotr_approved',__('messages.success.docotr_approved'));
             }else{
                return redirect('Admin/pending_list')->with('invalid_detail',__('messages.invalid.detail'));

@@ -42,7 +42,7 @@
                                                 <td>{{$PL->name}}</td>
                                                 <td>{{$PL->email}}</td>
                                                 <td>{{$PL->mobile}}</td>
-                                                <td><a href="appointmentView.php" class="btn btn-danger btn-sm"> See list</a></td>
+                                                <td><a href="{{url('Admin/appointment_list/patient')}}/{{$PL->id}}" class="btn btn-danger btn-sm"> See list</a></td>
                                                 <td>
                                                    @if($PL->status == 1)
                                                    <a href="{{url('Admin/block_patient')}}/{{$PL->id}}/0" class="btn btn-danger">Block</a>

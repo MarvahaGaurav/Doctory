@@ -702,7 +702,15 @@ class AdminController extends Controller
             $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
             $final_result = [];
             $date = date('Y-m-d');
-            $result = Appointment::get_all_appointment_of_doctor($date,$request->doctor_id);
+            if($request->doctor_id){
+               // dd('dr');
+               $result = Appointment::get_all_appointment_of_doctor($date,$request->doctor_id);
+            }
+
+            if($request->patient_id){
+               // dd('patient');
+               $result = Appointment::get_all_appointment_of_patient_id($date,$request->patient_id);
+            }
             // dd($result);
             // return $result->TimeSlotDetail;
             foreach ($result as $key => $value) {
@@ -730,13 +738,11 @@ class AdminController extends Controller
                    $final_result[] = $value;
                }
             }
-            // return $final_result;
-            // dd($final_result);
-
             return view('Admin/appointmentView',compact('AdminDetail','final_result'));
          }
       }else{
          return redirect('Admin/login');
       }
    }
+
 }

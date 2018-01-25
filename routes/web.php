@@ -34,28 +34,44 @@ Route::group(['prefix' => 'Admin'],function(){
 	Route::get('pending_list','AdminController@pending_list');
 	Route::get('docProfile','AdminController@docProfile');
 
-	Route::match(['get','post'],'speciality_management','AdminController@speciality_management');
-	Route::get('delete_speciality/{speciality_id}','AdminController@delete_speciality');
+	/////////////////////////////
+	////// Spacility Routes start
+	/////////////////////////////
+		Route::match(['get','post'],'speciality_management','AdminController@speciality_management');
+		Route::get('delete_speciality/{speciality_id}','AdminController@delete_speciality');
+		Route::match(['get','post'],'speciality/edit/{speciality_id}','AdminController@edit_speciality_management');
+		Route::post('save_speciality','AdminController@save_speciality');
+	/////////////////////////////
+	////// Spacility Routes End
+	/////////////////////////////
 
-	Route::match(['get','post'],'speciality/edit/{speciality_id}','AdminController@edit_speciality_management');
-
-	Route::post('save_speciality','AdminController@save_speciality');
-
+	/////////////////////////////
+	////// Qualification Routes start
+	/////////////////////////////
 	Route::match(['get','post'],'add_qualification','AdminController@addQualification');
 	Route::match(['get','post'],'qualification_edit/{qualification_id}','AdminController@qualification_edit');
-	
 	Route::post('save_qualification','AdminController@save_qualification');
-
 	Route::get('qualification_delete/{qualification_id}','AdminController@qualification_delete');
+   /////////////////////////////
+	////// Qualification Routes start
+	/////////////////////////////
 
+	////////////////////////////
+	////// Motherlanguage Routes start
+	/////////////////////////////
 	Route::match(['get','post'],'add_mother_language','AdminController@add_mother_language');
 	Route::get('mother_language_delete/{mother_language_id}','AdminController@mother_language_delete');
 	Route::match(['get','post'],'mother_language/edit/{mother_language_id}','AdminController@edit_mother_language');
 	Route::post('save_mother_language','AdminController@save_mother_language');
+	////////////////////////////
+	////// Motherlanguage Routes End
+	/////////////////////////////
 	
+
 	Route::get('patient_list','AdminController@patient_list');
 	Route::get('approve_doctor/{doctor_id}','AdminController@approve_doctor');
 	Route::get('block_patient/{patient_id}/{status}','AdminController@block_patient');
 	Route::get('appointment_list/{doctor_id}','AdminController@appointment_list');
+	Route::get('appointment_list/patient/{patient_id}','AdminController@appointment_list');
 
 });

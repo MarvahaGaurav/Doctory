@@ -32,6 +32,7 @@ use Hash;
 use Auth;
 use Exception;
 use Config;
+use Artisan;
 
 class Controller extends BaseController
 {
@@ -40,6 +41,10 @@ class Controller extends BaseController
  	public function __construct(){
 		$timezone = Config::get('app.timezone');
 		date_default_timezone_set($timezone);
+	}
+
+	public function test_CHECK(){
+		Log::info('TEst From Controller');
 	}
 
    public function getUserDetail($data){
@@ -721,6 +726,7 @@ class Controller extends BaseController
 		];
 		return $dates;
    }
+
    public function days(){
    	$days = [
 			Carbon::now()->addDay(1)->dayOfWeek+1,
@@ -747,10 +753,27 @@ class Controller extends BaseController
 
 	public function send_notification($NotificationDataArray){
 		// dd($NotificationDataArray);
-		$notifyType = 1;
+		$notifyType = 1; // 1 for simple , 2 ExtendChat
+
+		
+		if(!empty($NotificationDataArray['Notification_type']) && $NotificationDataArray['Notification_type'] == 2 ){
+			$notifyType = 2;
+		}
+
+		if(!empty($NotificationDataArray['Notification_type']) && $NotificationDataArray['Notification_type'] == 3 ){
+			$notifyType = 3;
+		}
+
+		if(!empty($NotificationDataArray['appointment_id'])) {
+			$appointment_id = $NotificationDataArray['appointment_id'];
+		}else{
+			$appointment_id = null;
+		}
+
 		$userId = (int) $NotificationDataArray['getter_id'];
 		$bodyText = [
 			'message'=>$NotificationDataArray['message'],
+			'appointment_id' => $appointment_id,
 		];
 		$this->notification($userId,$bodyText,$notifyType);
 	}
@@ -846,5 +869,10 @@ class Controller extends BaseController
    	$timezone = Config::get('app.timezone');
 		date_default_timezone_set($timezone);*/
 		date_default_timezone_set($timezone);
+	}
+
+	public function test(Request $request){
+		$exitCode = Artisan::call('gaurav:command');
+		dd($exitCode);
 	}
 }

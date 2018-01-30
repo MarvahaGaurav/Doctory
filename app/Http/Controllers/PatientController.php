@@ -1763,6 +1763,18 @@ class PatientController extends Controller
 		        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
     					break;
     				case 2:
+    					$NotificationDataArray = [
+                     'getter_id' => $doctor_id,
+                     'message' => __('messages.notification_messages.Patient_Post_Review_To_Doctor')
+                     
+                 	];
+                 	$NotificationGetterDetail = User::find($doctor_id);
+                  if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                      $this->send_notification($NotificationDataArray);
+                  }
+
+                  Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$UserDetail->id,'type' => __('messages.notification_status_codes.Patient_Post_Review_To_Doctor'),'appointment_id' => $appointment_id]);
+
     					$review_data = Review::firstOrNew(['patient_id' => $UserDetail->id, 'appointment_id' => $appointment_id , 'doctor_id' => $doctor_id]);
     					$review_data->rating = $rating;
     					$review_data->review_text = $review;

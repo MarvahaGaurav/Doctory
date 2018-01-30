@@ -60,8 +60,14 @@ class NotificationController extends Controller
         $serverKey = 'AIzaSyDQsqj3rxWpA7SAHLwziaVmaYJr0b_8m9o';
         $title = "Title";
         $body = $body_text['message'];
+
+        if($body_text['appointment_id']){
+           $appointment_id = $body_text['appointment_id'];     
+        }else{
+            $appointment_id = null;
+        }
         // $notification = array('title' =>$title , 'text' => $body, 'sound' => 'default', 'badge' => '1');
-        $notification = array('text' => $body, 'sound' => 'default');
+        $notification = array('text' => $body, 'sound' => 'default' ,'notification_type' => $notification_type , 'appointment_id' => $appointment_id);
         $arrayToSend = array('to' => $tokens, 'notification' => $notification,'priority'=>'high');
         $json = json_encode($arrayToSend);
         $headers = array();

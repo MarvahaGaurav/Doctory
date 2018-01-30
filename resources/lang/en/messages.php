@@ -99,6 +99,12 @@ return [
 		'Appointment_Cancelled_By_Doctor' => 'Appointment cancelled successfully.',
 		'Appointment_Transfered_By_Doctor' => 'Your appointment has been transferred to other doctor.',
 		'Scheduled_Appointment' => 'You have a new appointment request.',
+		'Patient_Post_Review_To_Doctor' => 'You have received the rating on appointment.',
+		'Doctor_Aprroved_By_Admin' => 'Your profile have been approved from admin.',
+		'Doctor_Have_Appointment_After_Fifteen_Minutes' => 'Your appointment is going to be start soon DR.',
+		'Patient_Have_Appointment_After_Fifteen_Minutes' => 'Your appointment is going to be start soon PT.',
+		'Extand_Chat_Notification' => 'Your appointment time has been extended.',
+		'Appointment_Completed' => 'Your appointment has been Completed.',
 	],
 
 	'notification_status_codes' => [
@@ -114,7 +120,19 @@ return [
 		'Appointment_Rejected_By_Doctor' => '10',
 		'Appointment_Cancelled_By_Patient' => '11',
 		'Appointment_Cancelled_By_Doctor' => '12',
-		'Appointment_Transfered_By_Doctor' => '13'
+		'Appointment_Transfered_By_Doctor' => '13',
+		'Patient_Post_Review_To_Doctor' => '14',
+		'Doctor_Aprroved_By_Admin' => '15',
+		'Doctor_Have_Appointment_After_Fifteen_Minutes' => '16',
+		'Patient_Have_Appointment_After_Fifteen_Minutes' => '17',
+		'Extand_Chat_Notification' => '18',
+		'Appointment_Completed' => '19',
+
+	],
+
+	'notification_type' => [
+		'Extend_Chat' => '2',
+		'Appointment_Completed' => '3',
 	],
 
 	'required' => [

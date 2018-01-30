@@ -64,6 +64,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('send_otp_at_email','DoctorController@send_otp_at_email');
 	Route::post('verify_email_by_otp','DoctorController@verify_email_by_otp');
 	Route::post('getDoctorRevenue','DoctorController@getDoctorRevenue');
+	Route::post('extendChat','DoctorController@extendChat');
 	
 	
 	
@@ -134,3 +135,5 @@ Route::get('getEnvData',function(){
 });
 
 Route::post('notfication','Controller@send_notification');
+
+Route::get('testArtisan','Controller@test');

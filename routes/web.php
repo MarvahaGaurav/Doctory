@@ -34,6 +34,8 @@ Route::group(['prefix' => 'Admin'],function(){
 	Route::get('pending_list','AdminController@pending_list');
 	Route::get('docProfile','AdminController@docProfile');
 
+
+
 	/////////////////////////////
 	////// Spacility Routes start
 	/////////////////////////////

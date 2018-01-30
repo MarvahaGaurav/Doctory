@@ -13,6 +13,7 @@ use App\Appointment;
 use \App\User;
 use App\Review;
 use App\TimeSlot;
+use App\Notification;
 use Auth;
 use Hash;
 use Session;
@@ -365,9 +366,11 @@ class AdminController extends Controller
 
                $NotificationDataArray = [
                   'getter_id' => $doctor_id,
-                  'message' => 'You are approved by Admin.'
+                  'message' => __('messages.notification_messages.Doctor_Aprroved_By_Admin')
                ];
                $this->send_notification($NotificationDataArray);
+
+               Notification::insert(['doctor_id'=>$doctor_id,'type' => __('messages.notification_status_codes.Doctor_Aprroved_By_Admin')]);
 
                return redirect('Admin/approve_list')->with('docotr_approved',__('messages.success.docotr_approved'));
             }else{
@@ -738,11 +741,13 @@ class AdminController extends Controller
                    $final_result[] = $value;
                }
             }
+            // return $final_result;
+            // dd($final_result);
+
             return view('Admin/appointmentView',compact('AdminDetail','final_result'));
          }
       }else{
          return redirect('Admin/login');
       }
    }
-
 }

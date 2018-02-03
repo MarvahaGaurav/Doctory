@@ -104,7 +104,8 @@ return [
 		'Doctor_Have_Appointment_After_Fifteen_Minutes' => 'Your appointment is going to be start soon.',
 		'Patient_Have_Appointment_After_Fifteen_Minutes' => 'Your appointment is going to be start soon.',
 		'Extand_Chat_Notification' => 'Your appointment time has been extended.',
-		'Appointment_Completed' => 'Your appointment has been Completed.',
+		'Appointment_Completed' => 'The Doctor has completed your appointment. You can give your review.',
+		'Appointment_Started' => 'Your appointment has started.',
 	],
 	
 
@@ -133,6 +134,7 @@ return [
 	'notification_type' => [
 		'Extend_Chat' => '2',
 		'Appointment_Completed' => '3',
+		'transferAppointmentByDoctor' => '4'
 	],
 
 	'required' => [

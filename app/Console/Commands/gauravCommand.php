@@ -100,10 +100,36 @@ class gauravCommand extends Command
                 if($NotificationGetterDetail_DR->notification && !empty($NotificationGetterDetail_DR->remember_token)){
                     $obj->send_notification($NotificationDataArray_PT);
                 }
-
-                
             }
 
-       }
+            Log::Warning('---------------GAURAV MARVAHA------------------------------');
+            Log::info('start_time-----------'.print_r(Carbon::parse($Appointment_TimeSlot_StartTime )->format('Y-m-d h:i'),True));
+            Log::info('Now Time-----------'.print_r(Carbon::now()->format('Y-m-d h:i'),True));
+
+
+            Log::info(Carbon::parse($Appointment_TimeSlot_StartTime)->format('Y-m-d h:i') ==  Carbon::now()->format('Y-m-d h:i'));
+
+            if( Carbon::parse($Appointment_TimeSlot_StartTime)->format('Y-m-d h:i') ==  Carbon::now()->format('Y-m-d h:i') ){
+                Log::info('Same Hai');
+                $NotificationDataArray_DR = [
+                    'getter_id' => $value->doctor_id,
+                    'message' => __('messages.notification_messages.Appointment_Started')
+                ];
+                $NotificationGetterDetail_DR = User::find($value->doctor_id);
+                if($NotificationGetterDetail_DR->notification && !empty($NotificationGetterDetail_DR->remember_token)){
+                    $obj->send_notification($NotificationDataArray_DR);
+                }
+
+                $NotificationDataArray_PT = [
+                    'getter_id' => $value->patient_id,
+                    'message' => __('messages.notification_messages.Appointment_Started')
+                ];
+                $NotificationGetterDetail_DR = User::find($value->patient_id);
+                if($NotificationGetterDetail_DR->notification && !empty($NotificationGetterDetail_DR->remember_token)){
+                    $obj->send_notification($NotificationDataArray_PT);
+                }
+            }
+
+        }
     }
 }

@@ -101,10 +101,11 @@ return [
 		'Scheduled_Appointment' => 'You have a new appointment request.',
 		'Patient_Post_Review_To_Doctor' => 'You have received the rating on appointment.',
 		'Doctor_Aprroved_By_Admin' => 'Your profile have been approved from admin.',
-		'Doctor_Have_Appointment_After_Fifteen_Minutes' => 'Your appointment is going to be start soon DR.',
-		'Patient_Have_Appointment_After_Fifteen_Minutes' => 'Your appointment is going to be start soon PT.',
+		'Doctor_Have_Appointment_After_Fifteen_Minutes' => 'Your appointment is going to be start soon.',
+		'Patient_Have_Appointment_After_Fifteen_Minutes' => 'Your appointment is going to be start soon.',
 		'Extand_Chat_Notification' => 'Your appointment time has been extended.',
-		'Appointment_Completed' => 'Your appointment has been Completed.',
+		'Appointment_Completed' => 'The Doctor has completed your appointment. You can give your review.',
+		'Appointment_Started' => 'Your appointment has started.'
 	],
 
 	'notification_status_codes' => [
@@ -133,6 +134,7 @@ return [
 	'notification_type' => [
 		'Extend_Chat' => '2',
 		'Appointment_Completed' => '3',
+		'transferAppointmentByDoctor' => '4'
 	],
 
 	'required' => [

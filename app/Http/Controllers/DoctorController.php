@@ -427,8 +427,9 @@ class DoctorController extends Controller
                      $NotificationDataArray = [
                         'getter_id' => $appointment_detail->patient_id,
                         'appointment_id' => $appointment_id,
+                        'Notification_type' => __('messages.notification_type.Appointment_Completed'),
                         'message' => __('messages.notification_messages.Appointment_Completed'),
-                        'Notification_type' => __('messages.notification_type.Appointment_Completed'), 
+                         
                      ];
                      $NotificationGetterDetail = User::find($appointment_detail->patient_id);
                      if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
@@ -497,7 +498,9 @@ class DoctorController extends Controller
 
                     $NotificationDataArray = [
                      'getter_id' => $appointment_detail->patient_id,
-                     'message' => __('messages.notification_messages.Appointment_Transfered_By_Doctor')
+                     'message' => __('messages.notification_messages.Appointment_Transfered_By_Doctor'),
+                     'appointment_id' => $appointment_id,
+                      'Notification_type' => __('messages.notification_type.transferAppointmentByDoctor'),
                     ];
 
                     $NotificationGetterDetail = User::find($appointment_detail->patient_id);
@@ -505,7 +508,7 @@ class DoctorController extends Controller
                         $this->send_notification($NotificationDataArray);
                     }
 
-                    Notification::insert([ 'doctor_id'=> $UserDetail->id ,'reffered_to_doctor_id' => $transfer_to_doctor_id,'patient_id' => $appointment_detail->patient_id,'appointment_id' => $appointment_detail->id , 'type' => __('messages.notification_status_codes.Appointment_Transfered_By_Doctor')]);
+                    Notification::insert([ 'doctor_id'=> $UserDetail->id ,'reffered_to_doctor_id' => $transfer_to_doctor_id,'patient_id' => $appointment_detail->patient_id,'appointment_id' => $appointment_detail->id , 'type' => __('messages.notification_status_codes.transferAppointmentByDoctor')]);
                     	$Response = [
                         'message'  => trans('messages.success.success'),
                     ];

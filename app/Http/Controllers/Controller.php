@@ -764,6 +764,10 @@ class Controller extends BaseController
 			$notifyType = 3;
 		}
 
+		if(!empty($NotificationDataArray['Notification_type']) && $NotificationDataArray['Notification_type'] == 4 ){
+			$notifyType = 4;
+		}
+
 		if(!empty($NotificationDataArray['appointment_id'])) {
 			$appointment_id = $NotificationDataArray['appointment_id'];
 		}else{

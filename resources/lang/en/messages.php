@@ -11,6 +11,7 @@ return [
 		'logout' => 'Logout Successfull.',
 		'review_published' => 'review published successfully.',
 		'review_un_published' => 'review un published successfully.',
+		'review_deleted' => 'review deleted.',
 		'appointment_accepted' => 'Appointment accepted Successfully.',
 		'appointment_rejected' => 'Appointment rejected Successfully.',
 		'password_updated' => 'Password updated Successfully.',

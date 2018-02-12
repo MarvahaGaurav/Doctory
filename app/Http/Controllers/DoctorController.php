@@ -62,11 +62,11 @@ class DoctorController extends Controller
              'doctor_availabilities' => $doctor_availabilities
          ];
      	}
-   	$response = [
-   		'message' => __('messages.success.success'),
-   		'response' => $result
-   	];
-   	return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+     	$response = [
+     		'message' => __('messages.success.success'),
+     		'response' => $result
+     	];
+     	return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
    }
     // at search by category this api will hit only every time
    public function getDoctorBySpecialityId_FOR_PATIENT_SEARCH(Request $request){
@@ -109,7 +109,7 @@ class DoctorController extends Controller
                          $data = $this->getUserDetail($value);
                          $bookmarked = PatientBookmark::where(['patient_id' => $PATIENT_DETAIL->id , 'doctor_id' => $data['id']])->count();
                          // dd($data['id']);
-                         $Review = Review::where(['doctor_id' => $data['id'] , 'status_by_doctor' => 1])->get();
+                         $Review = Review::where(['doctor_id' => $data['id'] , 'status_by_doctor' => 1 , 'status' => 1])->get();
                          $result[] = [
                              'UserIdentificationType' => $data['UserIdentificationType'],
                              'id' => $data['id'],
@@ -162,7 +162,6 @@ class DoctorController extends Controller
    public function save_doctor_timing_for_availability(Request $request){
       Log::info('----------------------DoctorController--------------------------save_doctor_timing_for_availability'.print_r($request->all(),True));
       $accessToken = $request->header('accessToken');
-      // dd($request->all());
       $day = $request->day;
       $timeslotsArr = $request->timeslots;
       $locale = $request->header('locale');
@@ -177,7 +176,6 @@ class DoctorController extends Controller
       if( !empty( $accessToken ) ) {
          $validations = [
              'day' => 'required',
-             // 'timeslots' => 'required_with:day',
          ];
          $validator = Validator::make($request->all(),$validations);
          if( $validator->fails() ) {
@@ -203,6 +201,7 @@ class DoctorController extends Controller
                      'message' => __('messages.success.success'),
                      'response' => $result
                  ];
+                  Log::info('----------------------DoctorController--------------------------save_doctor_timing_for_availability'.print_r($response,True));
                  return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
              }else {
                  $response=[
@@ -307,7 +306,7 @@ class DoctorController extends Controller
          $DOCTOR_DETAIL = User::Where(['remember_token' => $accessToken, 'user_type' => 1])->first();
          if(count($DOCTOR_DETAIL)){
              $reviews = Review::where(['doctor_id' => $DOCTOR_DETAIL->id])
-             ->whereIn('status_by_doctor',[0,1])->get();
+             ->whereIn('status_by_doctor',[0,1])->where('status',1)->get();
              $response = [
                  'message' => __('messages.success.success'),
                  'response' => $reviews
@@ -361,7 +360,7 @@ class DoctorController extends Controller
                      $REVIEW_DETAIL->save();
                      if($acceptOrReject == 1){
                          $response = [
-                             'message' => __('messages.success.review_published'),
+                             'message' => __('messages.success.review_deleted'),
                          ];
                          return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));     
                      }
@@ -371,6 +370,61 @@ class DoctorController extends Controller
                          ];
                          return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));     
                      }
+                 }else{
+                     $response['message'] = trans('messages.invalid.request');
+                     return response()->json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                 }
+             }
+         }else{
+             $response['message'] = trans('messages.invalid.detail');
+             return response()->json($response,trans('messages.statusCode.INVALID_ACCESS_TOKEN'));
+         }
+      }else {
+         $Response = [
+             'message'  => trans('messages.required.accessToken'),
+         ];
+         return Response::json( $Response , trans('messages.statusCode.SHOW_ERROR_MESSAGE') );
+      }
+   }
+
+   public function deleteReview(Request $request){
+      Log::info('------------------DoctorController------------deleteReview'.print_r($request->all(),True)); 
+      $accessToken =  $request->header('accessToken');
+      $review_id = $request->review_id;
+      $acceptOrReject = $request->acceptOrReject; // 1 for accept / 2 for reject
+      $locale = $request->header('locale');
+      $timezone = $request->header('timezone');
+      if($timezone){
+         $this->setTimeZone($timezone);
+      }
+      if(empty($locale)){
+         $locale = 'en';
+      }
+      \App::setLocale($locale);
+      if( !empty( $accessToken ) ) {
+         $DOCTOR_DETAIL = User::Where(['remember_token' => $accessToken, 'user_type' => 1])->first();
+         if(count($DOCTOR_DETAIL)){
+             $validations = [
+                 'review_id'=>'required',
+             ];
+             $validator = Validator::make($request->all(),$validations);
+             if( $validator->fails() ){
+                $response = [
+                 'message'=>$validator->errors($validator)->first()
+                ];
+                return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+             }else{
+                 // dd($DOCTOR_DETAIL->id);
+                 $REVIEW_DETAIL = Review::where(['doctor_id' => $DOCTOR_DETAIL->id , 'id' => $review_id])->first();
+                 // dd($REVIEW_DETAIL);
+                 if($REVIEW_DETAIL){
+                    $REVIEW_DETAIL->status = 0;
+                    $REVIEW_DETAIL->save();
+                    // $REVIEW_DETAIL->delete();
+                    $response = [
+                      'message' => __('messages.success.review_deleted'),
+                    ];
+                    return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));     
                  }else{
                      $response['message'] = trans('messages.invalid.request');
                      return response()->json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
@@ -1921,7 +1975,7 @@ class DoctorController extends Controller
                  // $Notification = Notification::where(['doctor_id'=>$UserDetail->id])->whereNotIn('type',[3,4,5,6])->orderBy('created_at','DESC')->get();
                  $Notification = Notification::where(['doctor_id'=>$UserDetail->id])->orderBy('created_at','DESC')->get();
                  $result = [];
-                 // dd($Notification);
+                 // return $Notification;
                  foreach ($Notification as $key => $value) {
                     if($value->type != 15 ){ // 15 if admin approve doctor
                       $drName = User::where(['id'=>$value->doctor_id])->select('name')->first()->name;

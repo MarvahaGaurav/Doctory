@@ -46,6 +46,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('save_doctor_timing_for_availability','DoctorController@save_doctor_timing_for_availability');
 	Route::post('getReviewList','DoctorController@getReviewList');
 	Route::post('acceptReview','DoctorController@acceptReview');
+	Route::post('deleteReview','DoctorController@deleteReview');
 	Route::post('getDoctorBySpecialityId','DoctorController@getDoctorBySpecialityId_FOR_PATIENT_SEARCH');
 
 	Route::post('get_all_appointment_of_doctor','DoctorController@get_all_appointment_of_doctor');

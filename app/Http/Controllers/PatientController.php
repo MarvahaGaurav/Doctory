@@ -134,7 +134,7 @@ class PatientController extends Controller
 				    	$result[] = $this->getUserDetail($User->getUserDetail($value->doctor_id));
     				}
     				foreach ($result as $key => $value) {
-    					$Review = Review::where(['doctor_id' => $value['id'] , 'status_by_doctor' => 1])->get();
+    					$Review = Review::where(['doctor_id' => $value['id'] , 'status_by_doctor' => 1 , 'status' => 1])->get();
     					$final_result[] = [
     						'UserIdentificationType' => $value['UserIdentificationType'],
 				   		'id' => $value['id'],
@@ -381,6 +381,9 @@ class PatientController extends Controller
 	   $page_number = $request->page_number;
  		$locale = $request->header('locale');
  		$timezone = $request->header('timezone');
+
+      Log::info('Time zone '.print_r($timezone,True));
+
    	if($timezone){
 			$this->setTimeZone($timezone);
     	}

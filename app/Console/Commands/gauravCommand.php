@@ -52,14 +52,11 @@ class gauravCommand extends Command
 
         foreach ($apntmnt_list as $key => $value) {
 
-            Log::warning('Counter'.print_r($key,True));
-            Log::info('Appointment Detail-----------'.print_r($value,True));
+            // Log::warning('Counter'.print_r($key,True));
+            // Log::info('Appointment Detail-----------'.print_r($value,True));
 
             $doctor_device_token = User::where('id',$value->doctor_id)->first()->device_token;
             $patient_device_token = User::where('id',$value->patient_id)->first()->device_token;
-
-           /* Log::info('===============Patient Token ================== ' . print_r($doctor_device_token,True));
-            Log::info('===============Doctor Token ================== ' . print_r($patient_device_token,True)."<br>");*/
 
             $Time_slot_detail = TimeSlot::find($value->time_slot_id);
             $Appointment_TimeSlot_StartTime = $Time_slot_detail->start_time;
@@ -67,13 +64,13 @@ class gauravCommand extends Command
 
             $obj = new \App\Http\Controllers\Controller;
 
-            // Notification::insert(['doctor_id'=>$UserDetail->id,'patient_id'=>$patient_id,'type' =>__('messages.notification_status_codes.Rescheduled_Appointment_Accepted_By_Doctor'),'appointment_id' => $appointment_id]);
+            // Log::warning('------------------------------------------------------------------------');
 
-            // Log::info('start_time-----------'.print_r(Carbon::parse($Appointment_TimeSlot_StartTime )->format('Y-m-d h:i'),True));
-            // Log::info('Now Time-----------'.print_r(Carbon::now()->addMinutes(10)->format('Y-m-d h:i'),True));
-            
+            // Log::info('Appointment Time Start'.print_r(Carbon::parse($Appointment_TimeSlot_StartTime)->format('Y-m-d h:i'),True));
 
-            if( Carbon::parse($Appointment_TimeSlot_StartTime)->format('Y-m-d h:i') ==  Carbon::now()->addMinutes(15) ->format('Y-m-d h:i') ){
+            // Log::info('Appointment Time Now'.print_r(Carbon::now('Asia/Riyadh')->addMinutes(15)->format('Y-m-d h:i'),True));
+
+            if( Carbon::parse($Appointment_TimeSlot_StartTime)->format('Y-m-d h:i') ==  Carbon::now('Asia/Riyadh')->addMinutes(15) ->format('Y-m-d h:i') ){
 
                 $NotificationDataArray_DR = [
                     'getter_id' => $value->doctor_id,
@@ -102,15 +99,14 @@ class gauravCommand extends Command
                 }
             }
 
-            Log::Warning('---------------GAURAV MARVAHA------------------------------');
+            /*Log::Warning('---------------GAURAV MARVAHA------------------------------');
             Log::info('start_time-----------'.print_r(Carbon::parse($Appointment_TimeSlot_StartTime )->format('Y-m-d h:i'),True));
             Log::info('Now Time-----------'.print_r(Carbon::now()->format('Y-m-d h:i'),True));
 
 
-            Log::info(Carbon::parse($Appointment_TimeSlot_StartTime)->format('Y-m-d h:i') ==  Carbon::now()->format('Y-m-d h:i'));
+            Log::info(Carbon::parse($Appointment_TimeSlot_StartTime)->format('Y-m-d h:i') ==  Carbon::now()->format('Y-m-d h:i'));*/
 
-            if( Carbon::parse($Appointment_TimeSlot_StartTime)->format('Y-m-d h:i') ==  Carbon::now()->format('Y-m-d h:i') ){
-                Log::info('Same Hai');
+            if( Carbon::parse($Appointment_TimeSlot_StartTime)->format('Y-m-d h:i') ==  Carbon::now('Asia/Riyadh')->format('Y-m-d h:i') ){
                 $NotificationDataArray_DR = [
                     'getter_id' => $value->doctor_id,
                     'message' => __('messages.notification_messages.Appointment_Started')

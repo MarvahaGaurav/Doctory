@@ -11,6 +11,7 @@ return [
 		'logout' => 'تم الخروج بنجاح',
 		'review_published' => 'تم نشر المراجعة بنجاح',
 		'review_un_published' => 'مراجعة غير المنشورة بنجاح',
+		'review_deleted' => 'review deleted.',
 		'appointment_accepted' => 'تم قبول الموعد بنجاح',
 		'appointment_rejected' => 'تم رفض التعيين بنجاح',
 		'password_updated' => 'تم تحديث كلمة السر بنجاح',

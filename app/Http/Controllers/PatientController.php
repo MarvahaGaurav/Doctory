@@ -986,13 +986,13 @@ class PatientController extends Controller
 			               }
 							}
 							$doctor_availabilities_result = [
-							   '1' => $this->filter($day1),
-							   '2' => $this->filter($day2),
-							   '3' => $this->filter($day3),
-							   '4' => $this->filter($day4),
-							   '5' => $this->filter($day5),
-							   '6' => $this->filter($day6),
-							   '7' => $this->filter($day7),
+							   '1' => $this->filter_data($day1),
+							   '2' => $this->filter_data($day2),
+							   '3' => $this->filter_data($day3),
+							   '4' => $this->filter_data($day4),
+							   '5' => $this->filter_data($day5),
+							   '6' => $this->filter_data($day6),
+							   '7' => $this->filter_data($day7),
 				        	];
 				        	$qualification = DoctorQualification::where(['user_id'=>$res->DoctorDetail->id])->get();
 				        	$qualificationArr = [];

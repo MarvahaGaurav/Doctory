@@ -562,7 +562,7 @@ class DoctorController extends Controller
                         $this->send_notification($NotificationDataArray);
                     }
 
-                    Notification::insert([ 'doctor_id'=> $UserDetail->id ,'reffered_to_doctor_id' => $transfer_to_doctor_id,'patient_id' => $appointment_detail->patient_id,'appointment_id' => $appointment_detail->id , 'type' => __('messages.notification_status_codes.transferAppointmentByDoctor')]);
+                    Notification::insert([ 'doctor_id'=> $UserDetail->id ,'reffered_to_doctor_id' => $transfer_to_doctor_id,'patient_id' => $appointment_detail->patient_id,'appointment_id' => $appointment_detail->id , 'type' => __('messages.notification_status_codes.Appointment_Transfered_By_Doctor')]);
                     	$Response = [
                         'message'  => trans('messages.success.success'),
                     ];

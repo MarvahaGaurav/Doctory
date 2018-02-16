@@ -644,7 +644,7 @@ class Controller extends BaseController
 			}
 
 			// dd($day5);
-			$doctor_availabilities_result = [
+			/*$doctor_availabilities_result = [
 			   '1' => $this->filter($day1),
 			   '2' => $this->filter($day2),
 			   '3' => $this->filter($day3),
@@ -652,9 +652,75 @@ class Controller extends BaseController
 			   '5' => $this->filter($day5),
 			   '6' => $this->filter($day6),
 			   '7' => $this->filter($day7),
+        	];*/
+
+        	if(!empty($day1)){
+	        	foreach ($day1 as $key => $value) {
+	        		$sort1[] = $value['time_slot_id'];
+	        		
+	        	}
+	        	array_multisort($sort1, SORT_ASC, $day1);
+	      }
+
+	      if(!empty($day2)){
+	        	foreach ($day2 as $key => $value) {
+	        		$sort2[] = $value['time_slot_id'];
+	        		
+	        	}
+        		array_multisort($sort2, SORT_ASC, $day2);
+        	}
+
+        	if(!empty($day3)){
+	        	foreach ($day3 as $key => $value) {
+	        		$sort3[] = $value['time_slot_id'];
+	        		
+	        	}
+	        	array_multisort($sort3, SORT_ASC, $day3);
+	      }
+
+	      if(!empty($day4)){
+	        	foreach ($day4 as $key => $value) {
+	        		$sort4[] = $value['time_slot_id'];
+	        		
+	        	}
+        		array_multisort($sort4, SORT_ASC, $day4);
+        	}
+
+        	if(!empty($day5)){
+	        	foreach ($day5 as $key => $value) {
+	        		$sort5[] = $value['time_slot_id'];
+	        		
+	        	}
+	        	array_multisort($sort5, SORT_ASC, $day5);
+	      }
+
+	      if(!empty($day6)){
+	        	foreach ($day6 as $key => $value) {
+	        		$sort6[] = $value['time_slot_id'];
+	        		
+	        	}
+	        	array_multisort($sort6, SORT_ASC, $day6);
+	      }
+
+	      if(!empty($day7)){
+	        	foreach ($day7 as $key => $value) {
+	        		$sort7[] = $value['time_slot_id'];
+	        		
+	        	}
+	        	array_multisort($sort7, SORT_ASC, $day7);
+			}
+
+        	$doctor_availabilities_result = [
+			   '1' => $this->filter_date($day1),
+			   '2' => $this->filter_date($day2),
+			   '3' => $this->filter_date($day3),
+			   '4' => $this->filter_date($day4),
+			   '5' => $this->filter_date($day5),
+			   '6' => $this->filter_date($day6),
+			   '7' => $this->filter_date($day7),
         	];
 
-        	// dd($data);
+        	// dd($doctor_availabilities_result);
 	   	$result = [
 	   		'UserIdentificationType' => "Doctor",
 	   		'id' => $data['id'],
@@ -739,7 +805,7 @@ class Controller extends BaseController
 		return $days;
    }
 
-	public function filter($day){
+	public function filter_date($day){
 		$result = [];
 		$result1 = [];
 		foreach ($day as $key => $value) {

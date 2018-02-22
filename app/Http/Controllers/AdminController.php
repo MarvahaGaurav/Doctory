@@ -28,7 +28,6 @@ class AdminController extends Controller
     		$loggedIn = Session::get('Dr_Admin_loggedIn');
     		if($loggedIn){
             $totalDoctor = User::where(['user_type' => 1])->get();
-            dd($totalDoctor);
     			return redirect('Admin/dashboard');
     		}else{
     			return view('Admin/login');
@@ -746,6 +745,20 @@ class AdminController extends Controller
 
             return view('Admin/appointmentView',compact('AdminDetail','final_result'));
          }
+      }else{
+         return redirect('Admin/login');
+      }
+   }
+
+   public function doctor_ranking(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         $id = Session::get('Dr_Admin_Id');
+         $role = Session::get('Dr_Admin_Role');
+         $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
+         $Review_List = Review::get_ranking($request->doctor_id);
+         // return $Review_List;
+         return view('Admin/doctorRank',compact('AdminDetail','Review_List'));
       }else{
          return redirect('Admin/login');
       }

@@ -33,6 +33,7 @@ Route::group(['prefix' => 'Admin'],function(){
 	Route::get('approve_list','AdminController@approved_list');
 	Route::get('pending_list','AdminController@pending_list');
 	Route::get('docProfile','AdminController@docProfile');
+	Route::get('doctor_ranking/{doctor_id}','AdminController@doctor_ranking');
 
 
 

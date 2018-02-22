@@ -11,9 +11,9 @@
                 <!-- ============================================================== -->
                 <div class="row page-titles">
                     <div class="col-md-12 col-12 align-self-center">
-                        <h3 class="text-themecolor">Approved List of Doctors</h3>
+                        <h3 class="text-themecolor">Rank of Doctor</h3>
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{url('Admin/dashboard')}}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
                             <li class="breadcrumb-item active">Doctor list</li>
                         </ol>
                     </div>
@@ -21,35 +21,32 @@
                 <!-- ============================================================== -->
               <div class="row">
                <div class="col-md-12">
-               <span style="color:green">{{Session::get('docotr_approved')}}</span>
                 <div class="card">
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table id="myTable" class="table table-bordered table-striped">
+                                    <table id="myTable" class="table table-bordered no-wrap table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
-                                                <th>Email</th>
-                                                <th>Mobile</th>
-                                                <th>View profile</th>
-                                                <th>Appointment</th>
-                                                <th>Status</th>
+                                                <th>Patient name</th>
+                                                <th>Review</th>
                                                 <th>Rank</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                          @foreach($Approved_doctor_list as $ADL)
-                                            <tr>
-                                                <td>{{$ADL->name}}</td>
-                                                <td>{{$ADL->email}}</td>
-                                                <td>{{$ADL->country_code}}-{{$ADL->mobile}}</td>
-                                                <td><a href="{{url('Admin/doctor_profile')}}/{{$ADL->id}}" class="btn btn-danger btn-sm"> Profile</a></td>
-                                                <td><a href="{{url('Admin/appointment_list')}}/{{$ADL->id}}" class="btn btn-danger btn-sm"> See list</a></td>
-                                                <td><label class="label label-rounded label-success">Approved</label></td>
-                                                <td><a href="{{url('Admin/doctor_ranking/')}}/{{$ADL->id}}" class="btn btn-sm btn-info" name="Rank" value="Rank">Rank</a></td>
-                                            </tr>
-                                          @endforeach
-                                            </tbody>
+                                            @foreach($Review_List as $List)
+                                                <tr>
+                                                    <td>{{$List->patient_detail->name}}</td>
+                                                    <td>{{$List->review_text}}</td>
+                                                    <td>
+                                                        <div class="rating"> 
+                                                           @for($i = 0;$i < $List->rating; $i++ )
+                                                            <i class="fa fa-star"></i>
+                                                           @endfor
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -75,9 +72,8 @@
             <!-- ============================================================== -->
             @include('Admin/footer')
              
-            <script>
+<script>
     $(document).ready(function() {
         $('#myTable').DataTable();
     });
-    
-    </script>
+</script>

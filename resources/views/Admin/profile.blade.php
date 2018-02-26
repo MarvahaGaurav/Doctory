@@ -105,8 +105,8 @@
                                 <li>
                                     <span class="text-muted display-5"><i class="mdi mdi-linkedin"></i></span>
                                     <div class="dl m-l-10">
-                                        <h3 class="card-title">Linkedin</h3>
-                                        <h6 class="card-subtitle">{{$AdminDetail->linkedin}}</h6>
+                                        <h3 class="card-title">{{$AdminDetail->linkedin}}</h3>
+                                        <h6 class="card-subtitle">Linkedin</h6>
                                     </div>
                                     <div class="progress">
                                         <div class="progress-bar bg-success" role="progressbar" style="width: 15%; height:6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>

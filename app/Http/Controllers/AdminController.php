@@ -28,6 +28,7 @@ class AdminController extends Controller
     		$loggedIn = Session::get('Dr_Admin_loggedIn');
     		if($loggedIn){
             $totalDoctor = User::where(['user_type' => 1])->get();
+            // dd($totalDoctor);
     			return redirect('Admin/dashboard');
     		}else{
     			return view('Admin/login');
@@ -663,7 +664,7 @@ class AdminController extends Controller
             $User = New User;
             $Doctor_detail = $this->getUserDetail($User->getUserDetail($request->doctor_id));
             if($Doctor_detail){
-               // dd($Doctor_detail);
+               // return $Doctor_detail;
                return view('Admin/docProfile',compact('AdminDetail','Doctor_detail'));
             }else{
                
@@ -705,12 +706,10 @@ class AdminController extends Controller
             $final_result = [];
             $date = date('Y-m-d');
             if($request->doctor_id){
-               // dd('dr');
                $result = Appointment::get_all_appointment_of_doctor($date,$request->doctor_id);
             }
 
             if($request->patient_id){
-               // dd('patient');
                $result = Appointment::get_all_appointment_of_patient_id($date,$request->patient_id);
             }
             // dd($result);
@@ -720,11 +719,23 @@ class AdminController extends Controller
                $TimeSlotDetail = TimeSlot::find($value->time_slot_id);
                $start_time = Carbon::parse($TimeSlotDetail->start_time);
                $end_time = Carbon::parse($TimeSlotDetail->end_time);
-               if($value->appointment_date == Carbon::now()->format('Y-m-d')  ){
+
+               $value->DoctorDetailForWeb;
+               if($value->status_of_appointment != 'Accepted' && $value->appointment_date == Carbon::now()->format('Y-m-d')) {
+                  $Appointment = Appointment::find($value->id);
+                  $Appointment->status_of_appointment = 'Expired';
+                  $Appointment->save();
+                  $final_result[] = $value;
+               }else{
+                  $final_result[] = $value;
+               }
+            }
+
+               /*if($value->appointment_date == Carbon::now()->format('Y-m-d')  ){
                   $value->DoctorDetailForWeb;
-                   if(Carbon::parse($start_time) > Carbon::now()){
-                       $final_result[] = $value;
-                   }else{
+                  if(Carbon::parse($start_time) > Carbon::now()){
+                    $final_result[] = $value;
+                  }else{
                      if($value->status_of_appointment != 'Accepted' ){
                         $Appointment = Appointment::find($value->id);
                         $Appointment->status_of_appointment = 'Expired';
@@ -734,12 +745,12 @@ class AdminController extends Controller
                            $final_result[] = $value;
                         }
                      }
-                   }
+                  }
                }
                if($value->appointment_date > Carbon::now()->format('Y-m-d')){
                    $final_result[] = $value;
-               }
-            }
+               }*/
+            // }
             // return $final_result;
             // dd($final_result);
 
@@ -759,6 +770,20 @@ class AdminController extends Controller
          $Review_List = Review::get_ranking($request->doctor_id);
          // return $Review_List;
          return view('Admin/doctorRank',compact('AdminDetail','Review_List'));
+      }else{
+         return redirect('Admin/login');
+      }
+   }
+
+
+   public function chat(Request $request){
+      $loggedIn = Session::get('Dr_Admin_loggedIn');
+      if($loggedIn){
+         $id = Session::get('Dr_Admin_Id');
+         $role = Session::get('Dr_Admin_Role');
+         $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
+         // return $Review_List;
+         return view('Admin/chatView',compact('AdminDetail'));
       }else{
          return redirect('Admin/login');
       }

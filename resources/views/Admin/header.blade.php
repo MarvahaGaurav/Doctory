@@ -181,7 +181,7 @@
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
                         <li class="nav-small-cap">Navigation</li>
-                        <li> <a class="waves-effect waves-dark" href="{{url('Admin/dashboard')}}"><i class="mdi mdi-gauge"></i><span class="hide-menu">Deshboard</span></a>
+                        <li> <a class="waves-effect waves-dark" href="{{url('Admin/dashboard')}}"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span></a>
                         </li>
                         <li> <a class="waves-effect waves-dark" href="{{url('Admin/approve_list')}}"><i class="mdi mdi-laptop-windows"></i><span class="hide-menu">Approved List</span></a>
                         </li>

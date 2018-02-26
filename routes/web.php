@@ -77,4 +77,6 @@ Route::group(['prefix' => 'Admin'],function(){
 	Route::get('appointment_list/{doctor_id}','AdminController@appointment_list');
 	Route::get('appointment_list/patient/{patient_id}','AdminController@appointment_list');
 
+	Route::get('chat','AdminController@chat');
+	
 });

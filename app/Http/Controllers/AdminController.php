@@ -706,11 +706,11 @@ class AdminController extends Controller
             $final_result = [];
             $date = date('Y-m-d');
             if($request->doctor_id){
-               $result = Appointment::get_all_appointment_of_doctor($date,$request->doctor_id);
+               $result = Appointment::get_all_appointment_of_doctor_Admin($date,$request->doctor_id);
             }
 
             if($request->patient_id){
-               $result = Appointment::get_all_appointment_of_patient_id($date,$request->patient_id);
+               $result = Appointment::get_all_appointment_of_patient_id_Admin($date,$request->patient_id);
             }
             // dd($result);
             // return $result->TimeSlotDetail;

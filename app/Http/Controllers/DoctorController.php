@@ -658,6 +658,7 @@ class DoctorController extends Controller
                                  'doctor_id' => $value->doctor_id,
                                  'time_slot_id' => $value->time_slot_id,
                                  'day_id' => $value->day_id,
+                                 'is_extended' => $value['is_extended'],
                                  'appointment_date' => $value->appointment_date,
                                  'status_of_appointment' => 'Expired',
                                  'reffered_to_doctor_id' => $value->reffered_to_doctor_id,
@@ -690,6 +691,7 @@ class DoctorController extends Controller
                                  'doctor_id' => $value->doctor_id,
                                  'time_slot_id' => $value->time_slot_id,
                                  'day_id' => $value->day_id,
+                                 'is_extended' => $value['is_extended'],
                                  'appointment_date' => $value->appointment_date,
                                  'status_of_appointment' => $value->status_of_appointment,
                                  'reffered_to_doctor_id' => $value->reffered_to_doctor_id,
@@ -731,6 +733,7 @@ class DoctorController extends Controller
                               'doctor_id' => $value->doctor_id,
                               'time_slot_id' => $value->time_slot_id,
                               'day_id' => $value->day_id,
+                              'is_extended' => $value['is_extended'],
                               'appointment_date' => $value->appointment_date,
                               'status_of_appointment' => $status_of_appointment,
                               'reffered_to_doctor_id' => $value->reffered_to_doctor_id,
@@ -2445,7 +2448,8 @@ class DoctorController extends Controller
                   $AppointmentDetail = Appointment::find($appointment_id);
                   if($AppointmentDetail){
                      if($AppointmentDetail->doctor_id == $UserDetail->id){
-
+                        $AppointmentDetail->is_extended = 1;
+                        $AppointmentDetail->save();
                         $NotificationDataArray = [
                            'getter_id' => $AppointmentDetail->patient_id,
                            'appointment_id' => $AppointmentDetail->id,
@@ -2453,10 +2457,12 @@ class DoctorController extends Controller
                            'Notification_type' => __('messages.notification_type.Extend_Chat'),
                         ];
                         $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
+                        
                         if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
                             $this->send_notification($NotificationDataArray);
                         }
                         Notification::insert(['doctor_id'=>$UserDetail->id,'patient_id'=>$AppointmentDetail->patient_id,'type' =>__('messages.notification_status_codes.Extand_Chat_Notification'),'appointment_id' => $AppointmentDetail->id]);
+                        
                         $Response = [
                            'message'  => trans('messages.notification_messages.Extand_Chat_Notification'),
                         ];

@@ -344,7 +344,8 @@ class CommonController extends Controller
 			$locale = 'en';
 		}
 		if(!empty($locale)){
-			\App::setLocale($locale);
+		\App::setLocale($locale);
+
 			if( !empty( $accessToken ) ) {
 				$user = new \App\User;
 				$userDetail = User::where(['remember_token' => $accessToken])->first();
@@ -1248,6 +1249,60 @@ class CommonController extends Controller
    	];
 		return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
    }
+
+
+   public function get_appointment_detail( Request $request ){
+		$accessToken =  $request->header('accessToken');
+		$appointment_id = $request->appointment_id;
+		$validations = [
+			'appointment_id' 	   => 'required',
+		];
+		$locale = $request->header('locale');
+		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
+		$validator = Validator::make($request->all(),$validations);
+
+		if( !empty( $accessToken ) ) {
+			$UserDetail = User::where(['remember_token' => $accessToken])->first();
+			if(count($UserDetail)){
+				if($validator->fails()){
+		    		$response = [
+						'message' => $validator->errors($validator)->first()
+					];
+					return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+		    	}
+				$Appointment = Appointment::where('id',$appointment_id)->first();
+				if($Appointment){
+					$response = [
+						'is_extended' => $Appointment->is_extended
+					];
+					$Response = [
+	    			  'message'  => trans('messages.success.success'),
+	    			  'response' => $response
+	    			];
+	        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+				}else{
+					$Response = [
+	    			  'message'  => trans('messages.invalid.request'),
+	    			];
+	        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+				}
+			}else{
+    			$Response = [
+    			  'message'  => trans('messages.invalid.detail'),
+    			];
+        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+    		}
+		}else {
+	    	$Response = [
+				'message'  => trans('messages.required.accessToken'),
+			];
+	      return Response::json( $Response , 400 );
+	   }
+	}
+
 
    public function get_all_event_dates(Request $request){
    	Log::info('----------------------CommonController--------------------------get_all_event_dates'.print_r($request->all(),True));

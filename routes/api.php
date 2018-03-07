@@ -39,6 +39,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('sendMail','CommonController@sendMail');
 	Route::post('updateDeviceToken','Controller@updateDeviceToken');
 
+	Route::post('get_appointment_detail','Controller@get_appointment_detail');
+	
 ////////////////////////////////////////////////
 ////// Doctor Api's
 ////////////////////////////////////////////////

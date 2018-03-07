@@ -1043,7 +1043,7 @@ class PatientController extends Controller
 		    					'doctor_id' => $res->doctor_id,
 		    					'time_slot_id' => $res->time_slot_id,
 		    					'day_id' => $res->day_id,
-		    					'is_extended' => $value['is_extended'],
+		    					'is_extended' => $res->is_extended,
 		    					'appointment_date' => $res->appointment_date,
 		    					'status_of_appointment' => $res->status_of_appointment,
 		    					'reffered_to_doctor_id' => $res->reffered_to_doctor_id,

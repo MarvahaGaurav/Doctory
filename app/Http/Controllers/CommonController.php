@@ -1282,7 +1282,7 @@ class CommonController extends Controller
 	    			  'message'  => trans('messages.success.success'),
 	    			  'response' => $response
 	    			];
-	        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+	        		return Response::json( $Response , trans('messages.statusCode.ACTION_COMPLETE') );
 				}else{
 					$Response = [
 	    			  'message'  => trans('messages.invalid.request'),

@@ -76,7 +76,13 @@
                                         <li>
                                             <span class="text-muted display-5"><i class="mdi mdi-emoticon-neutral"></i></span>
                                             <div class="dl m-l-10">
-                                                <h3 class="card-title"><?php print_r($Doctor_detail['mother_language'][0]['mother_language_name'])?></h3>
+                                                <h3 class="card-title">
+                                                    <?php 
+                                                        if($Doctor_detail['mother_language']){
+                                                            print_r($Doctor_detail['mother_language'][0]['mother_language_name']);
+                                                        }
+                                                    ?>
+                                                </h3>
                                                 <h6 class="card-subtitle">Language</h6> 
                                             </div>
                                             <div class="progress">

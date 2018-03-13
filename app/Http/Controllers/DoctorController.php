@@ -626,7 +626,7 @@ class DoctorController extends Controller
                      // return $result;
                      $final_result = [];
                      foreach ($result as $key => $value) {
-                        // dd($value->id);
+                        
                         $today_day_id = Carbon::parse($value->appointment_date)->dayOfWeek+1;
                         $today_date = Carbon::now()->format('Y-m-d');
                         $Aptment_date = Carbon::parse($value->appointment_date)->format('Y-m-d');
@@ -636,7 +636,8 @@ class DoctorController extends Controller
 
                         if($Aptment_date == $today_date && $today_day_id == $value->day_id && Carbon::parse($TimeSlotDetail_startTime) < Carbon::now() && $value->status_of_appointment == 'Pending')
                         {
-                           if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now()){
+                          // return $value->status_of_appointment;
+                          if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now()){
                               $Appointment = Appointment::find($value->id);
                               $Appointment->status_of_appointment = 'Expired';
                               $Appointment->save();
@@ -708,9 +709,15 @@ class DoctorController extends Controller
                               ];
                            }
                         }else{
+                          
                            if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now() && Carbon::parse($value->appointment_date) < Carbon::now()){
-                              Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
-                              $status_of_appointment = 'Completed';
+
+                              if($value->status_of_appointment == 'Transfered'){
+                                $status_of_appointment = $value->status_of_appointment;
+                              }else{
+                                Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
+                                $status_of_appointment = 'Completed';
+                              }
                            }else{
                               $status_of_appointment = $value->status_of_appointment;
                            }
@@ -1435,6 +1442,8 @@ class DoctorController extends Controller
                            }
                         }
                   }
+
+
                   if($value1 == 2 && $value->day_id == 2){
                      $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
                          ->where('appointment_date',$dates[$key])
@@ -1536,7 +1545,10 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                       ->where('rescheduled_date',$dates[$key])
+                       ->first();
+                                 
                         if($checkReschedule){
                            if(!in_array($checkReschedule->rescheduled_time_slot_id, $day4_arr)){
                               array_push($day4_arr,$checkReschedule->rescheduled_time_slot_id);

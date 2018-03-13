@@ -1100,8 +1100,18 @@ class PatientController extends Controller
 		    				}else{
 		    					// dd(Carbon::parse($value['appointment_date']) < Carbon::now());
 		    					if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now() && Carbon::parse($value['appointment_date']) < Carbon::now()){
-		    						Appointment::where(['id' => $value['id']])->update(['status_of_appointment' => 'Completed']);
-                           $status_of_appointment = 'Completed';
+
+
+
+		    						if($value['status_of_appointment'] == 'Transfered'){
+                                $status_of_appointment = $value['status_of_appointment'];
+                           }else{
+                             	Appointment::where(['id' => $value['id']])->update(['status_of_appointment' => 'Completed']);
+                        		$status_of_appointment = 'Completed';
+                           }
+
+
+		    						
                         }else{
                            $status_of_appointment = $value['status_of_appointment'];
                         }

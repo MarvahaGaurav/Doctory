@@ -282,7 +282,7 @@ class PatientController extends Controller
 					                    	];
 					                    	$NotificationGetterDetail = User::find($doctor_id);
                                     if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-                                        $this->send_notification($NotificationDataArray);
+                                        $this->send_notification($NotificationDataArray); // this function calling from main controller
                                     }
 
 							    				Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$patient_id,'type'=>__('messages.notification_status_codes.Scheduled_Appointment'),'appointment_id' => $appontmentId]);
@@ -305,7 +305,7 @@ class PatientController extends Controller
 						                    	];
 						                    	$NotificationGetterDetail = User::find($doctor_id);
 	                                    if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-	                                        $this->send_notification($NotificationDataArray);
+	                                        $this->send_notification($NotificationDataArray); // this function calling from main controller
 	                                    }
 
 								    				Notification::insert(['doctor_id' => $doctor_id,'patient_id'=>$patient_id,'type' => __('messages.notification_status_codes.Scheduled_Appointment'),'appointment_id' => $appontmentId]);
@@ -1103,7 +1103,7 @@ class PatientController extends Controller
 
 
 
-		    						if($value['status_of_appointment'] == 'Transfered'){
+		    						if($value['status_of_appointment'] == 'Transfered' || $value['status_of_appointment'] =='Cancelled'){
                                 $status_of_appointment = $value['status_of_appointment'];
                            }else{
                              	Appointment::where(['id' => $value['id']])->update(['status_of_appointment' => 'Completed']);
@@ -1232,7 +1232,7 @@ class PatientController extends Controller
 			                    	];
 			                    	$NotificationGetterDetail = User::find($doctor_id);
                               if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-                                  $this->send_notification($NotificationDataArray);
+                                  $this->send_notification($NotificationDataArray); // this function calling from main controller
                               }
 
                            	Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Rescheduled_Appointment_Accepted_By_Patient'),'appointment_id' => $appointment_id,'appointment_status'=>'Accepted']);
@@ -1255,7 +1255,7 @@ class PatientController extends Controller
 			                    	];
 			                    	$NotificationGetterDetail = User::find($doctor_id);
                               if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-                                  $this->send_notification($NotificationDataArray);
+                                  $this->send_notification($NotificationDataArray); // this function calling from main controller
                               }
 
                            	Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Rescheduled_Appointment_Rejected_By_Patient'),'appointment_id' => $appointment_id,'appointment_status'=>'Rejected']);
@@ -1364,7 +1364,7 @@ class PatientController extends Controller
 			                    	];
 			                    	$NotificationGetterDetail = User::find($AppointmentDetail->doctor_id);
                               if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-                                  $this->send_notification($NotificationDataArray);
+                                  $this->send_notification($NotificationDataArray); // this function calling from main controller
                               }
 
 	                        	Notification::insert(['doctor_id'=>$AppointmentDetail->doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Appointment_Cancelled_By_Patient'),'appointment_id' => $appointment_id]);
@@ -1391,7 +1391,7 @@ class PatientController extends Controller
 		                    	];
 		                    	$NotificationGetterDetail = User::find($AppointmentDetail->doctor_id);
                            if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-                               $this->send_notification($NotificationDataArray);
+                               $this->send_notification($NotificationDataArray); // this function calling from main controller
                            }
 
                         	Notification::insert(['doctor_id'=>$AppointmentDetail->doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Appointment_Cancelled_By_Patient'),'appointment_id' => $appointment_id]);
@@ -1529,6 +1529,7 @@ class PatientController extends Controller
 	    				if(!empty($value->reffered_to_doctor_id)){
 	    					$trans_dr_detail = $this->getUserDetail($USER->getUserDetail($value->reffered_to_doctor_id));
 	    				}
+
                   $result[] = [
                       'notification_id' => $value->id,
                       'doctor_id' => $value->doctor_id,
@@ -1538,6 +1539,7 @@ class PatientController extends Controller
                       'appointment_id' => $value->appointment_id,
                       'time_slot_id' => $Appointment->time_slot_id,
                       'day_id' => $Appointment->day_id,
+                      'is_cancel' => $value->is_cancel,
                       'appointment_date' => $Appointment->appointment_date,
                       'rescheduled_time_slot_id' => $Appointment->rescheduled_time_slot_id,
                       'rescheduled_day_id' => $Appointment->rescheduled_day_id,
@@ -1647,7 +1649,7 @@ class PatientController extends Controller
 						                    	];
 						                    	$NotificationGetterDetail = User::find($doctor_id);
 			                              if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-			                                  $this->send_notification($NotificationDataArray);
+			                                  $this->send_notification($NotificationDataArray); // this function calling from main controller
 			                              }
 
 													Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$PatientDetail->id,'type' => __('messages.notification_status_codes.Appointment_Rescheduled_By_Patient'),'appointment_id' => $appointment_id]);
@@ -1690,7 +1692,7 @@ class PatientController extends Controller
 						                    	];
 						                    	$NotificationGetterDetail = User::find($doctor_id);
 			                              if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-			                                  $this->send_notification($NotificationDataArray);
+			                                  $this->send_notification($NotificationDataArray); // this function calling from main controller
 			                              }
 
                                         Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$PatientDetail->id,'type' => __('messages.notification_status_codes.Appointment_Rescheduled_By_Patient'),'appointment_id' => $appointment_id]);
@@ -1786,7 +1788,7 @@ class PatientController extends Controller
                  	];
                  	$NotificationGetterDetail = User::find($doctor_id);
                   if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-                      $this->send_notification($NotificationDataArray);
+                      $this->send_notification($NotificationDataArray); // this function calling from main controller
                   }
 
                   Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$UserDetail->id,'type' => __('messages.notification_status_codes.Patient_Post_Review_To_Doctor'),'appointment_id' => $appointment_id]);
@@ -1819,5 +1821,147 @@ class PatientController extends Controller
 			];
 	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
 		}		
+   }
+
+   public function cancel_transfer_appointment_request_by_patient(Request $request){
+   	Log::info('----------------------PatientController--------------------------cancel_transfer_appointment_request_by_patient'.print_r($request->all(),True));
+
+ 		$accessToken = $request->header('accessToken');
+ 		$appointment_id = $request->appointment_id;
+ 		$notification_id = $request->notification_id;
+
+ 		$timezone = $request->header('timezone');
+   	if($timezone){
+			$this->setTimeZone($timezone);
+    	}
+ 		if(empty($locale)){
+			$locale = 'en';
+		}
+		\App::setLocale($locale);
+
+ 		if( !empty( $accessToken ) ) {
+ 			$UserDetail = User::where(['remember_token'=>$accessToken])->first();
+ 			if(count($UserDetail)){
+ 				if($UserDetail->user_type == 2){ // for Patient Only
+ 					$validations = [
+						'appointment_id' => 'required|numeric',
+			    	];
+			    	$validator = Validator::make($request->all(),$validations);
+			    	if($validator->fails()){
+			    		$response = [
+							'message' => $validator->errors($validator)->first()
+						];
+						return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+		    		}else{
+		    			// dd('else');
+		    			$AppointmentDetail = Appointment::find($appointment_id);
+		    			if($AppointmentDetail){
+		    				// dd($AppointmentDetail->appointment_date);
+		    				$appointmentDateInDb = Carbon::parse($AppointmentDetail->appointment_date)->format('Y-m-d');
+
+		    				// dd($appointmentDateInDb  >= Carbon::now()->format('Y-m-d'));
+
+		    				if($appointmentDateInDb >= Carbon::now()->format('Y-m-d')){
+		    					// dd($AppointmentDetail);
+			    				$Time_slot_detail = TimeSlot::find($AppointmentDetail->time_slot_id);
+								$Appointment_TimeSlot_StartTime = $Time_slot_detail->start_time;
+								$Appointment_TimeSlot_EndTime = $Time_slot_detail->end_time;
+								// dd(Carbon::parse($appointmentDateInDb)->isToday());
+								// dd($Appointment_TimeSlot_StartTime);
+								if(Carbon::parse($appointmentDateInDb)->isToday()){
+									if(Carbon::parse($Appointment_TimeSlot_StartTime ) > Carbon::now()){
+	                        	$AppointmentDetail->is_transfered_cancel = 1;
+	                        	$AppointmentDetail->save();
+
+	                        	$NotificationDataArray = [
+			                        'getter_id' => $AppointmentDetail->patient_id,
+			                        'is_cancel' => 1,
+			                        'message' => __('messages.notification_messages.cancel_the_transfer_request')
+			                    	];
+			                    	$NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
+                              if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                                  $this->send_notification($NotificationDataArray); // this function calling from main controller
+                              }
+
+                              $updateNoti = Notification::where(['id' => $notification_id])->first();
+                              $updateNoti->is_cancel = 1;
+                              $updateNoti->save();
+	                        	Notification::insert([
+	                        			'doctor_id'=>$AppointmentDetail->doctor_id,
+	                        			'patient_id'=>$AppointmentDetail->patient_id,
+	                        			'type'=>__('messages.notification_status_codes.cancel_the_transfer_request'),'appointment_id' => $appointment_id,
+	                        			'is_cancel' => 1
+	                        	]);
+
+	                            $Response = [
+	                                'message'  => trans('messages.appointment_status.cancel_the_transfer_request'),
+	                            ];
+	                            return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+									}else{
+									   $AppointmentDetail->status_of_appointment = "Expired";
+									   $AppointmentDetail->save();
+									   $response = [
+									       'message' => __('messages.invalid.appointment_expired')
+									   ];
+									   return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+									}
+								}else{
+									$AppointmentDetail->is_transfered_cancel = 1;
+                        	$AppointmentDetail->save();
+
+                        	$NotificationDataArray = [
+		                        'getter_id' => $AppointmentDetail->patient_id,
+		                        // 'is_cancel' => 1,
+		                        'message' => __('messages.notification_messages.cancel_the_transfer_request')
+		                    	];
+		                    	$NotificationGetterDetail = User::find($AppointmentDetail->doctor_id);
+                           if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                               $this->send_notification($NotificationDataArray); // this function calling from main controller
+                           }
+                           $updateNoti = Notification::where(['id' => $notification_id])->first();
+                           $updateNoti->is_cancel = 1;
+                           $updateNoti->save();
+                        	Notification::insert([
+                        		'doctor_id'=>$AppointmentDetail->doctor_id,
+                        		'patient_id'=>$AppointmentDetail->patient_id,
+                        		'type'=>__('messages.notification_status_codes.cancel_the_transfer_request'),'appointment_id' => $appointment_id,
+                        		'is_cancel' => 1
+                        	]);
+									$Response = [
+									'message'  => trans('messages.appointment_status.cancel_the_transfer_request'),
+									];
+									return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+								}
+			    			}else{
+								$response = [
+								   'message' => __('messages.invalid.appointment_expired')
+								];
+								return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+							}	
+			    		}else{
+			    			$response = [
+								'message' => __('messages.success.NO_DATA_FOUND')
+							];
+							return response()->json($response,trans('messages.statusCode.NO_DATA_FOUND'));
+			    		}
+		    		}
+		    	}else{
+ 					$response=[
+						'message' => trans('messages.invalid.request'),
+		      	];
+		     		return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+ 				}
+		   }else{
+    			$Response = [
+    			  'message'  => trans('messages.invalid.detail'),
+    			];
+        		return Response::json( $Response , trans('messages.statusCode.INVALID_ACCESS_TOKEN') );
+    		}
+		}else {
+	    	$Response = [
+				'message'  => trans('messages.required.accessToken'),
+			];
+	      return Response::json( $Response , __('messages.statusCode.SHOW_ERROR_MESSAGE') );
+	   }
    }
 }

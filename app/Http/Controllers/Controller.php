@@ -832,6 +832,7 @@ class Controller extends BaseController
 		$bodyText = [
 			'message'=>$NotificationDataArray['message'],
 			'appointment_id' => $appointment_id,
+			// 'is_cancel' => $NotificationDataArray['is_cancel']
 		];
 		$this->notification($userId,$bodyText,$notifyType);
 	}

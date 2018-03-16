@@ -20,6 +20,8 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 
+
+
 Route::group(['prefix' => 'Admin'],function(){
 	Route::match(['get','post'],'login', 'AdminController@index');
 	Route::get('doctor_profile/{doctor_id}','AdminController@doctor_profile');

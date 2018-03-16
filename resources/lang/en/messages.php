@@ -106,7 +106,8 @@ return [
 		'Patient_Have_Appointment_After_Fifteen_Minutes' => 'Your appointment is about to start.',
 		'Extand_Chat_Notification' => 'Your appointment time has been extended.',
 		'Appointment_Completed' => 'The Doctor has completed your appointment. You can give your review.',
-		'Appointment_Started' => 'Your appointment has started.'
+		'Appointment_Started' => 'Your appointment has started.',
+		'cancel_the_transfer_request' => 'You have cancel your transfer appointment request. You have already refund into your wallet.',
 	],
 
 	'notification_status_codes' => [
@@ -129,6 +130,7 @@ return [
 		'Patient_Have_Appointment_After_Fifteen_Minutes' => '17',
 		'Extand_Chat_Notification' => '18',
 		'Appointment_Completed' => '19',
+		'cancel_the_transfer_request' => '20',
 
 	],
 

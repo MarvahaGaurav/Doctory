@@ -92,6 +92,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 		Route::post('get_notification_list_for_patient','PatientController@get_notification_list');
 		Route::post('reschedule_appointment_by_patient','PatientController@reschedule_appointment_by_patient');
 		Route::post('cancel_appointment_by_patient','PatientController@cancel_appointment_by_patient');
+
+		Route::post('cancel_transfer_appointment_request_by_patient','PatientController@cancel_transfer_appointment_request_by_patient');
+		
 		Route::post('giveReviewToDoctor','PatientController@giveReviewToDoctor');
 	});	
 

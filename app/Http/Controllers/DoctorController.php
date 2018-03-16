@@ -712,7 +712,7 @@ class DoctorController extends Controller
                           
                            if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now() && Carbon::parse($value->appointment_date) < Carbon::now()){
 
-                              if($value->status_of_appointment == 'Transfered'){
+                              if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' ){
                                 $status_of_appointment = $value->status_of_appointment;
                               }else{
                                 Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);

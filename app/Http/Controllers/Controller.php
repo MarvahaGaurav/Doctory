@@ -805,6 +805,56 @@ class Controller extends BaseController
 		return $result1;
 	}
 
+	public function testNotification(Request $request){
+		$device_token = $request->device_token;
+		$message = $request->message;
+		$Validation = [
+			'device_token' => 'required',
+			'message' => 'required',
+		];
+		$message = [
+			'device_token.required' => 'device_token key is required',
+			'message.required' => 'message key is required',
+		];
+		$Validator = Validator::make($request->all(),$Validation,$message);
+		if($Validator->fails()){
+			return response()->json(['message' => $Validator->errors()->first()],__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+		}else{
+
+			$data = DB::table('users')
+	  			->where('device_token',$device_token)
+	  			->first();
+	  		$device_type = $data->device_type;
+
+	  		$body_text = ['message' => $message ,'appointment_id' => ''];
+	  		$notification_type = 1;
+	  		$tokens = $device_token;
+	  		$id = 1;
+
+	  		$notificationobject = new NotificationController();
+	  		if($device_type == "0"){
+				$status = $notificationobject->androidPushNotification($body_text,$notification_type,$tokens,null);
+
+	      }else if($device_type == "1"){
+				$status = $notificationobject->iosPushNotification($body_text,$notification_type,$tokens,null);
+	      }
+
+	      if($device_type == '0'){
+	      	$type = 'Android';
+	      }else{
+	      	$type = 'IOS';
+	      }
+	       
+	      $response = [
+	      	'message' => 'Notification send',
+	      	'type' => $type,
+	      	'detail' => $data
+	      ];
+	      return response()->json($response,__('messages.statusCode.ACTION_COMPLETE'));
+		}
+	}
+
+
 	public function send_notification($NotificationDataArray){
 		// dd($NotificationDataArray);
 		$notifyType = 1; // 1 for simple , 2 ExtendChat
@@ -832,6 +882,7 @@ class Controller extends BaseController
 		$bodyText = [
 			'message'=>$NotificationDataArray['message'],
 			'appointment_id' => $appointment_id,
+			'notification_type' => $notifyType
 			// 'is_cancel' => $NotificationDataArray['is_cancel']
 		];
 		$this->notification($userId,$bodyText,$notifyType);

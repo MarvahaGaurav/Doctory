@@ -709,79 +709,77 @@ class DoctorController extends Controller
                               ];
                            }
                         }else{
-                          
+                            
+                            if($Aptment_date == $today_date && $today_day_id == $value->day_id){
+                              if( $value->is_extended == 1 ){
+                                if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now()){
+                                  if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment == 'Expired' || $value->status_of_appointment == 'Rejected'){
+                                              $status_of_appointment = $value->status_of_appointment;
+                                         }else{
+                                            Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
+                                          $status_of_appointment = 'Completed';
+                                         }
+                                      }
+                              }else{
+                                if(Carbon::parse($TimeSlotDetail_startTime)->addMinutes(10) == Carbon::now()){
+                                  if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment == 'Expired' || $value->status_of_appointment == 'Rejected'){
+                                              $status_of_appointment = $value->status_of_appointment;
+                                         }else{
+                                            Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
+                                          $status_of_appointment = 'Completed';
+                                         }
+                                }
+                              }
+                            }
 
-                          if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now() && Carbon::parse($value->appointment_date) < Carbon::now()){
-                            if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment =='Expired' || $value->status_of_appointment == 'Rejected'){
+
+
+
+                           if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now() && Carbon::parse($value->appointment_date) < Carbon::now()){
+
+                              if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment =='Expired' || $value->status_of_appointment == 'Rejected'){
+                                $status_of_appointment = $value->status_of_appointment;
+                              }else{
+                                Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
+                                $status_of_appointment = 'Completed';
+                              }
+                           }else{
                               $status_of_appointment = $value->status_of_appointment;
-                            }else{
-                              Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
-                              $status_of_appointment = 'Completed';
-                            }
-                          }else{
-                            $status_of_appointment = $value->status_of_appointment;
-                          }
+                           }
 
-                          if($Aptment_date == $today_date && $today_day_id == $value->day_id){
-                            // dd('today');
-                            if( $value->is_extended == 1 ){
-                              // dd('extend');
-                              if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now()){
-                                if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment == 'Expired' || $value->status_of_appointment == 'Rejected'){
-                                    $status_of_appointment = $value->status_of_appointment;
-                                }else{
-                                  Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
-                                  $status_of_appointment = 'Completed';
-                                }
-                              }
-                            }
+                           if($value->reffered_to_doctor_id){
+                             $Reffered_To_Doctor_Detail = $value->Reffered_To_Doctor_Detail;
+                             $Reffered_By_Doctor_Detail = $value->Reffered_By_Doctor_Detail;
+                           }else{
+                             $Reffered_To_Doctor_Detail = null;
+                             $Reffered_By_Doctor_Detail = null;
+                           }
 
-                            if( $value->is_extended != 1 ){
-                              if(Carbon::parse($TimeSlotDetail_startTime)->addMinutes(10) < Carbon::now()){
-                                if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment == 'Expired' || $value->status_of_appointment == 'Rejected'){
-                                  $status_of_appointment = $value->status_of_appointment;
-                                }else{
-                                  Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
-                                  $status_of_appointment = 'Completed';
-                                }
-                              }
-                            }
-                          } // here we check if appointment date is today date & if appointment extended then let it run or if appointment not extended then complete that appointment after 10 minute from start time
-
-                          
-                          if($value->reffered_to_doctor_id){
-                            $Reffered_To_Doctor_Detail = $value->Reffered_To_Doctor_Detail;
-                            $Reffered_By_Doctor_Detail = $value->Reffered_By_Doctor_Detail;
-                          }else{
-                            $Reffered_To_Doctor_Detail = null;
-                            $Reffered_By_Doctor_Detail = null;
-                          }
-
-                          $final_result[]= [
-                            'id' => $value->id,
-                            'patient_id' => $value->patient_id,
-                            'patient_age' => $value->patient_age,
-                            'patient_gender' => $value->patient_gender,
-                            'question' => $value->question,
-                            'previous_illness_desc' => $value->previous_illness_desc,
-                            'doctor_id' => $value->doctor_id,
-                            'time_slot_id' => $value->time_slot_id,
-                            'day_id' => $value->day_id,
-                            'is_extended' => $value->is_extended,
-                            'appointment_date' => $value->appointment_date,
-                            'status_of_appointment' => $status_of_appointment,
-                            'reffered_to_doctor_id' => $value->reffered_to_doctor_id,
-                            'rescheduled_by_doctor' => $value->rescheduled_by_doctor,
-                            'rescheduled_time_slot_id' => $value->rescheduled_time_slot_id,
-                            'rescheduled_day_id' => $value->rescheduled_day_id,
-                            'rescheduled_date' => $value->rescheduled_date,
-                            'rescheduled_by_patient' => $value->rescheduled_by_patient,
-                            'created_at' => Carbon::parse($value->created_at)->format('Y-m-d H:i:s'),
-                            'updated_at' => Carbon::parse($value->updated_at)->format('Y-m-d H:i:s'),
-                            'patient_detail' => $value->patientDetail,
-                            'reffered__to__doctor__detail' => $Reffered_To_Doctor_Detail,
-                            'reffered__by__doctor__detail' => $Reffered_By_Doctor_Detail
-                          ];
+                           $final_result[]= [
+                              'id' => $value->id,
+                              'patient_id' => $value->patient_id,
+                              'patient_age' => $value->patient_age,
+                              'patient_gender' => $value->patient_gender,
+                              'question' => $value->question,
+                              'previous_illness_desc' => $value->previous_illness_desc,
+                              'doctor_id' => $value->doctor_id,
+                              'time_slot_id' => $value->time_slot_id,
+                              'day_id' => $value->day_id,
+                              'is_extended' => $value->is_extended,
+                              'appointment_date' => $value->appointment_date,
+                              'status_of_appointment' => $status_of_appointment,
+                              'reffered_to_doctor_id' => $value->reffered_to_doctor_id,
+                              'rescheduled_by_doctor' => $value->rescheduled_by_doctor,
+                              'rescheduled_time_slot_id' => $value->rescheduled_time_slot_id,
+                              'rescheduled_day_id' => $value->rescheduled_day_id,
+                              'rescheduled_date' => $value->rescheduled_date,
+                              'rescheduled_by_patient' => $value->rescheduled_by_patient,
+                              'created_at' => Carbon::parse($value->created_at)->format('Y-m-d H:i:s'),
+                              'updated_at' => Carbon::parse($value->updated_at)->format('Y-m-d H:i:s'),
+                              'patient_detail' => $value->patientDetail,
+                              'reffered__to__doctor__detail' => $Reffered_To_Doctor_Detail,
+                              'reffered__by__doctor__detail' => $Reffered_By_Doctor_Detail
+                           ];
                         }
                      }
 
@@ -849,17 +847,15 @@ class DoctorController extends Controller
                   $UserDetail->save();
                   $final_result = [];
                   foreach ($result as $key => $value) {
-
                      $TimeSlotDetail = TimeSlot::find($value->time_slot_id);
                      $start_time = Carbon::parse($TimeSlotDetail->start_time);
                      $end_time = Carbon::parse($TimeSlotDetail->end_time);
-
-                     if($value->appointment_date == Carbon::now()->format('Y-m-d')  ){ 
+                     if($value->appointment_date == Carbon::now()->format('Y-m-d')  ){
                         if(Carbon::parse($start_time) > Carbon::now()){
+
                              $final_result[] = $value;
                         }else{
-                          if($value->status_of_appointment != 'Accepted' ){ 
-                              // if appointment time started but not accepted yet
+                          if($value->status_of_appointment != 'Accepted' ){
                               if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' ){
                                   $Appointment->status_of_appointmentt = $value->status_of_appointment;
                               }else{
@@ -868,32 +864,16 @@ class DoctorController extends Controller
                               }
                               $Appointment->save();
                           }else{
-
-                            /*if( $value->is_extended != 1 ){
-                              if(Carbon::parse($TimeSlotDetail->start_time)->addMinutes(10) < Carbon::now()){
-                                if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment == 'Expired' || $value->status_of_appointment == 'Rejected'){
-                                  $status_of_appointment = $value->status_of_appointment;
-                                }else{
-                                  Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
-                                  $status_of_appointment = 'Completed';
-                                }
-                              }
-                            }*/
-                            
                             if(Carbon::parse($end_time) > Carbon::now()) {
-                              $final_result[] = $value;
+                               $final_result[] = $value;
                             }
                           }
                         }
-
-                     }// if appointment day is today
-
+                     }
                      if($value->appointment_date > Carbon::now()->format('Y-m-d')){
                          $final_result[] = $value;
                      }
                   }
-
-
                   $Response = [
                      'message'  => trans('messages.success.success'),
                      'response' => $final_result

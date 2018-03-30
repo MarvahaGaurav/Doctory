@@ -26,9 +26,9 @@
                             <div class="card-body little-profile text-center">
                                 <div class="pro-img">
                                 @if(empty($Doctor_detail['profile_image']))
-                                    <img src="{{asset('Admin/assets/images/users/4.jpg')}}" alt="user" />
+                                    <img src="{{asset('Admin/assets/images/users/4.jpg')}}" data-image-url="{{asset('Admin/assets/images/users/4.jpg')}}" class="profile_image_class" alt="user" data-toggle="modal" data-target="#delSpeciality"/>
                                 @else
-                                    <img src="{{url('userImages')}}/big{{$Doctor_detail['profile_image']}}" alt="user" />
+                                    <img src="{{url('userImages')}}/big{{$Doctor_detail['profile_image']}}" class="profile_image_class" alt="user" data-image-url="{{url('userImages')}}/big{{$Doctor_detail['profile_image']}}" data-toggle="modal" data-target="#delSpeciality"/>
                                 @endif
 
                                 </div>
@@ -100,9 +100,35 @@
                 <!-- ============================================================== -->
             </div>
             @include('Admin/footer')
-            <script>
+
+
+<script>
     $(document).ready(function() {
         $('#myTable').DataTable();
+
+        $('.profile_image_class').on('click',function(){
+
+            console.log($(this).attr('data-image-url'));
+            $('.image_popup').attr('src',$(this).attr('data-image-url'));
+        });
     });
     
-    </script>
+</script>
+
+
+<div class="modal fade" id="delSpeciality" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img class="img-responsive image_popup" src="assets/images/big/img1.jpg">
+            </div>
+            <div class="modal-footer">
+               <div class="pull-left">
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+               </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

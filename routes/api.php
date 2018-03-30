@@ -143,3 +143,6 @@ Route::get('getEnvData',function(){
 Route::post('notfication','Controller@send_notification');
 
 Route::get('testArtisan','Controller@test');
+
+
+Route::post('image','CommonController@uploadImageTest');

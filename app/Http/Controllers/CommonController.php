@@ -29,6 +29,8 @@ use Twilio\Rest\Client;
 class CommonController extends Controller
 {
 
+	
+
 	public function getSettingsData(Request $request){
 		Log::info('------------------CommonController------------getSettingsData');
 
@@ -1159,9 +1161,13 @@ class CommonController extends Controller
    }
 
    public function uploadImage($photo,$uploadedfile,$destinationPathOfPhoto){
-        /*$photo = $request->file('photo');
+        
+
+        $photo = $request->file('photo');
         $uploadedfile = $_FILES['photo']['tmp_name'];
-        $destinationPathOfPhoto = public_path().'/'.'thumbnail/';*/
+        $destinationPathOfPhoto = public_path().'/'.'thumbnail/';
+        
+
         $fileName = time()."_".$photo->getClientOriginalName();
         $src = "";
         $i = strrpos($fileName,".");
@@ -1176,6 +1182,68 @@ class CommonController extends Controller
             $src = imagecreatefromgif($uploadedfile);
         }else{
             $src = imagecreatefrombmp($uploadedfile);
+        }
+        $newwidth  = 200;
+        list($width,$height)=getimagesize($uploadedfile);
+        $newheight=($height/$width)*$newwidth;
+        $tmp=imagecreatetruecolor($newwidth,$newheight);
+        imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height);
+        $filename = $destinationPathOfPhoto.'small'.'_'.$fileName; 
+        imagejpeg($tmp,$filename,100);
+        imagedestroy($tmp);
+        $filename = explode('/', $filename);
+
+        $newwidth1  = 400;
+        list($width,$height)=getimagesize($uploadedfile);
+        $newheight1=($height/$width)*$newwidth1;
+        $tmp=imagecreatetruecolor($newwidth1,$newheight1);
+        imagecopyresampled($tmp,$src,0,0,0,0,$newwidth1,$newheight1,$width,$height);
+        $filename = $destinationPathOfPhoto.'big'.'_'.$fileName; 
+        imagejpeg($tmp,$filename,100);
+        imagedestroy($tmp);
+        $filename = explode('/', $filename);
+
+        $newwidth2  = 100;
+        list($width,$height)=getimagesize($uploadedfile);
+        $newheight2=($height/$width)*$newwidth2;
+        $tmp=imagecreatetruecolor($newwidth2,$newheight2);
+        imagecopyresampled($tmp,$src,0,0,0,0,$newwidth2,$newheight2,$width,$height);
+        $filename = $destinationPathOfPhoto.'thumbnail'.'_'.$fileName; 
+        imagejpeg($tmp,$filename,100);
+        imagedestroy($tmp);
+        $filename = explode('/', $filename);
+        return $filename[6];
+   }
+
+   public function uploadImageTest(Request $request){
+        
+
+        $photo = $request->file('photo');
+        $uploadedfile = $_FILES['photo']['tmp_name'];
+        $destinationPathOfPhoto = public_path().'/'.'thumbnail/';
+        $degrees = 0;
+
+        // dd($photo);
+        $fileName = time()."_".$photo->getClientOriginalName();
+        $src = "";
+        $i = strrpos($fileName,".");
+        $l = strlen($fileName) - $i;
+        $ext = substr($fileName,$i+1);
+
+        if($ext=="jpg" || $ext=="jpeg" || $ext=="JPG" || $ext=="JPEG"){
+            // $src = imagecreatefromjpeg($uploadedfile);
+
+            $src = imagerotate(imagecreatefromjpeg($uploadedfile), $degrees, 0);
+
+        }else if($ext=="png" || $ext=="PNG"){
+            // $src = imagecreatefrompng($uploadedfile);
+            $src = imagerotate(imagecreatefrompng($uploadedfile), $degrees, 0);
+        }else if($ext=="gif" || $ext=="GIF"){
+            // $src = imagecreatefromgif($uploadedfile);
+            $src = imagerotate(imagecreatefromgif($uploadedfile), $degrees, 0);
+        }else{
+            // $src = imagecreatefrombmp($uploadedfile);
+            $src = imagerotate(imagecreatefrombmp($uploadedfile), $degrees, 0);
         }
         $newwidth  = 200;
         list($width,$height)=getimagesize($uploadedfile);

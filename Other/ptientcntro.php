@@ -1099,10 +1099,30 @@ class PatientController extends Controller
 		    					];
 		    				}else{
 		    					// dd(Carbon::parse($value['appointment_date']) < Carbon::now());
-		    					// dd('else');
-		    					// dd($value['time_slot_id']);
-		    					// if($value['time_slot_id'] == 48){
-		    					
+
+		    					if($Aptment_date == $today_date && $today_day_id == $value['day_id']){
+
+		    						if( $value['is_extended'] == 1 ){
+									  	if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now()){
+											if($value['status_of_appointment'] == 'Transfered' || $value['status_of_appointment'] =='Cancelled' || $value['status_of_appointment'] == 'Expired' || $value['status_of_appointment'] == 'Rejected'){
+												$status_of_appointment = $value['status_of_appointment'];
+											}else{
+												Appointment::where(['id' => $value['id'])->update(['status_of_appointment' => 'Completed']);
+												$status_of_appointment = 'Completed';
+											}
+										}
+                           }else{
+                           	if(Carbon::parse($TimeSlotDetail_startTime)->addMinutes(10) == Carbon::now()){
+											if($value['status_of_appointment'] == 'Transfered' || $value['status_of_appointment'] =='Cancelled' || $value['status_of_appointment'] == 'Expired' || $value['status_of_appointment'] == 'Rejected'){
+												$status_of_appointment = $value['status_of_appointment'];
+											}else{
+												Appointment::where(['id' => $value['id'])->update(['status_of_appointment' => 'Completed']);
+												$status_of_appointment = 'Completed';
+											}
+										}
+                           }
+		    					}
+
 
 		    					if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now() && Carbon::parse($value['appointment_date']) < Carbon::now()){
 		    						if($value['status_of_appointment'] == 'Transfered' || $value['status_of_appointment'] =='Cancelled' || $value['status_of_appointment'] == 'Expired' || $value['status_of_appointment'] == 'Rejected'){
@@ -1114,38 +1134,6 @@ class PatientController extends Controller
                         }else{
                            $status_of_appointment = $value['status_of_appointment'];
                         }
-
-                        if($Aptment_date == $today_date && $today_day_id == $value['day_id']){
-		    						if( $value['is_extended'] == 1 ){
-		    							// dd('extended');
-									  	if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now()){
-											if($value['status_of_appointment'] == 'Transfered' || $value['status_of_appointment'] =='Cancelled' || $value['status_of_appointment'] == 'Expired' || $value['status_of_appointment'] == 'Rejected'){
-												$status_of_appointment = $value['status_of_appointment'];
-											}else{
-												Appointment::where(['id' => $value['id']])
-												->update(['status_of_appointment' => 'Completed']);
-												$status_of_appointment = 'Completed';
-											}
-										}
-                           }
-
-                           if( $value['is_extended'] != 1 ){
-                        		// if($value['time_slot_id'] == 49){
-                           	// dd('else');
-                           	// dd(Carbon::parse($TimeSlotDetail_startTime));
-                           	// dd(Carbon::parse($TimeSlotDetail_startTime)->addMinutes(10) == Carbon::now());
-                           	if(Carbon::parse($TimeSlotDetail_startTime)->addMinutes(10) < Carbon::now()){
-											if($value['status_of_appointment'] == 'Transfered' || $value['status_of_appointment'] =='Cancelled' || $value['status_of_appointment'] == 'Expired' || $value['status_of_appointment'] == 'Rejected'){
-												$status_of_appointment = $value['status_of_appointment'];
-											}else{
-												Appointment::where(['id' => $value['id']])->update(['status_of_appointment' => 'Completed']);
-												$status_of_appointment = 'Completed';
-											}
-										}
-                           }
-		    					}// here we check if appointment date is today date & if appointment extended then let it run or if appointment not extended then complete that appointment after 10 minute from start time
-
-		    					
 		    					$Rsult[] = [
 			    					'id' => $value['id'],
 			    					'patient_id' => $value['patient_id'],

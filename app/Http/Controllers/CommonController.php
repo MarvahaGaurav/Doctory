@@ -600,6 +600,7 @@ class CommonController extends Controller
 		$otp = rand(1000,10000);
 		$locale = $request->header('locale');
 		$timezone = $request->header('timezone');
+		$login_type = $request->login_type;
    	if($timezone){
 			$this->setTimeZone($timezone);
     	}
@@ -610,7 +611,8 @@ class CommonController extends Controller
 		if(!empty($locale)){
 			\App::setLocale($locale);
 			$validations = [
-				'email'=>'required|email'
+				'email'=>'required|email',
+				'login_type' => 'required'
 			];
 			$validator = Validator::make($request->all(),$validations);
 			if( $validator->fails() ){
@@ -620,39 +622,58 @@ class CommonController extends Controller
 			   return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
 			}else{
 				$UserDetail = User::Where(['email' => $email])->first();
-				if(count($UserDetail)){
-					// $this->sendOtp($country_code.$mobile,$otp);
-					$data = [
-						'otp' => $otp,
-						'email' => $email
-					];
-					try{
-						Mail::send(['text'=>'otp'], $data, function($message) use ($data)
-						{
-					         $message->to($data['email'])
-					         		->subject ('Forget Password OTP');
-					         $message->from('techfluper@gmail.com');
-					   });	
-					}catch(Exception $e){
+				
+					if(count($UserDetail)){
+						if($UserDetail->user_type == $login_type){
+							// $this->sendOtp($country_code.$mobile,$otp);
+							$data = [
+								'otp' => $otp,
+								'email' => $email
+							];
+							try{
+								Mail::send(['text'=>'otp'], $data, function($message) use ($data)
+								{
+							         $message->to($data['email'])
+							         		->subject ('Forget Password OTP');
+							         $message->from('techfluper@gmail.com');
+							   });	
+							}catch(Exception $e){
+								$response=[
+									'message' => $e->getMessage()
+					      	];
+					     		return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+							}
+							$UserOtp = Otp::find($UserDetail->id);
+							$UserOtp->otp = $otp;
+							$UserOtp->save();
+							$response=[
+								'message' => trans('messages.success.email_forget_otp'),
+								'response' => ['user_id'=> $UserDetail->id]
+					      ];
+					      return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
+						}else{
+							switch ($login_type) {
+								case '1':
+									$response = [
+										'message' => trans('messages.invalid_email_dr'),
+									];
+									return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+									break;
+								case '2':
+									$response = [
+										'message' => trans('messages.invalid_email_pt'),
+									];
+									return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+									break;
+							}
+						}
+					} else {
 						$response=[
-							'message' => $e->getMessage()
-			      	];
-			     		return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
+							'message' => trans('messages.invalid.credentials'),
+				      	];
+				      return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
 					}
-					$UserOtp = Otp::find($UserDetail->id);
-					$UserOtp->otp = $otp;
-					$UserOtp->save();
-					$response=[
-						'message' => trans('messages.success.email_forget_otp'),
-						'response' => ['user_id'=> $UserDetail->id]
-			      ];
-			      return Response::json($response,__('messages.statusCode.ACTION_COMPLETE'));
-				} else {
-					$response=[
-						'message' => trans('messages.invalid.credentials'),
-			      	];
-			      return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
-				}
+				
 			}
 		}else{
 	   	$response = [
@@ -1161,13 +1182,9 @@ class CommonController extends Controller
    }
 
    public function uploadImage($photo,$uploadedfile,$destinationPathOfPhoto){
-        
-
-        $photo = $request->file('photo');
+        /*$photo = $request->file('photo');
         $uploadedfile = $_FILES['photo']['tmp_name'];
-        $destinationPathOfPhoto = public_path().'/'.'thumbnail/';
-        
-
+        $destinationPathOfPhoto = public_path().'/'.'thumbnail/';*/
         $fileName = time()."_".$photo->getClientOriginalName();
         $src = "";
         $i = strrpos($fileName,".");
@@ -1182,68 +1199,6 @@ class CommonController extends Controller
             $src = imagecreatefromgif($uploadedfile);
         }else{
             $src = imagecreatefrombmp($uploadedfile);
-        }
-        $newwidth  = 200;
-        list($width,$height)=getimagesize($uploadedfile);
-        $newheight=($height/$width)*$newwidth;
-        $tmp=imagecreatetruecolor($newwidth,$newheight);
-        imagecopyresampled($tmp,$src,0,0,0,0,$newwidth,$newheight,$width,$height);
-        $filename = $destinationPathOfPhoto.'small'.'_'.$fileName; 
-        imagejpeg($tmp,$filename,100);
-        imagedestroy($tmp);
-        $filename = explode('/', $filename);
-
-        $newwidth1  = 400;
-        list($width,$height)=getimagesize($uploadedfile);
-        $newheight1=($height/$width)*$newwidth1;
-        $tmp=imagecreatetruecolor($newwidth1,$newheight1);
-        imagecopyresampled($tmp,$src,0,0,0,0,$newwidth1,$newheight1,$width,$height);
-        $filename = $destinationPathOfPhoto.'big'.'_'.$fileName; 
-        imagejpeg($tmp,$filename,100);
-        imagedestroy($tmp);
-        $filename = explode('/', $filename);
-
-        $newwidth2  = 100;
-        list($width,$height)=getimagesize($uploadedfile);
-        $newheight2=($height/$width)*$newwidth2;
-        $tmp=imagecreatetruecolor($newwidth2,$newheight2);
-        imagecopyresampled($tmp,$src,0,0,0,0,$newwidth2,$newheight2,$width,$height);
-        $filename = $destinationPathOfPhoto.'thumbnail'.'_'.$fileName; 
-        imagejpeg($tmp,$filename,100);
-        imagedestroy($tmp);
-        $filename = explode('/', $filename);
-        return $filename[6];
-   }
-
-   public function uploadImageTest(Request $request){
-        
-
-        $photo = $request->file('photo');
-        $uploadedfile = $_FILES['photo']['tmp_name'];
-        $destinationPathOfPhoto = public_path().'/'.'thumbnail/';
-        $degrees = 0;
-
-        // dd($photo);
-        $fileName = time()."_".$photo->getClientOriginalName();
-        $src = "";
-        $i = strrpos($fileName,".");
-        $l = strlen($fileName) - $i;
-        $ext = substr($fileName,$i+1);
-
-        if($ext=="jpg" || $ext=="jpeg" || $ext=="JPG" || $ext=="JPEG"){
-            // $src = imagecreatefromjpeg($uploadedfile);
-
-            $src = imagerotate(imagecreatefromjpeg($uploadedfile), $degrees, 0);
-
-        }else if($ext=="png" || $ext=="PNG"){
-            // $src = imagecreatefrompng($uploadedfile);
-            $src = imagerotate(imagecreatefrompng($uploadedfile), $degrees, 0);
-        }else if($ext=="gif" || $ext=="GIF"){
-            // $src = imagecreatefromgif($uploadedfile);
-            $src = imagerotate(imagecreatefromgif($uploadedfile), $degrees, 0);
-        }else{
-            // $src = imagecreatefrombmp($uploadedfile);
-            $src = imagerotate(imagecreatefrombmp($uploadedfile), $degrees, 0);
         }
         $newwidth  = 200;
         list($width,$height)=getimagesize($uploadedfile);

@@ -57,7 +57,8 @@ class NotificationController extends Controller
         // dd($tokens);
         $url = "https://fcm.googleapis.com/fcm/send";
         $token = $tokens[0];
-        $serverKey = 'AIzaSyDQsqj3rxWpA7SAHLwziaVmaYJr0b_8m9o';
+        $serverKey = 'AAAAcACqRE8:APA91bEzTru2cT4ui2RLnTmyyr4Lm7U09K0aoe1ceyr3djaDtDbrnX862t9e0ASBz9iMKKyy2zXT2N5LcBDzMRTNkNDQTGfPUX8dc3CjvlQQDAGUItgbS1To1GYlvQptap7ZwC7ejslH';
+        // $serverKey = 'AIzaSyDQsqj3rxWpA7SAHLwziaVmaYJr0b_8m9o';
         $title = "Title";
         $body = $body_text['message'];
 
@@ -103,7 +104,7 @@ class NotificationController extends Controller
         // dd($tokens);
         $url = 'https://fcm.googleapis.com/fcm/send';
         $headers = array (
-                'Authorization: key=' . "AAAA7JOUN98:APA91bETfdWp40yElYWFrgf6_3A8ZBv9kaCYvdgT3nJ9my64bIg3QIIHE5NIj6RtvdaNqlYujCYnaeMzHB5Py_KxGqP_3fZWRCTj1M_UX90ktzcx9K6x6bPrL9alHDMIwVXqua3RtKmn",
+                'Authorization: key=' . "AAAAcACqRE8:APA91bEzTru2cT4ui2RLnTmyyr4Lm7U09K0aoe1ceyr3djaDtDbrnX862t9e0ASBz9iMKKyy2zXT2N5LcBDzMRTNkNDQTGfPUX8dc3CjvlQQDAGUItgbS1To1GYlvQptap7ZwC7ejslH",
                 'Content-Type: application/json'
         );
         $ch = curl_init ();

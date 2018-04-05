@@ -181,4 +181,7 @@ return [
 	'Wait_For_Approval_From_Admin' =>'Please Wait for approval from admin',
 
 	'Account_blocked_Patient' => 'Account is blocked by admin',
+
+	'invalid_email_dr' => 'There is no such Doctor has registered with us.',
+	'invalid_email_pt' => 'There is no such Patient has registered with us.',
 ];

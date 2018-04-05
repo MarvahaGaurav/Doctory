@@ -21,16 +21,15 @@ class GauravController extends Controller
    		}
    	});*/
 
-
-
    	////////////////////////////////////////////////////////////////
    	///// firstOrNew  
    	///////////////////////////////////////////////////////////////
 
-	   	/*$data = Gaurav::firstOrNew(['name' => 'ankit1','email' => 'gauravmrvh1@gmail.com1']);
-	   	$data->save();*/
+	   	$data = Gaurav::firstOrNew(['name' => 'ankit','email' => 'gauravmrvh1@gmail.com']);
+	   	/*$data->name = 'gaurav marvaha';
+	   	$data->email = 'gauravmrvh1@gmail.com';*/
+	   	$data->save();
 
-	   	// it will find data in db if find , return data else u have to run save() to save data in db
 		////////////////////////////////////////////////////////////////
    	///// firstOrNew End
    	///////////////////////////////////////////////////////////////
@@ -41,18 +40,19 @@ class GauravController extends Controller
    	///////////////////////////////////////////////////////////////
 
 	   	/*$data = Gaurav::firstOrCreate(['name' => 'gaurav','email' => 'gauravmrvh1@gmail.com']);*/
-	   	
+
 	   	// if data in table having name = gaurav email = gauravmrvh1@gmail.com it will return data otherwise it will create data into DB but in this i have to do ( protected $fillable = ['name','email'] ) in model
 
 		////////////////////////////////////////////////////////////////
    	///// firstOrCreate End
    	///////////////////////////////////////////////////////////////
 
-         
-   	
-   }
 
-   public function checkBeforeFunction(Request $request){
-      dd($request->all());
+
+
+   	$response = [
+   		'response' => $data
+   	];
+	  	return Response::json( $response , 200 );
    }
 }

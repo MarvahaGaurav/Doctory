@@ -347,7 +347,7 @@ class AdminController extends Controller
             $role = Session::get('Dr_Admin_Role');
             $AdminDetail = $this->getAdminDetail(['id'=>$id,'role'=>$role]);
             $Pending_doctor_list = User::where(['status'=>0,'user_type'=>1])->get();
-            // dd($Pending_doctor_list);
+            // return $Pending_doctor_list;
             return view('Admin/pendingList',compact('AdminDetail','Pending_doctor_list'));
          }else{
             return redirect('Admin/login');

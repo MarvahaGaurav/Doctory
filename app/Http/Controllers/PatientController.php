@@ -1824,7 +1824,9 @@ class PatientController extends Controller
                   	}
                   }
 
-                  Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$UserDetail->id,'type' => __('messages.notification_status_codes.Patient_Post_Review_To_Doctor'),'appointment_id' => $appointment_id]);
+                  if( $review && $rating){
+                  	Notification::insert(['doctor_id'=>$doctor_id,'patient_id'=>$UserDetail->id,'type' => __('messages.notification_status_codes.Patient_Post_Review_To_Doctor'),'appointment_id' => $appointment_id]);
+                  }
 
     					$review_data = Review::firstOrNew(['patient_id' => $UserDetail->id, 'appointment_id' => $appointment_id , 'doctor_id' => $doctor_id]);
     					$review_data->rating = $rating;

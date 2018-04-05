@@ -67,7 +67,7 @@ return [
 
 	'appointment_status' => [
 		'PENDING' => 'قيد الانتظار',
-		'ACCEPTED_BY_DOCTOR' => 'قبلت من قبل الطبيب',
+		'ACCEPTED_BY_DOCTOR' => 'تم قبول موعدك',
 		'REJECTED_BY_DOCTOR' => 'رفضت من قبل الطبيب',
 		'CANCELED_BY_DOCTOR' => 'ألغى من قبل الطبيب',
 		'CANCELED_BY_PATIENT' => 'ألغيت من قبل المريض',
@@ -170,5 +170,8 @@ return [
 	'Appointment_already_booked_at_this_time_slot_for_this_patient' => 'حجز حجز بالفعل في هذا الوقت فتحة لهذا المريض',
 	'Wait_For_Approval_From_Admin' =>'يرجى الانتظار للموافقة من المشرف',
 	'Account_blocked_Patient' => 'تم حظر الحساب من قبل المشرف',
+
+	'invalid_email_dr' => 'There is no such Doctor has registered with us.',
+	'invalid_email_pt' => 'There is no such Patient has registered with us.',
 
 ];

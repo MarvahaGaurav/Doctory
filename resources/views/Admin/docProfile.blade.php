@@ -33,13 +33,14 @@
 
                                 </div>
                                 <h3 class="m-b-0">{{ucfirst($Doctor_detail['name'])}}</h3>
+                                <p>lorem ipsum is the dummy content for about the doctore and for the testing.</p>
                                 <div class="row text-center m-t-20">
                                     <div class="col-lg-4 col-md-4 m-t-20">
-                                        <h3 class="m-b-0 font-light">{{ucfirst($Doctor_detail['working_place'])}}</h3><small>Location</small></div>
+                                        <h3 class="m-b-0">{{ucfirst($Doctor_detail['working_place'])}}</h3><small>Location</small></div>
                                     <div class="col-lg-4 col-md-4 m-t-20">
-                                        <h3 class="m-b-0 font-light">{{$Doctor_detail['experience']}} year</h3><small>Experience</small></div>
+                                        <h3 class="m-b-0">{{$Doctor_detail['experience']}} year</h3><small>Experience</small></div>
                                     <div class="col-lg-4 col-md-4 m-t-20">
-                                        <h3 class="m-b-0 font-light">{{ucfirst($Doctor_detail['speciality']['name'])}}</h3><small>Speciality</small></div>
+                                        <h3 class="m-b-0">{{ucfirst($Doctor_detail['speciality']['name'])}}</h3><small>Speciality</small></div>
                                     <div class="col-md-12 m-b-10"></div>
                                 </div>
                             </div>
@@ -84,6 +85,16 @@
                                                     ?>
                                                 </h3>
                                                 <h6 class="card-subtitle">Language</h6> 
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 15%; height:6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="text-muted display-5"><i class="mdi mdi-emoticon-happy"></i></span> 
+                                            <div class="dl m-l-10">
+                                                <h3 class="card-title">{{$Doctor_detail['medical_licence_number']}}</h3>
+                                                <h6 class="card-subtitle">Medical licence number</h6> 
                                             </div>
                                             <div class="progress">
                                                 <div class="progress-bar bg-success" role="progressbar" style="width: 15%; height:6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>

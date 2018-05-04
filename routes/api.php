@@ -38,9 +38,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 	Route::post('sendOtp','CommonController@sendOtp');
 	Route::post('sendMail','CommonController@sendMail');
 	Route::post('updateDeviceToken','Controller@updateDeviceToken');
+	Route::post('get_appointment_detail','CommonController@get_appointment_detail'); // is extended or not
 
-	Route::post('get_appointment_detail','Controller@get_appointment_detail');
-	
 ////////////////////////////////////////////////
 ////// Doctor Api's
 ////////////////////////////////////////////////
@@ -92,10 +91,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 		Route::post('get_notification_list_for_patient','PatientController@get_notification_list');
 		Route::post('reschedule_appointment_by_patient','PatientController@reschedule_appointment_by_patient');
 		Route::post('cancel_appointment_by_patient','PatientController@cancel_appointment_by_patient');
-
 		Route::post('cancel_transfer_appointment_request_by_patient','PatientController@cancel_transfer_appointment_request_by_patient');
-		
 		Route::post('giveReviewToDoctor','PatientController@giveReviewToDoctor');
+		Route::post('makeAppointmentPayment','PatientController@makeAppointmentPayment');
+		Route::post('getTransactionHistory','PatientController@getTransactionHistory');
 	});	
 
 ////////////////////////////////////////////////
@@ -145,4 +144,4 @@ Route::post('notfication','Controller@send_notification');
 Route::get('testArtisan','Controller@test');
 
 
-Route::post('image','CommonController@uploadImageTest');
+Route::match(['get','post'],'testNotification','Controller@testNotification');

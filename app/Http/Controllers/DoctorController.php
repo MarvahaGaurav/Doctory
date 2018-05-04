@@ -478,15 +478,23 @@ class DoctorController extends Controller
                         'message'  => trans('messages.success.success'),
                      ];
 
-                     $NotificationDataArray = [
+                     /*$NotificationDataArray = [
                         'getter_id' => $appointment_detail->patient_id,
                         'appointment_id' => $appointment_id,
                         'Notification_type' => __('messages.notification_type.Appointment_Completed'),
                         'message' => __('messages.notification_messages.Appointment_Completed'),
                          
-                     ];
+                     ];*/
                      $NotificationGetterDetail = User::find($appointment_detail->patient_id);
                      if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                        \App::setLocale($NotificationGetterDetail->language);
+                        $NotificationDataArray = [
+                          'getter_id' => $appointment_detail->patient_id,
+                          'appointment_id' => $appointment_id,
+                          'Notification_type' => __('messages.notification_type.Appointment_Completed'),
+                          'message' => __('messages.notification_messages.Appointment_Completed'),
+                           
+                       ];
                          $this->send_notification($NotificationDataArray);
                      }
                      Notification::insert(['doctor_id'=>$UserDetail->id,'patient_id'=>$appointment_detail->patient_id,'type' =>__('messages.notification_status_codes.Appointment_Completed'),'appointment_id' => $appointment_detail->id]);
@@ -543,22 +551,21 @@ class DoctorController extends Controller
 					];
 					return Response::json($response,__('messages.statusCode.SHOW_ERROR_MESSAGE'));
        		}else{
-       			$appointment_detail = Appointment::where(['id'=>$appointment_id,'doctor_id'=>$UserDetail->id])->whereNotIn('status_of_appointment',['Expired','Cancelled','Completed','Transfered'])->first();
+       			$appointment_detail = Appointment::where(['id'=>$appointment_id,'doctor_id'=>$UserDetail->id])->whereNotIn('status_of_appointment',['Expired','Cancelled','Completed','Transferred'])->first();
                 // dd($appointment_detail);
        			if(count($appointment_detail)){
        				$appointment_detail->reffered_to_doctor_id = $transfer_to_doctor_id;
-       				$appointment_detail->status_of_appointment = 'Transfered';
+       				$appointment_detail->status_of_appointment = 'Transferred';
        				$appointment_detail->save();
-
-                    $NotificationDataArray = [
-                     'getter_id' => $appointment_detail->patient_id,
-                     'message' => __('messages.notification_messages.Appointment_Transfered_By_Doctor'),
-                     'appointment_id' => $appointment_id,
-                      'Notification_type' => __('messages.notification_type.transferAppointmentByDoctor'),
-                    ];
-
                     $NotificationGetterDetail = User::find($appointment_detail->patient_id);
                     if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                      \App::setLocale($NotificationGetterDetail->language);
+                      $NotificationDataArray = [
+                       'getter_id' => $appointment_detail->patient_id,
+                       'message' => __('messages.notification_messages.Appointment_Transfered_By_Doctor'),
+                       'appointment_id' => $appointment_id,
+                        'Notification_type' => __('messages.notification_type.transferAppointmentByDoctor'),
+                      ];
                         $this->send_notification($NotificationDataArray);
                     }
 
@@ -712,7 +719,7 @@ class DoctorController extends Controller
                           
 
                           if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now() && Carbon::parse($value->appointment_date) < Carbon::now()){
-                            if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment =='Expired' || $value->status_of_appointment == 'Rejected'){
+                            if($value->status_of_appointment == 'Transferred' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment =='Expired' || $value->status_of_appointment == 'Rejected'){
                               $status_of_appointment = $value->status_of_appointment;
                             }else{
                               Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
@@ -727,7 +734,7 @@ class DoctorController extends Controller
                             if( $value->is_extended == 1 ){
                               // dd('extend');
                               if(Carbon::parse($TimeSlotDetail_endTime) < Carbon::now()){
-                                if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment == 'Expired' || $value->status_of_appointment == 'Rejected'){
+                                if($value->status_of_appointment == 'Transferred' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment == 'Expired' || $value->status_of_appointment == 'Rejected'){
                                     $status_of_appointment = $value->status_of_appointment;
                                 }else{
                                   Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
@@ -738,7 +745,7 @@ class DoctorController extends Controller
 
                             if( $value->is_extended != 1 ){
                               if(Carbon::parse($TimeSlotDetail_startTime)->addMinutes(10) < Carbon::now()){
-                                if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment == 'Expired' || $value->status_of_appointment == 'Rejected'){
+                                if($value->status_of_appointment == 'Transferred' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment == 'Expired' || $value->status_of_appointment == 'Rejected'){
                                   $status_of_appointment = $value->status_of_appointment;
                                 }else{
                                   Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
@@ -842,6 +849,7 @@ class DoctorController extends Controller
          if(count($UserDetail)){
             if($UserDetail->user_type == 1){
                   $result = Appointment::get_all_appointment_of_doctor($date,$UserDetail->id);
+                  // dd($result);
                   $UserDetail->firebase_id = $firebase_id;
                   if($device_token){
                      $UserDetail->device_token = $device_token;
@@ -853,17 +861,22 @@ class DoctorController extends Controller
                      $TimeSlotDetail = TimeSlot::find($value->time_slot_id);
                      $start_time = Carbon::parse($TimeSlotDetail->start_time);
                      $end_time = Carbon::parse($TimeSlotDetail->end_time);
-
+                     // dd($TimeSlotDetail);
                      if($value->appointment_date == Carbon::now()->format('Y-m-d')  ){ 
+                        // dd('dsbnkjsdkv');
+                        // dd(Carbon::now());
+                        // dd(Carbon::parse($start_time) );
+                        // dd(Carbon::parse($start_time) > Carbon::now());
                         if(Carbon::parse($start_time) > Carbon::now()){
                              $final_result[] = $value;
                         }else{
+                          // dd('else');
                           if($value->status_of_appointment != 'Accepted' ){ 
+                              $Appointment = Appointment::find($value->id);
                               // if appointment time started but not accepted yet
-                              if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' ){
-                                  $Appointment->status_of_appointmentt = $value->status_of_appointment;
+                              if($value->status_of_appointment == 'Transferred' || $value->status_of_appointment =='Cancelled' ){
+                                  $Appointment->status_of_appointment = $value->status_of_appointment;
                               }else{
-                                $Appointment = Appointment::find($value->id);
                                 $Appointment->status_of_appointment = 'Expired';
                               }
                               $Appointment->save();
@@ -871,7 +884,7 @@ class DoctorController extends Controller
 
                             /*if( $value->is_extended != 1 ){
                               if(Carbon::parse($TimeSlotDetail->start_time)->addMinutes(10) < Carbon::now()){
-                                if($value->status_of_appointment == 'Transfered' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment == 'Expired' || $value->status_of_appointment == 'Rejected'){
+                                if($value->status_of_appointment == 'Transferred' || $value->status_of_appointment =='Cancelled' || $value->status_of_appointment == 'Expired' || $value->status_of_appointment == 'Rejected'){
                                   $status_of_appointment = $value->status_of_appointment;
                                 }else{
                                   Appointment::where(['id' => $value->id])->update(['status_of_appointment' => 'Completed']);
@@ -969,12 +982,14 @@ class DoctorController extends Controller
                                      ];
 
                                     //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
-                                    $NotificationDataArray = [
-                                       'getter_id' => $AppointmentDetail->patient_id,
-                                       'message' => __('messages.notification_messages.ACCEPTED_BY_DOCTOR')
-                                    ];
+                                    
                                     $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
                                     if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                                      \App::setLocale($NotificationGetterDetail->language);
+                                      $NotificationDataArray = [
+                                         'getter_id' => $AppointmentDetail->patient_id,
+                                         'message' => __('messages.notification_messages.ACCEPTED_BY_DOCTOR')
+                                      ];
                                         $this->send_notification($NotificationDataArray);
                                     }
 
@@ -987,12 +1002,14 @@ class DoctorController extends Controller
                                     ];
 
                                     //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
-                                    $NotificationDataArray = [
-                                       'getter_id' => $AppointmentDetail->patient_id,
-                                       'message' => __('messages.notification_messages.REJECTED_BY_DOCTOR')
-                                    ];
+                                    
                                     $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
                                     if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                                      \App::setLocale($NotificationGetterDetail->language);
+                                      $NotificationDataArray = [
+                                         'getter_id' => $AppointmentDetail->patient_id,
+                                         'message' => __('messages.notification_messages.REJECTED_BY_DOCTOR')
+                                      ];
                                         $this->send_notification($NotificationDataArray);
                                     }
 
@@ -1020,13 +1037,15 @@ class DoctorController extends Controller
                                  ];
 
                                  //HERE I HAVE TO SEND NOTIFICATION TO PATIENT
-                                 $NotificationDataArray = [
-                                    'getter_id' => $AppointmentDetail->patient_id,
-                                    'message' => __('messages.notification_messages.ACCEPTED_BY_DOCTOR')
-                                 ];
+                                 
                                 $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
                                 if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-                                    $this->send_notification($NotificationDataArray);
+                                  \App::setLocale($NotificationGetterDetail->language);
+                                  $NotificationDataArray = [
+                                    'getter_id' => $AppointmentDetail->patient_id,
+                                    'message' => __('messages.notification_messages.ACCEPTED_BY_DOCTOR')
+                                  ];
+                                  $this->send_notification($NotificationDataArray);
                                 }
 
                                  Notification::insert(['doctor_id' => $DOCTOR_DETAIL->id,'patient_id' => $AppointmentDetail->patient_id,'type' => __('messages.notification_status_codes.Appointment_Accepted_By_Doctor'),'appointment_id' => $appointment_id]);
@@ -1037,13 +1056,15 @@ class DoctorController extends Controller
                                      'message'  => trans('messages.success.appointment_rejected'),
                                  ];
 
-                                 $NotificationDataArray = [
-                                    'getter_id' => $AppointmentDetail->patient_id,
-                                    'message' => __('messages.notification_messages.REJECTED_BY_DOCTOR')
-                                 ];
+                                 
                                  $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
                                 if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-                                    $this->send_notification($NotificationDataArray);
+                                  \App::setLocale($NotificationGetterDetail->language);
+                                  $NotificationDataArray = [
+                                    'getter_id' => $AppointmentDetail->patient_id,
+                                    'message' => __('messages.notification_messages.REJECTED_BY_DOCTOR')
+                                  ];
+                                  $this->send_notification($NotificationDataArray);
                                 }
 
                                  Notification::insert(['doctor_id' => $DOCTOR_DETAIL->id,'patient_id' => $AppointmentDetail->patient_id,'type' => __('messages.notification_status_codes.Appointment_Rejected_By_Doctor'),'appointment_id' => $appointment_id]);
@@ -1154,12 +1175,14 @@ class DoctorController extends Controller
                                      // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
                                     Notification::where(['appointment_id' => $appointment_id])->delete();
 
-                                    $NotificationDataArray = [
-                                       'getter_id' => $AppointmentDetail->patient_id,
-                                       'message' => __('messages.notification_messages.RESCHEDULED_BY_DOCTOR')
-                                    ];
+                                   
                                     $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
                                     if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                                      \App::setLocale($NotificationGetterDetail->language);
+                                      $NotificationDataArray = [
+                                         'getter_id' => $AppointmentDetail->patient_id,
+                                         'message' => __('messages.notification_messages.RESCHEDULED_BY_DOCTOR')
+                                      ];
                                         $this->send_notification($NotificationDataArray);
                                     }
 
@@ -1197,13 +1220,15 @@ class DoctorController extends Controller
                                      // HERE I HAVE TO SEND NOTIFICATION TO GET CONFIRM ABOUT RESCHEDULED APPOINTMENT
                                     Notification::where(['appointment_id' => $appointment_id])->delete();
 
-                                    $NotificationDataArray = [
-                                       'getter_id' => $AppointmentDetail->patient_id,
-                                       'message' => __('messages.notification_messages.RESCHEDULED_BY_DOCTOR')
-                                    ];
+                                    
                                     $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
                                     if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-                                        $this->send_notification($NotificationDataArray);
+                                      \App::setLocale($NotificationGetterDetail->language);
+                                      $NotificationDataArray = [
+                                         'getter_id' => $AppointmentDetail->patient_id,
+                                         'message' => __('messages.notification_messages.RESCHEDULED_BY_DOCTOR')
+                                      ];
+                                      $this->send_notification($NotificationDataArray);
                                     }
 
                                     Notification::insert(['doctor_id'=>$DOCTOR_DETAIL->id,'patient_id'=>$patient_id,'type' =>__('messages.notification_status_codes.Appointment_Rescheduled_By_Doctor'),'appointment_id' => $appointment_id]);
@@ -1293,12 +1318,13 @@ class DoctorController extends Controller
                      // dd($AppointmentDetail);
                      if($AppointmentDetail && $AppointmentDetail->patient_id == $patient_id && $AppointmentDetail->rescheduled_by_patient == 1)
                      {
-                         $appointmentDateInDb = Carbon::parse($AppointmentDetail->appointment_date)->format('Y-m-d');
+                         // $appointmentDateInDb = Carbon::parse($AppointmentDetail->appointment_date)->format('Y-m-d');
+                         $appointmentDateInDb = Carbon::parse($AppointmentDetail->rescheduled_date)->format('Y-m-d');
                          // dd($appointmentDateInDb);
-                         if($appointmentDateInDb >= Carbon::now()->format('Y-m-d')){
+                         if($appointmentDateInDb == Carbon::now()->format('Y-m-d')){
                             // dd($appointmentDateInDb);
 
-                             $Time_slot_detail = TimeSlot::find($AppointmentDetail->time_slot_id);
+                             $Time_slot_detail = TimeSlot::find($AppointmentDetail->rescheduled_time_slot_id);
                              $Appointment_TimeSlot_StartTime = $Time_slot_detail->start_time;
                              $Appointment_TimeSlot_EndTime = $Time_slot_detail->end_time;
                              // dd($Time_slot_detail);
@@ -1317,12 +1343,14 @@ class DoctorController extends Controller
                                      ];
                                      Log::info('----------------------DoctorController--------------------------accept_or_reject_appointment_by_doctor_rescheduled_by_patient---------response'.print_r($Response,True));
 
-                                    $NotificationDataArray = [
-                                       'getter_id' => $AppointmentDetail->patient_id,
-                                       'message' => __('messages.notification_messages.RESCHEDULED_ACCEPTED_BY_DOCTOR')
-                                    ];
+                                    
                                     $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
                                     if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                                      \App::setLocale($NotificationGetterDetail->language);
+                                      $NotificationDataArray = [
+                                         'getter_id' => $AppointmentDetail->patient_id,
+                                         'message' => __('messages.notification_messages.RESCHEDULED_ACCEPTED_BY_DOCTOR')
+                                      ];
                                         $this->send_notification($NotificationDataArray);
                                     }
 
@@ -1336,12 +1364,14 @@ class DoctorController extends Controller
                                      $AppointmentDetail->rescheduled_date = null;
                                      $AppointmentDetail->save();
 
-                                    $NotificationDataArray = [
-                                       'getter_id' => $AppointmentDetail->patient_id,
-                                       'message' => __('messages.notification_messages.RESCHEDULED_REJECTED_BY_DOCTOR')
-                                    ];
+                                    
                                     $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
                                     if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                                      \App::setLocale($NotificationGetterDetail->language);
+                                      $NotificationDataArray = [
+                                         'getter_id' => $AppointmentDetail->patient_id,
+                                         'message' => __('messages.notification_messages.RESCHEDULED_REJECTED_BY_DOCTOR')
+                                      ];
                                         $this->send_notification($NotificationDataArray);
                                     }
 
@@ -1367,12 +1397,72 @@ class DoctorController extends Controller
                                  Log::info('----------------------DoctorController--------------------------accept_or_reject_appointment_by_doctor_rescheduled_by_patient---------response'.print_r($response,True));
                                  return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
                              }
-                         }else{
-                             $response = [
-                                'message' => __('messages.invalid.appointment_expired')
-                             ];
-                             return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
-                         }   
+                         }
+
+                         if($appointmentDateInDb > Carbon::now()->format('Y-m-d')){
+                            if($accept_or_reject == 'Accepted'){
+                                $AppointmentDetail->status_of_appointment = $accept_or_reject;
+                                Notification::where('appointment_id',$AppointmentDetail->id)->delete();
+                                 $AppointmentDetail->time_slot_id = $AppointmentDetail->rescheduled_time_slot_id;
+                                 $AppointmentDetail->day_id = $AppointmentDetail->rescheduled_day_id;
+                                 $AppointmentDetail->appointment_date = $AppointmentDetail->rescheduled_date;
+                                 $AppointmentDetail->save();
+                                 $Response = [
+                                     'message'  => trans('messages.success.appointment_accepted'),
+                                 ];
+                                 Log::info('----------------------DoctorController--------------------------accept_or_reject_appointment_by_doctor_rescheduled_by_patient---------response'.print_r($Response,True));
+
+                                
+                                $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
+                                if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                                  \App::setLocale($NotificationGetterDetail->language);
+                                  $NotificationDataArray = [
+                                     'getter_id' => $AppointmentDetail->patient_id,
+                                     'message' => __('messages.notification_messages.RESCHEDULED_ACCEPTED_BY_DOCTOR')
+                                  ];
+                                    $this->send_notification($NotificationDataArray);
+                                }
+
+                                 Notification::insert(['doctor_id'=>$UserDetail->id,'patient_id'=>$patient_id,'type' =>__('messages.notification_status_codes.Rescheduled_Appointment_Accepted_By_Doctor'),'appointment_id' => $appointment_id]);
+
+                                 return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                            }
+                            if($accept_or_reject == 'Rejected'){
+                              $AppointmentDetail->rescheduled_time_slot_id = null;
+                              $AppointmentDetail->rescheduled_day_id = null;
+                               $AppointmentDetail->rescheduled_date = null;
+                               $AppointmentDetail->save();
+
+                              
+                              $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
+                              if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                                \App::setLocale($NotificationGetterDetail->language);
+                                $NotificationDataArray = [
+                                   'getter_id' => $AppointmentDetail->patient_id,
+                                   'message' => __('messages.notification_messages.RESCHEDULED_REJECTED_BY_DOCTOR')
+                                ];
+                                  $this->send_notification($NotificationDataArray);
+                              }
+
+                              Notification::where('appointment_id',$AppointmentDetail->id)->delete();
+
+                              Notification::insert(['doctor_id'=>$UserDetail->id,'patient_id'=>$AppointmentDetail->patient_id,'type' =>__('messages.notification_status_codes.Rescheduled_Appointment_Rejected_By_Doctor'),'appointment_id' => $AppointmentDetail->id]);
+                              
+                              $AppointmentDetail->save();
+                              $Response = [
+                              'message'  => trans('messages.success.appointment_rejected'),
+                              ];
+
+                              Log::info('----------------------DoctorController--------------------------accept_or_reject_appointment_by_doctor_rescheduled_by_patient---------response'.print_r($Response,True));
+                              return Response::json( $Response , __('messages.statusCode.ACTION_COMPLETE') );
+                            }
+                         }
+                         // else{
+                         $response = [
+                            'message' => __('messages.invalid.appointment_expired')
+                         ];
+                         return response()->json($response,trans('messages.statusCode.SHOW_ERROR_MESSAGE'));
+                         // }   
                      }else{
                          $response = [
                              'message' => __('messages.success.NO_DATA_FOUND')
@@ -1458,7 +1548,7 @@ class DoctorController extends Controller
                foreach ($days as $key => $value1) {
                   if($value1 == 1 && $value->day_id == 1){
                         $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])
-                        ->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        ->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                         ->where('appointment_date',$dates[$key])
                         ->first();
                         if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1476,7 +1566,7 @@ class DoctorController extends Controller
                               }
                            }
                         }else{
-                           $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                           $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                                  ->where('rescheduled_date',$dates[$key])
                                  ->first();
                            if($checkReschedule){
@@ -1494,7 +1584,7 @@ class DoctorController extends Controller
 
 
                   if($value1 == 2 && $value->day_id == 2){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1512,7 +1602,7 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                                  ->where('rescheduled_date',$dates[$key])
                                  ->first();
                         if($checkReschedule){
@@ -1528,7 +1618,7 @@ class DoctorController extends Controller
                      }
                   }
                   if($value1 == 3 && $value->day_id == 3){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
                         if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1540,7 +1630,7 @@ class DoctorController extends Controller
                                  array_push($day3,['time_slot_id'=>$value->time_slot_id,'busyOrFree'=>count($busyOrFree)]);
                               }
                            }else{
-                              $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'rescheduled_day_id'=>$busyOrFree->rescheduled_day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                              $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$busyOrFree->rescheduled_time_slot_id,'rescheduled_day_id'=>$busyOrFree->rescheduled_day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                                  ->where('rescheduled_date',$dates[$key])
                                  ->first();
                               if($checkReschedule){
@@ -1556,7 +1646,7 @@ class DoctorController extends Controller
                               }
                            }
                         }else{
-                           $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                           $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                                  ->where('rescheduled_date',$dates[$key])
                                  ->first();
                            if($checkReschedule){
@@ -1573,7 +1663,7 @@ class DoctorController extends Controller
                        
                   }
                   if($value1 == 4 && $value->day_id == 4){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
                      
@@ -1594,7 +1684,7 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                        ->where('rescheduled_date',$dates[$key])
                        ->first();
                                  
@@ -1611,7 +1701,7 @@ class DoctorController extends Controller
                      }
                   }
                   if($value1 == 5 && $value->day_id == 5){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1630,7 +1720,7 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                                  ->where('rescheduled_date',$dates[$key])
                                  ->first();
                         if($checkReschedule){
@@ -1646,7 +1736,7 @@ class DoctorController extends Controller
                      }
                   }
                   if($value1 == 6 && $value->day_id == 6){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1664,7 +1754,7 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                                  ->where('rescheduled_date',$dates[$key])
                                  ->first();
                         if($checkReschedule){
@@ -1680,7 +1770,7 @@ class DoctorController extends Controller
                      }
                   }
                   if($value1 == 7 && $value->day_id == 7){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                          ->where('appointment_date',$dates[$key])
                          ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1698,7 +1788,7 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value1])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                                  ->where('rescheduled_date',$dates[$key])
                                  ->first();
                         if($checkReschedule){
@@ -1719,7 +1809,7 @@ class DoctorController extends Controller
                if($value->day_id == 1){
                   if(Carbon::now()->dayOfWeek+1 == 1){
                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])
-                    ->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                    ->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                     ->where('appointment_date',Date('Y-m-d'))
                     ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1737,7 +1827,7 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                         ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
                         ->first();
                         if($checkReschedule){
@@ -1755,7 +1845,7 @@ class DoctorController extends Controller
                }
                if($value->day_id == 2){
                   if(Carbon::now()->dayOfWeek+1 == 2){
-                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                     ->where('appointment_date',Date('Y-m-d'))
                     ->first();
                     // dd($busyOrFree);
@@ -1774,7 +1864,7 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                         ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
                         ->first();
                         if($checkReschedule){
@@ -1792,7 +1882,7 @@ class DoctorController extends Controller
                }
                if($value->day_id == 3){
                   if(Carbon::now()->dayOfWeek+1 == 3){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                         ->where('appointment_date',Date('Y-m-d'))
                         ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1812,7 +1902,7 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                         ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
                         ->first();
                         if($checkReschedule){
@@ -1830,7 +1920,7 @@ class DoctorController extends Controller
                }
                if($value->day_id == 4){
                   if(Carbon::now()->dayOfWeek+1 == 4){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                      ->where('appointment_date',Date('Y-m-d'))
                      ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1849,7 +1939,7 @@ class DoctorController extends Controller
                         }
                      }else{
                         
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                         ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
                         ->first();
                         if($checkReschedule){
@@ -1867,7 +1957,7 @@ class DoctorController extends Controller
                }
                if($value->day_id == 5){
                   if(Carbon::now()->dayOfWeek+1 == 5){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                         ->where('appointment_date',Carbon::now()->format('Y-m-d'))
                         ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1885,7 +1975,7 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                         ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
                         ->first();
                         if($checkReschedule){
@@ -1904,7 +1994,7 @@ class DoctorController extends Controller
 
                if($value->day_id == 6){
                   if(Carbon::now()->dayOfWeek+1 == 6){
-                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                     $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                         ->where('appointment_date',Date('Y-m-d'))
                         ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1922,7 +2012,7 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id,'rescheduled_day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                                  ->where('rescheduled_date',$dates[$key])
                                  ->first();
                         if($checkReschedule){
@@ -1940,7 +2030,7 @@ class DoctorController extends Controller
                }
                if($value->day_id == 7){
                   if(Carbon::now()->dayOfWeek+1 == 7){
-                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                    $busyOrFree = Appointment::where(['doctor_id'=>$drId,'time_slot_id'=>$value->time_slot_id,'day_id'=>$value->day_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                         ->where('appointment_date',Date('Y-m-d'))
                         ->first();
                      if(!empty($busyOrFree->rescheduled_day_id)){
@@ -1958,7 +2048,7 @@ class DoctorController extends Controller
                            }
                         }
                      }else{
-                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transfered'])
+                        $checkReschedule = Appointment::where(['doctor_id'=>$value->doctor_id,'rescheduled_time_slot_id'=>$value->time_slot_id])->whereNotIn('status_of_appointment',['Rejected','Cancelled','Expired','Completed','Transferred'])
                         ->where('rescheduled_date',Carbon::now()->format('Y-m-d'))
                         ->first();
                         if($checkReschedule){
@@ -2162,13 +2252,15 @@ class DoctorController extends Controller
                                   $AppointmentDetail->status_of_appointment = 'Cancelled';
                                   $AppointmentDetail->save();
 
-                                 $NotificationDataArray = [
-                                    'getter_id' => $AppointmentDetail->patient_id,
-                                    'message' => __('messages.notification_messages.CANCELED_BY_DOCTOR')
-                                 ];
+                                 
                                 $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
                                 if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-                                    $this->send_notification($NotificationDataArray);
+                                  \App::setLocale($NotificationGetterDetail->language);
+                                  $NotificationDataArray = [
+                                    'getter_id' => $AppointmentDetail->patient_id,
+                                    'message' => __('messages.notification_messages.CANCELED_BY_DOCTOR')
+                                  ];
+                                  $this->send_notification($NotificationDataArray);
                                 }
 
                                  Notification::insert(['doctor_id'=>$AppointmentDetail->doctor_id,'patient_id'=>$AppointmentDetail->patient_id,'type'=>__('messages.notification_status_codes.Appointment_Cancelled_By_Doctor'),'appointment_id' => $appointment_id,'appointment_status'=>'Cancelled']);
@@ -2187,12 +2279,14 @@ class DoctorController extends Controller
                             }else{
                                $AppointmentDetail->status_of_appointment = 'Cancelled';
                                $AppointmentDetail->save();
-                               $NotificationDataArray = [
-                                 'getter_id' => $AppointmentDetail->patient_id,
-                                 'message' => __('messages.notification_messages.CANCELED_BY_DOCTOR')
-                              ];
+                               
                                 $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
                                 if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
+                                  \App::setLocale($NotificationGetterDetail->language);
+                                  $NotificationDataArray = [
+                                     'getter_id' => $AppointmentDetail->patient_id,
+                                     'message' => __('messages.notification_messages.CANCELED_BY_DOCTOR')
+                                  ];
                                     $this->send_notification($NotificationDataArray);
                                 }
 
@@ -2511,16 +2605,18 @@ class DoctorController extends Controller
                      if($AppointmentDetail->doctor_id == $UserDetail->id){
                         $AppointmentDetail->is_extended = 1;
                         $AppointmentDetail->save();
-                        $NotificationDataArray = [
-                           'getter_id' => $AppointmentDetail->patient_id,
-                           'appointment_id' => $AppointmentDetail->id,
-                           'message' => __('messages.notification_messages.Extand_Chat_Notification'),
-                           'Notification_type' => __('messages.notification_type.Extend_Chat'),
-                        ];
+                        
                         $NotificationGetterDetail = User::find($AppointmentDetail->patient_id);
                         
                         if($NotificationGetterDetail->notification && !empty($NotificationGetterDetail->remember_token)){
-                            $this->send_notification($NotificationDataArray);
+                          \App::setLocale($NotificationGetterDetail->language);
+                          $NotificationDataArray = [
+                             'getter_id' => $AppointmentDetail->patient_id,
+                             'appointment_id' => $AppointmentDetail->id,
+                             'message' => __('messages.notification_messages.Extand_Chat_Notification'),
+                             'Notification_type' => __('messages.notification_type.Extend_Chat'),
+                          ];
+                          $this->send_notification($NotificationDataArray);
                         }
                         Notification::insert(['doctor_id'=>$UserDetail->id,'patient_id'=>$AppointmentDetail->patient_id,'type' =>__('messages.notification_status_codes.Extand_Chat_Notification'),'appointment_id' => $AppointmentDetail->id]);
                         

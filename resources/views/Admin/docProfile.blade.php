@@ -33,7 +33,7 @@
 
                                 </div>
                                 <h3 class="m-b-0">{{ucfirst($Doctor_detail['name'])}}</h3>
-                                <p>lorem ipsum is the dummy content for about the doctore and for the testing.</p>
+                                <p>{{$Doctor_detail['about_me']}}</p>
                                 <div class="row text-center m-t-20">
                                     <div class="col-lg-4 col-md-4 m-t-20">
                                         <h3 class="m-b-0">{{ucfirst($Doctor_detail['working_place'])}}</h3><small>Location</small></div>

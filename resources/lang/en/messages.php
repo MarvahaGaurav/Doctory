@@ -3,12 +3,13 @@
 return [
 	
 	'success' => [
-		'login' => 'Login Successfull.',
+		'payment' => 'Payment Successful.',
+		'login' => 'Login Successful.',
 		'success' => 'Success.',
-		'signup' => 'Signup Successfull.',
-		'update' => 'Update Successfull.',
+		'signup' => 'Signup Successful.',
+		'update' => 'Update Successful.',
 		'unsuccess' => 'Unsuccessful.',
-		'logout' => 'Logout Successfull.',
+		'logout' => 'Logout Successful.',
 		'review_published' => 'review published successfully.',
 		'review_un_published' => 'review un published successfully.',
 		'review_deleted' => 'review deleted.',
@@ -100,7 +101,7 @@ return [
 		'Appointment_Cancelled_By_Doctor' => 'Appointment cancelled successfully.',
 		'Appointment_Transfered_By_Doctor' => 'Your appointment has been transferred to other doctor.',
 		'Scheduled_Appointment' => 'You have a new appointment request.',
-		'Patient_Post_Review_To_Doctor' => 'You have received the rating on appointment.',
+		'Patient_Post_Review_To_Doctor' => 'You have received the review on appointment.',
 		'Doctor_Aprroved_By_Admin' => 'Your profile have been approved from admin.',
 		'Doctor_Have_Appointment_After_Fifteen_Minutes' => 'Your appointment is about to start.',
 		'Patient_Have_Appointment_After_Fifteen_Minutes' => 'Your appointment is about to start.',
@@ -159,6 +160,7 @@ return [
 		'doctor_not_available_at_this_time_slot' => 'Doctor not available at this time slot',
 		'appointment_expired' => 'Appointment Experied.',
 		'invalid_email_match' => "Your entered email dosen't match with your email.",
+		'insufficient_amount' => 'insufficient amount in wallet.',
 	],
 
 	'same' => [
@@ -184,4 +186,6 @@ return [
 
 	'invalid_email_dr' => 'There is no such Doctor has registered with us.',
 	'invalid_email_pt' => 'There is no such Patient has registered with us.',
+
+
 ];

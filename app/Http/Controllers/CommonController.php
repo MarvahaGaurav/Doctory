@@ -234,7 +234,7 @@ class CommonController extends Controller
 		    				$UserDetail->language = $language;
 		    				$UserDetail->save();
 		    				$result = $this->getUserDetail($User->getUserDetail($userDetail->id)); // $this->getUserDetail available in controller
-
+		    				// return $result;
 							if(!empty($result) && $result['status'] == 0 && $result['user_type'] == 2){
 								$response = [
 									'message' =>  __('messages.Account_blocked_Patient'),

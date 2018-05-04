@@ -34,6 +34,7 @@ class PatientStatusAuthentication
                     ];
                     return response()->json($response,__('messages.statusCode.INVALID_ACCESS_TOKEN'));
                 }
+                $request['DetailFromMiddelware'] = $userDetail;
                 return $next($request);
             }
         } else {
